@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "509796159048",
+    "firebase_url": "https://jippy-mart-a2bbe-default-rtdb.firebaseio.com",
+    "project_id": "jippy-mart-a2bbe",
+    "storage_bucket": "jippy-mart-a2bbe.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:509796159048:android:880f9b54c90e056fbdd27d",
+        "android_client_info": {
+          "package_name": "com.jippymart.customer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "509796159048-6v0gg0gd7ri5vgtu8kpbjbv5n7majqbl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jippymart.customer",
+            "certificate_hash": "676927c75a588acc76f775e964b6ea84794f937e"
+          }
+        },
+        {
+          "client_id": "509796159048-l9lv36s3do1sne4n41kbc0i400j3f6us.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBK-WJX6l4wUeiHt-H8kZOVpb4aSbz-Fgg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "509796159048-l9lv36s3do1sne4n41kbc0i400j3f6us.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
