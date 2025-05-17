@@ -5,9 +5,9 @@ import 'package:customer/constant/constant.dart';
 import 'package:customer/controllers/global_setting_controller.dart';
 import 'package:customer/firebase_options.dart';
 import 'package:customer/models/language_model.dart';
+import 'package:customer/services/api_service.dart';
 import 'package:customer/services/database_helper.dart';
 import 'package:customer/services/localization_service.dart';
-import 'package:customer/services/mock_api_service.dart';
 import 'package:customer/themes/styles.dart';
 import 'package:customer/utils/dark_theme_provider.dart';
 import 'package:customer/utils/preferences.dart';
@@ -36,8 +36,8 @@ void main() async {
     appleProvider: AppleProvider.appAttest,
   );
   
-  // Initialize mock API service
-  await Get.putAsync(() => MockApiService().init());
+  // Initialize API service
+  await Get.putAsync(() => ApiService().init());
   
   DatabaseHelper.instance;
   await Preferences.initPref();
