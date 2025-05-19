@@ -5,7 +5,7 @@ import 'package:customer/utils/preferences.dart';
 
 class ApiService extends GetxService {
   // Base URL for your API - Replace this with your actual API URL
-  static const String baseUrl = 'https://user.jippymart.in/api/'; // Example: 'https://your-domain.com/api/v1' or 'http://your-ip:port/api/v1'
+  static const String baseUrl = 'https://jippymart.in/api/'; // Example: 'https://your-domain.com/api/v1' or 'http://your-ip:port/api/v1'
   
   // Initialize the service
   Future<ApiService> init() async {
@@ -13,7 +13,7 @@ class ApiService extends GetxService {
     return this;
   }
 
-  // API Headers
+  // API Headers 
   Map<String, String> get _headers {
     final token = Preferences.getString(Preferences.tokenKey);
     return {
