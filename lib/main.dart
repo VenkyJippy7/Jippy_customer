@@ -17,9 +17,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter/foundation.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Firebase
   await Firebase.initializeApp(
     name: 'default',
     options: DefaultFirebaseOptions.currentPlatform,
@@ -30,17 +34,22 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
+  // App Check configuration
   await FirebaseAppCheck.instance.activate(
+    androidProvider: kReleaseMode
+        ? AndroidProvider.playIntegrity   // Use in production
+        : AndroidProvider.debug,          // Use for local dev & emulator
+    appleProvider: kReleaseMode
+        ? AppleProvider.appAttest
+        : AppleProvider.debug,
     webProvider: ReCaptchaV3Provider('recaptcha-v3-site-key'),
-    androidProvider: AndroidProvider.playIntegrity,
-    appleProvider: AppleProvider.appAttest,
   );
-  
-  // Initialize API service
+
+  // Initialize other services
   await Get.putAsync(() => ApiService().init());
-  
   DatabaseHelper.instance;
   await Preferences.initPref();
+
   runApp(
     const MyApp(),
   );
@@ -95,7 +104,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       child: Consumer<DarkThemeProvider>(
         builder: (context, value, child) {
           return GetMaterialApp(
-            title: 'Foodie Customer'.tr,
+            title: 'JippyMart Customer'.tr,
             debugShowCheckedModeBanner: false,
             theme: Styles.themeData(
                 themeChangeProvider.darkTheme == 0

@@ -7,7 +7,7 @@
     <uses-feature android:name="android.hardware.location.gps" />
     
     <application
-        android:label="Jippy Mart"
+        android:label="JippyMart"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         tools:replace="android:label"
@@ -47,7 +47,7 @@
         <!-- Google Maps API Key -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyBK-WJX6l4wUeiHt-H8kZOVpb4aSbz-Fgg" />
+            android:value="AIzaSyBRdk2BoUowc2FgvAwI0oDF_0fhbazoTQs" />
 
         <meta-data
             android:name="com.google.android.gms.wallet.api.enabled"

@@ -25,6 +25,17 @@ class NetworkImageWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Handle null or empty URLs
+    if (imageUrl.isEmpty || imageUrl == "null" || imageUrl == "Null" || imageUrl == "NULL") {
+      return errorWidget ??
+          Image.network(
+            Constant.placeholderImage,
+            fit: fit ?? BoxFit.fitWidth,
+            height: height ?? Responsive.height(8, context),
+            width: width ?? Responsive.width(15, context),
+          );
+    }
+
     return CachedNetworkImage(
       imageUrl: imageUrl,
       fit: fit ?? BoxFit.fitWidth,

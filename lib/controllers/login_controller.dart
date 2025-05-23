@@ -37,41 +37,63 @@ class LoginController extends GetxController {
       );
       UserModel? userModel = await FireStoreUtils.getUserProfile(credential.user!.uid);
       log("Login :: ${userModel?.toJson()}");
-      if (userModel?.role == Constant.userRoleCustomer) {
-        if (userModel?.active == true) {
-          userModel?.fcmToken = await NotificationService.getToken();
-          await FireStoreUtils.updateUser(userModel!);
-          if (userModel.shippingAddress != null && userModel.shippingAddress!.isNotEmpty) {
-            if (userModel.shippingAddress!.where((element) => element.isDefault == true).isNotEmpty) {
-              Constant.selectedLocation = userModel.shippingAddress!.where((element) => element.isDefault == true).single;
-            } else {
-              Constant.selectedLocation = userModel.shippingAddress!.first;
-            }
-            Get.offAll(const DashBoardScreen());
-          } else {
-            Get.offAll(const LocationPermissionScreen());
-          }
+      
+      if (userModel == null) {
+        await FirebaseAuth.instance.signOut();
+        ShowToastDialog.closeLoader();
+        ShowToastDialog.showToast("User profile not found. Please try again.".tr);
+        return;
+      }
+
+      if (userModel.role != Constant.userRoleCustomer) {
+        await FirebaseAuth.instance.signOut();
+        ShowToastDialog.closeLoader();
+        ShowToastDialog.showToast("Invalid user role. Please contact administrator.".tr);
+        return;
+      }
+
+      if (userModel.active != true) {
+        await FirebaseAuth.instance.signOut();
+        ShowToastDialog.closeLoader();
+        ShowToastDialog.showToast("This user is disabled. Please contact administrator.".tr);
+        return;
+      }
+
+      userModel.fcmToken = await NotificationService.getToken();
+      await FireStoreUtils.updateUser(userModel);
+      
+      if (userModel.shippingAddress != null && userModel.shippingAddress!.isNotEmpty) {
+        if (userModel.shippingAddress!.where((element) => element.isDefault == true).isNotEmpty) {
+          Constant.selectedLocation = userModel.shippingAddress!.where((element) => element.isDefault == true).single;
         } else {
-          await FirebaseAuth.instance.signOut();
-          ShowToastDialog.showToast("This user is disable please contact to administrator".tr);
+          Constant.selectedLocation = userModel.shippingAddress!.first;
+        }
+        ShowToastDialog.closeLoader();
+        Get.offAll(const DashBoardScreen());
+      } else {
+        ShowToastDialog.closeLoader();
+        Get.offAll(const LocationPermissionScreen());
+      }
+    } catch (e) {
+      ShowToastDialog.closeLoader();
+      if (e is FirebaseAuthException) {
+        switch (e.code) {
+          case 'user-not-found':
+            ShowToastDialog.showToast("No user found for that email.".tr);
+            break;
+          case 'wrong-password':
+            ShowToastDialog.showToast("Wrong password provided for that user.".tr);
+            break;
+          case 'invalid-email':
+            ShowToastDialog.showToast("Invalid Email.".tr);
+            break;
+          default:
+            ShowToastDialog.showToast(e.message ?? "An error occurred during login.".tr);
         }
       } else {
-        await FirebaseAuth.instance.signOut();
-        // ShowToastDialog.showToast("This user is disable please contact to administrator".tr);
-      }
-    } on FirebaseAuthException catch (e) {
-      print(e.code);
-      if (e.code == 'user-not-found') {
-        ShowToastDialog.showToast("No user found for that email.".tr);
-      } else if (e.code == 'wrong-password') {
-        ShowToastDialog.showToast("Wrong password provided for that user.".tr);
-      } else if (e.code == 'invalid-email') {
-        ShowToastDialog.showToast("Invalid Email.");
-      } else {
-        ShowToastDialog.showToast("${e.message}");
+        ShowToastDialog.showToast("An unexpected error occurred. Please try again.".tr);
       }
     }
-    ShowToastDialog.closeLoader();
   }
 
   loginWithGoogle() async {

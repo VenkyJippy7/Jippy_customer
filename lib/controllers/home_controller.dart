@@ -80,14 +80,17 @@ class HomeController extends GetxController {
       newArrivalRestaurantList.addAll(event);
       popularRestaurantList.addAll(event);
       Constant.restaurantList = allNearestRestaurant;
-      List<String> usedCategoryIds = allNearestRestaurant
-          .expand((vendor) => vendor.categoryID ?? [])
-          .whereType<String>()
-          .toSet()
-          .toList();
-      vendorCategoryModel.value = vendorCategoryModel
-          .where((category) => usedCategoryIds.contains(category.id))
-          .toList();
+      
+      // Comment out category filtering logic
+      // List<String> usedCategoryIds = allNearestRestaurant
+      //     .expand((vendor) => vendor.categoryID ?? [])
+      //     .whereType<String>()
+      //     .toSet()
+      //     .toList();
+      // vendorCategoryModel.value = vendorCategoryModel
+      //     .where((category) => usedCategoryIds.contains(category.id))
+      //     .toList();
+
       popularRestaurantList.sort(
         (a, b) => Constant.calculateReview(
                 reviewCount: b.reviewsCount.toString(),

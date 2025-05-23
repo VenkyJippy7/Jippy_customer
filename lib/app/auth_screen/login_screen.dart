@@ -181,54 +181,60 @@ class LoginScreen extends StatelessWidget {
                         ],
                       ),
                     ),
-                    RoundedButtonFill(
-                      title: "Continue with Mobile Number".tr,
-                      textColor: themeChange.getThem() ? AppThemeData.grey100 : AppThemeData.grey900,
-                      color: themeChange.getThem() ? AppThemeData.grey900 : AppThemeData.grey100,
-                      icon: SvgPicture.asset(
-                        "assets/icons/ic_phone.svg",
-                        colorFilter: const ColorFilter.mode(AppThemeData.grey900, BlendMode.srcIn),
+                    Visibility(
+                      visible: false,
+                      child: RoundedButtonFill(
+                        title: "Continue with Mobile Number".tr,
+                        textColor: themeChange.getThem() ? AppThemeData.grey100 : AppThemeData.grey900,
+                        color: themeChange.getThem() ? AppThemeData.grey900 : AppThemeData.grey100,
+                        icon: SvgPicture.asset(
+                          "assets/icons/ic_phone.svg",
+                          colorFilter: const ColorFilter.mode(AppThemeData.grey900, BlendMode.srcIn),
+                        ),
+                        isRight: false,
+                        onPress: () async {
+                          Get.to(const PhoneNumberScreen());
+                        },
                       ),
-                      isRight: false,
-                      onPress: () async {
-                        Get.to(const PhoneNumberScreen());
-                      },
                     ),
                     const SizedBox(
                       height: 12,
                     ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: RoundedButtonFill(
-                            title: "with Google".tr,
-                            textColor: themeChange.getThem() ? AppThemeData.grey100 : AppThemeData.grey900,
-                            color: themeChange.getThem() ? AppThemeData.grey900 : AppThemeData.grey100,
-                            icon: SvgPicture.asset("assets/icons/ic_google.svg"),
-                            isRight: false,
-                            onPress: () async {
-                              controller.loginWithGoogle();
-                            },
+                    Visibility(
+                      visible: false,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: RoundedButtonFill(
+                              title: "with Google".tr,
+                              textColor: themeChange.getThem() ? AppThemeData.grey100 : AppThemeData.grey900,
+                              color: themeChange.getThem() ? AppThemeData.grey900 : AppThemeData.grey100,
+                              icon: SvgPicture.asset("assets/icons/ic_google.svg"),
+                              isRight: false,
+                              onPress: () async {
+                                controller.loginWithGoogle();
+                              },
+                            ),
                           ),
-                        ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        Platform.isIOS
-                            ? Expanded(
-                                child: RoundedButtonFill(
-                                  title: "with Apple".tr,
-                                  textColor: themeChange.getThem() ? AppThemeData.grey100 : AppThemeData.grey900,
-                                  color: themeChange.getThem() ? AppThemeData.grey900 : AppThemeData.grey100,
-                                  icon: SvgPicture.asset("assets/icons/ic_apple.svg"),
-                                  isRight: false,
-                                  onPress: () async {
-                                    controller.loginWithApple();
-                                  },
-                                ),
-                              )
-                            : const SizedBox(),
-                      ],
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          Platform.isIOS
+                              ? Expanded(
+                                  child: RoundedButtonFill(
+                                    title: "with Apple".tr,
+                                    textColor: themeChange.getThem() ? AppThemeData.grey100 : AppThemeData.grey900,
+                                    color: themeChange.getThem() ? AppThemeData.grey900 : AppThemeData.grey100,
+                                    icon: SvgPicture.asset("assets/icons/ic_apple.svg"),
+                                    isRight: false,
+                                    onPress: () async {
+                                      controller.loginWithApple();
+                                    },
+                                  ),
+                                )
+                              : const SizedBox(),
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -243,7 +249,7 @@ class LoginScreen extends StatelessWidget {
                     TextSpan(
                       children: [
                         TextSpan(
-                            text: 'Didn’t have an account?'.tr,
+                            text: "Didn't have an account?".tr,
                             style: TextStyle(
                               color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900,
                               fontFamily: AppThemeData.medium,

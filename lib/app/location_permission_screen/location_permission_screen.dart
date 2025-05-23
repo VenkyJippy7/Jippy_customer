@@ -42,9 +42,9 @@ class LocationPermissionScreen extends StatelessWidget {
                     style: TextStyle(color: themeChange.getThem() ? AppThemeData.grey900 : AppThemeData.grey900, fontSize: 22, fontFamily: AppThemeData.semiBold),
                   ),
                   Text(
-                    "To provide the best dining experience, allow Foodie to access your location.".tr,
+                    "To provide the best shopping experience, allow JippyMart to access your location.".tr,
                     textAlign: TextAlign.center,
-                    style: TextStyle(color: themeChange.getThem() ? AppThemeData.grey900 : AppThemeData.grey900, fontSize: 16, fontFamily: AppThemeData.bold),
+                    style: TextStyle(color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900, fontSize: 16, fontFamily: AppThemeData.regular),
                   ),
                   const SizedBox(
                     height: 32,
@@ -77,19 +77,8 @@ class LocationPermissionScreen extends StatelessWidget {
 
                             Get.offAll(const DashBoardScreen());
                           } catch (e) {
-                            await placemarkFromCoordinates(19.228825, 72.854118).then((valuePlaceMaker) {
-                              Placemark placeMark = valuePlaceMaker[0];
-                              addressModel.addressAs = "Home";
-                              addressModel.location = UserLocation(latitude: 19.228825, longitude: 72.854118);
-                              String currentLocation =
-                                  "${placeMark.name}, ${placeMark.subLocality}, ${placeMark.locality}, ${placeMark.administrativeArea}, ${placeMark.postalCode}, ${placeMark.country}";
-                              addressModel.locality = currentLocation;
-                            });
-
-                            Constant.selectedLocation = addressModel;
                             ShowToastDialog.closeLoader();
-
-                            Get.offAll(const DashBoardScreen());
+                            ShowToastDialog.showToast("Could not get current location. Please check your device settings and permissions.");
                           }
                         },
                       );

@@ -65,7 +65,7 @@ class DashBoardScreen extends StatelessWidget {
                         navigationBarItem(
                           themeChange,
                           index: 0,
-                          assetIcon: "assets/icons/ic_home.svg",
+                          assetIcon: "assets/images/ic_logo.png",
                           label: 'Home'.tr,
                           controller: controller,
                         ),
@@ -95,7 +95,7 @@ class DashBoardScreen extends StatelessWidget {
                         navigationBarItem(
                           themeChange,
                           index: 0,
-                          assetIcon: "assets/icons/ic_home.svg",
+                          assetIcon: "assets/images/ic_logo.png",
                           label: 'Home'.tr,
                           controller: controller,
                         ),
@@ -138,18 +138,31 @@ class DashBoardScreen extends StatelessWidget {
     return BottomNavigationBarItem(
       icon: Padding(
         padding: const EdgeInsets.symmetric(vertical: 5),
-        child: SvgPicture.asset(
-          assetIcon,
-          height: 22,
-          width: 22,
-          color: controller.selectedIndex.value == index
-              ? themeChange.getThem()
-                  ? AppThemeData.primary300
-                  : AppThemeData.primary300
-              : themeChange.getThem()
-                  ? AppThemeData.grey300
-                  : AppThemeData.grey600,
-        ),
+        child: assetIcon.endsWith('.svg')
+            ? SvgPicture.asset(
+                assetIcon,
+                height: 22,
+                width: 22,
+                color: controller.selectedIndex.value == index
+                    ? themeChange.getThem()
+                        ? AppThemeData.primary300
+                        : AppThemeData.primary300
+                    : themeChange.getThem()
+                        ? AppThemeData.grey300
+                        : AppThemeData.grey600,
+              )
+            : Image.asset(
+                assetIcon,
+                height: 22,
+                width: 22,
+                color: controller.selectedIndex.value == index
+                    ? themeChange.getThem()
+                        ? AppThemeData.primary300
+                        : AppThemeData.primary300
+                    : themeChange.getThem()
+                        ? AppThemeData.grey300
+                        : AppThemeData.grey600,
+              ),
       ),
       label: label,
     );

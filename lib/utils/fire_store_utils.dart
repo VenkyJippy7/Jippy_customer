@@ -724,16 +724,18 @@ class FireStoreUtils {
       getNearestVendorByCategoryController =
           StreamController<List<VendorModel>>.broadcast();
       List<VendorModel> vendorList = [];
+      
+      // Debug log the category ID we're searching for
+      print("Searching for category ID: $categoryId");
+      
       Query<Map<String, dynamic>> query = isDining == true
           ? fireStore
               .collection(CollectionName.vendors)
               .where('zoneId', isEqualTo: Constant.selectedZone!.id.toString())
-              .where('categoryID', arrayContains: categoryId)
               .where("enabledDiveInFuture", isEqualTo: true)
           : fireStore
               .collection(CollectionName.vendors)
-              .where('zoneId', isEqualTo: Constant.selectedZone!.id.toString())
-              .where('categoryID', arrayContains: categoryId);
+              .where('zoneId', isEqualTo: Constant.selectedZone!.id.toString());
 
       GeoFirePoint center = Geoflutterfire().point(
           latitude: Constant.selectedLocation.location!.latitude ?? 0.0,
@@ -753,33 +755,72 @@ class FireStoreUtils {
         for (var document in documentList) {
           final data = document.data() as Map<String, dynamic>;
           VendorModel vendorModel = VendorModel.fromJson(data);
-          if ((Constant.isSubscriptionModelApplied == true ||
-                  Constant.adminCommission?.isEnabled == true) &&
-              vendorModel.subscriptionPlan != null) {
-            if (vendorModel.subscriptionTotalOrders == "-1") {
-              vendorList.add(vendorModel);
-            } else {
-              if ((vendorModel.subscriptionExpiryDate != null &&
-                      vendorModel.subscriptionExpiryDate!
-                              .toDate()
-                              .isBefore(DateTime.now()) ==
-                          false) ||
-                  vendorModel.subscriptionPlan?.expiryDay == '-1') {
-                if (vendorModel.subscriptionTotalOrders != '0') {
-                  vendorList.add(vendorModel);
+          
+          // Debug logging
+          print("Vendor ID: ${vendorModel.id}");
+          print("Vendor Categories: ${vendorModel.categoryID}");
+          print("Raw vendor data: ${data['categoryID']}"); // Add this to see raw data
+          
+          // Check if the vendor has the category ID in its categoryID list
+          bool hasCategory = false;
+          
+          // First check if categoryID exists in raw data
+          if (data.containsKey('categoryID')) {
+            var rawCategoryId = data['categoryID'];
+            print("Raw category ID type: ${rawCategoryId.runtimeType}");
+            
+            // Handle different possible data types
+            if (rawCategoryId is List) {
+              hasCategory = rawCategoryId.any((catId) => 
+                catId.toString() == categoryId || 
+                catId.toString().trim() == categoryId.trim()
+              );
+            } else if (rawCategoryId is String) {
+              hasCategory = rawCategoryId == categoryId || 
+                           rawCategoryId.trim() == categoryId.trim();
+            }
+          }
+          
+          // If no category found in raw data, check the model
+          if (!hasCategory && vendorModel.categoryID != null) {
+            hasCategory = vendorModel.categoryID!.any((catId) => 
+              catId.toString() == categoryId || 
+              catId.toString().trim() == categoryId.trim()
+            );
+          }
+          
+          print("Has category: $hasCategory");
+
+          if (hasCategory) {
+            if ((Constant.isSubscriptionModelApplied == true ||
+                    Constant.adminCommission?.isEnabled == true) &&
+                vendorModel.subscriptionPlan != null) {
+              if (vendorModel.subscriptionTotalOrders == "-1") {
+                vendorList.add(vendorModel);
+              } else {
+                if ((vendorModel.subscriptionExpiryDate != null &&
+                        vendorModel.subscriptionExpiryDate!
+                                .toDate()
+                                .isBefore(DateTime.now()) ==
+                            false) ||
+                    vendorModel.subscriptionPlan?.expiryDay == '-1') {
+                  if (vendorModel.subscriptionTotalOrders != '0') {
+                    vendorList.add(vendorModel);
+                  }
                 }
               }
+            } else {
+              vendorList.add(vendorModel);
             }
-          } else {
-            vendorList.add(vendorModel);
           }
         }
+        print("Total vendors found: ${vendorList.length}");
         getNearestVendorByCategoryController!.sink.add(vendorList);
       });
 
       yield* getNearestVendorByCategoryController!.stream;
     } catch (e) {
-      print(e);
+      print("Error in getAllNearestRestaurantByCategoryId: $e");
     }
   }
 

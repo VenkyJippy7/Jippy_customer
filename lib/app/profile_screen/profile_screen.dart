@@ -96,12 +96,18 @@ class ProfileScreen extends StatelessWidget {
                                             Get.to(const EditProfileScreen());
                                           }),
                                     if (Constant.isEnabledForCustomer == true)
-                                      cardDecoration(themeChange, controller, "assets/images/ic_dinin.svg", "Dine-In".tr, () {
-                                        Get.to(const DineInScreen());
+                                      Visibility(
+                                        visible: false,
+                                        child: cardDecoration(themeChange, controller, "assets/images/ic_dinin.svg", "Dine-In".tr, () {
+                                          Get.to(const DineInScreen());
+                                        }),
+                                      ),
+                                    Visibility(
+                                      visible: false,
+                                      child: cardDecoration(themeChange, controller, "assets/images/ic_gift.svg", "Gift Card".tr, () {
+                                        Get.to(const GiftCardScreen());
                                       }),
-                                    cardDecoration(themeChange, controller, "assets/images/ic_gift.svg", "Gift Card".tr, () {
-                                      Get.to(const GiftCardScreen());
-                                    }),
+                                    ),
                                   ],
                                 ),
                               ),
@@ -109,42 +115,45 @@ class ProfileScreen extends StatelessWidget {
                             const SizedBox(
                               height: 20,
                             ),
-                            Constant.isEnabledForCustomer == true
-                                ? Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        "Bookings Information".tr,
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: themeChange.getThem() ? AppThemeData.grey400 : AppThemeData.grey500,
-                                          fontFamily: AppThemeData.semiBold,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                      const SizedBox(
-                                        height: 10,
-                                      ),
-                                      Container(
-                                        width: Responsive.width(100, context),
-                                        decoration: ShapeDecoration(
-                                          color: themeChange.getThem() ? AppThemeData.grey900 : AppThemeData.grey50,
-                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                                        ),
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                                          child: Column(
-                                            children: [
-                                              cardDecoration(themeChange, controller, "assets/icons/ic_dinin_order.svg", "Dine-In Booking".tr, () {
-                                                Get.to(const DineInBookingScreen());
-                                              }),
-                                            ],
+                            Visibility(
+                              visible: false,
+                              child: Constant.isEnabledForCustomer == true
+                                  ? Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "Bookings Information".tr,
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: themeChange.getThem() ? AppThemeData.grey400 : AppThemeData.grey500,
+                                            fontFamily: AppThemeData.semiBold,
+                                            fontWeight: FontWeight.w500,
                                           ),
                                         ),
-                                      ),
-                                    ],
-                                  )
-                                : const SizedBox(),
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                        Container(
+                                          width: Responsive.width(100, context),
+                                          decoration: ShapeDecoration(
+                                            color: themeChange.getThem() ? AppThemeData.grey900 : AppThemeData.grey50,
+                                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                          ),
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                            child: Column(
+                                              children: [
+                                                cardDecoration(themeChange, controller, "assets/icons/ic_dinin_order.svg", "Dine-In Booking".tr, () {
+                                                  Get.to(const DineInBookingScreen());
+                                                }),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    )
+                                  : const SizedBox(),
+                            ),
                             const SizedBox(
                               height: 10,
                             ),
@@ -210,7 +219,7 @@ class ProfileScreen extends StatelessWidget {
                                           }),
                                     cardDecoration(themeChange, controller, "assets/icons/ic_share.svg", "Share app", () {
                                       Share.share(
-                                          '${'Check out Foodie, your ultimate food delivery application!'.tr} \n\n${'Google Play:'.tr} ${Constant.googlePlayLink} \n\n${'App Store:'.tr} ${Constant.appStoreLink}',
+                                          '${'Check out JippyMart, your ultimate shopping application!'.tr} \n\n${'Google Play:'.tr} ${Constant.googlePlayLink} \n\n${'App Store:'.tr} ${Constant.appStoreLink}',
                                           subject: 'Look what I made!'.tr);
                                     }),
                                     cardDecoration(themeChange, controller, "assets/icons/ic_rate.svg", "Rate the app", () {
@@ -226,45 +235,48 @@ class ProfileScreen extends StatelessWidget {
                             ),
                             Constant.userModel == null
                                 ? const SizedBox()
-                                : Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        "Communication".tr,
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: themeChange.getThem() ? AppThemeData.grey400 : AppThemeData.grey500,
-                                          fontFamily: AppThemeData.semiBold,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                      const SizedBox(
-                                        height: 10,
-                                      ),
-                                      Container(
-                                        width: Responsive.width(100, context),
-                                        decoration: ShapeDecoration(
-                                          color: themeChange.getThem() ? AppThemeData.grey900 : AppThemeData.grey50,
-                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                                        ),
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                                          child: Column(
-                                            children: [
-                                              cardDecoration(themeChange, controller, "assets/icons/ic_restaurant_chat.svg", "Restaurant Inbox", () {
-                                                Get.to(const RestaurantInboxScreen());
-                                              }),
-                                              cardDecoration(themeChange, controller, "assets/icons/ic_restaurant_driver.svg", "Driver Inbox", () {
-                                                Get.to(const DriverInboxScreen());
-                                              }),
-                                            ],
+                                : Visibility(
+                                    visible: false,
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "Communication".tr,
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: themeChange.getThem() ? AppThemeData.grey400 : AppThemeData.grey500,
+                                            fontFamily: AppThemeData.semiBold,
+                                            fontWeight: FontWeight.w500,
                                           ),
                                         ),
-                                      ),
-                                      const SizedBox(
-                                        height: 10,
-                                      ),
-                                    ],
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                        Container(
+                                          width: Responsive.width(100, context),
+                                          decoration: ShapeDecoration(
+                                            color: themeChange.getThem() ? AppThemeData.grey900 : AppThemeData.grey50,
+                                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                          ),
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                                            child: Column(
+                                              children: [
+                                                cardDecoration(themeChange, controller, "assets/icons/ic_restaurant_chat.svg", "Restaurant Inbox", () {
+                                                  Get.to(const RestaurantInboxScreen());
+                                                }),
+                                                cardDecoration(themeChange, controller, "assets/icons/ic_restaurant_driver.svg", "Driver Inbox", () {
+                                                  Get.to(const DriverInboxScreen());
+                                                }),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                      ],
+                                    ),
                                   ),
                             Text(
                               "Legal".tr,

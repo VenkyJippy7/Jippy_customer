@@ -1030,174 +1030,177 @@ class HomeScreen extends StatelessWidget {
           ),
           floatingActionButtonLocation:
               FloatingActionButtonLocation.centerFloat,
-          floatingActionButton: Container(
-            decoration: BoxDecoration(
-                color: themeChange.getThem()
-                    ? AppThemeData.grey800
-                    : AppThemeData.grey100,
-                borderRadius: const BorderRadius.all(Radius.circular(30))),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      color: themeChange.getThem()
-                          ? AppThemeData.grey900
-                          : AppThemeData.grey50,
-                      borderRadius: const BorderRadius.all(
-                        Radius.circular(30),
-                      ),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 5),
-                      child: Row(
-                        children: [
-                          InkWell(
-                            onTap: () {
-                              controller.isListView.value = true;
-                            },
-                            child: ClipOval(
-                              child: Container(
-                                  decoration: BoxDecoration(
-                                      color: controller.isListView.value
-                                          ? AppThemeData.primary300
-                                          : null),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: SvgPicture.asset(
-                                      "assets/icons/ic_view_grid_list.svg",
-                                      colorFilter: ColorFilter.mode(
-                                          controller.isListView.value
-                                              ? AppThemeData.grey50
-                                              : AppThemeData.grey500,
-                                          BlendMode.srcIn),
-                                    ),
-                                  )),
-                            ),
-                          ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          InkWell(
-                            onTap: () {
-                              controller.isListView.value = false;
-                              controller.update();
-                            },
-                            child: ClipOval(
-                              child: Container(
-                                  decoration: BoxDecoration(
-                                      color:
-                                          controller.isListView.value == false
-                                              ? AppThemeData.primary300
-                                              : null),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: SvgPicture.asset(
-                                      "assets/icons/ic_map_draw.svg",
-                                      colorFilter: ColorFilter.mode(
-                                          controller.isListView.value == false
-                                              ? AppThemeData.grey50
-                                              : AppThemeData.grey500,
-                                          BlendMode.srcIn),
-                                    ),
-                                  )),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  InkWell(
-                    onTap: () {
-                      Get.to(const ScanQrCodeScreen());
-                    },
-                    child: ClipOval(
-                      child: Container(
-                          decoration: BoxDecoration(
-                              color: themeChange.getThem()
-                                  ? AppThemeData.grey900
-                                  : AppThemeData.grey50),
-                          child: Padding(
-                            padding: const EdgeInsets.all(10),
-                            child: SvgPicture.asset(
-                              "assets/icons/ic_scan_code.svg",
-                              colorFilter: ColorFilter.mode(
-                                  themeChange.getThem()
-                                      ? AppThemeData.grey400
-                                      : AppThemeData.grey500,
-                                  BlendMode.srcIn),
-                            ),
-                          )),
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 14,
-                  ),
-                  DropdownButton<String>(
-                    isDense: false,
-                    underline: const SizedBox(),
-                    value: controller.selectedOrderTypeValue.value.tr,
-                    icon: const Icon(Icons.keyboard_arrow_down),
-                    items: <String>['Delivery', 'TakeAway'].map((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(
-                          value.tr,
-                          style: TextStyle(
-                            fontFamily: AppThemeData.semiBold,
-                            fontSize: 16,
-                            color: themeChange.getThem()
-                                ? AppThemeData.grey50
-                                : AppThemeData.grey900,
-                          ),
+          floatingActionButton: Visibility(
+            visible: false,
+            child: Container(
+              decoration: BoxDecoration(
+                  color: themeChange.getThem()
+                      ? AppThemeData.grey800
+                      : AppThemeData.grey100,
+                  borderRadius: const BorderRadius.all(Radius.circular(30))),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        color: themeChange.getThem()
+                            ? AppThemeData.grey900
+                            : AppThemeData.grey50,
+                        borderRadius: const BorderRadius.all(
+                          Radius.circular(30),
                         ),
-                      );
-                    }).toList(),
-                    onChanged: (value) async {
-                      if (cartItem.isEmpty) {
-                        await Preferences.setString(
-                            Preferences.foodDeliveryType, value!);
-                        controller.selectedOrderTypeValue.value = value;
-                        controller.getData();
-                      } else {
-                        showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return CustomDialogBox(
-                                title: "Alert".tr,
-                                descriptions:
-                                    "Do you really want to change the delivery option? Your cart will be empty."
-                                        .tr,
-                                positiveString: "Ok".tr,
-                                negativeString: "Cancel".tr,
-                                positiveClick: () async {
-                                  await Preferences.setString(
-                                      Preferences.foodDeliveryType, value!);
-                                  controller.selectedOrderTypeValue.value =
-                                      value;
-                                  controller.getData();
-                                  DatabaseHelper.instance
-                                      .deleteAllCartProducts();
-                                  controller.cartProvider.clearDatabase();
-                                  controller.getCartData();
-                                  Get.back();
-                                },
-                                negativeClick: () {
-                                  Get.back();
-                                },
-                                img: null,
-                              );
-                            });
-                      }
-                    },
-                  )
-                ],
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 5),
+                        child: Row(
+                          children: [
+                            InkWell(
+                              onTap: () {
+                                controller.isListView.value = true;
+                              },
+                              child: ClipOval(
+                                child: Container(
+                                    decoration: BoxDecoration(
+                                        color: controller.isListView.value
+                                            ? AppThemeData.primary300
+                                            : null),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: SvgPicture.asset(
+                                        "assets/icons/ic_view_grid_list.svg",
+                                        colorFilter: ColorFilter.mode(
+                                            controller.isListView.value
+                                                ? AppThemeData.grey50
+                                                : AppThemeData.grey500,
+                                            BlendMode.srcIn),
+                                      ),
+                                    )),
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            InkWell(
+                              onTap: () {
+                                controller.isListView.value = false;
+                                controller.update();
+                              },
+                              child: ClipOval(
+                                child: Container(
+                                    decoration: BoxDecoration(
+                                        color:
+                                            controller.isListView.value == false
+                                                ? AppThemeData.primary300
+                                                : null),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: SvgPicture.asset(
+                                        "assets/icons/ic_map_draw.svg",
+                                        colorFilter: ColorFilter.mode(
+                                            controller.isListView.value == false
+                                                ? AppThemeData.grey50
+                                                : AppThemeData.grey500,
+                                            BlendMode.srcIn),
+                                      ),
+                                    )),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    InkWell(
+                      onTap: () {
+                        Get.to(const ScanQrCodeScreen());
+                      },
+                      child: ClipOval(
+                        child: Container(
+                            decoration: BoxDecoration(
+                                color: themeChange.getThem()
+                                    ? AppThemeData.grey900
+                                    : AppThemeData.grey50),
+                            child: Padding(
+                              padding: const EdgeInsets.all(10),
+                              child: SvgPicture.asset(
+                                "assets/icons/ic_scan_code.svg",
+                                colorFilter: ColorFilter.mode(
+                                    themeChange.getThem()
+                                        ? AppThemeData.grey400
+                                        : AppThemeData.grey500,
+                                    BlendMode.srcIn),
+                              ),
+                            )),
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 14,
+                    ),
+                    DropdownButton<String>(
+                      isDense: false,
+                      underline: const SizedBox(),
+                      value: controller.selectedOrderTypeValue.value.tr,
+                      icon: const Icon(Icons.keyboard_arrow_down),
+                      items: <String>['Delivery', 'TakeAway'].map((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(
+                            value.tr,
+                            style: TextStyle(
+                              fontFamily: AppThemeData.semiBold,
+                              fontSize: 16,
+                              color: themeChange.getThem()
+                                  ? AppThemeData.grey50
+                                  : AppThemeData.grey900,
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                      onChanged: (value) async {
+                        if (cartItem.isEmpty) {
+                          await Preferences.setString(
+                              Preferences.foodDeliveryType, value!);
+                          controller.selectedOrderTypeValue.value = value;
+                          controller.getData();
+                        } else {
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return CustomDialogBox(
+                                  title: "Alert".tr,
+                                  descriptions:
+                                      "Do you really want to change the delivery option? Your cart will be empty."
+                                          .tr,
+                                  positiveString: "Ok".tr,
+                                  negativeString: "Cancel".tr,
+                                  positiveClick: () async {
+                                    await Preferences.setString(
+                                        Preferences.foodDeliveryType, value!);
+                                    controller.selectedOrderTypeValue.value =
+                                        value;
+                                    controller.getData();
+                                    DatabaseHelper.instance
+                                        .deleteAllCartProducts();
+                                    controller.cartProvider.clearDatabase();
+                                    controller.getCartData();
+                                    Get.back();
+                                  },
+                                  negativeClick: () {
+                                    Get.back();
+                                  },
+                                  img: null,
+                                );
+                              });
+                        }
+                      },
+                    )
+                  ],
+                ),
               ),
             ),
           ),

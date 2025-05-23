@@ -21,17 +21,17 @@ class SplashScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Image.asset("assets/images/ic_logo.png"),
+                Image.asset("assets/images/ic_logo.png", width: 150, height: 150),
                 const SizedBox(
-                  height: 10,
+                  height: 20,
                 ),
                 Text(
-                  "Welcome to Foodie".tr,
+                  "Welcome to Jippy Mart".tr,
                   style: TextStyle(color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey50, fontSize: 28, fontFamily: AppThemeData.bold),
                 ),
                 Text(
-                  "Your Favorite Food Delivered Fast!".tr,
-                  style: TextStyle(color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey50),
+                  "Your One-Stop Shopping Destination!".tr,
+                  style: TextStyle(color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey50, fontSize: 16),
                 ),
               ],
             ),

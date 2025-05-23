@@ -12,13 +12,15 @@ import 'package:customer/utils/notification_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:location/location.dart';
 
 class SignupController extends GetxController {
   Rx<TextEditingController> firstNameEditingController = TextEditingController().obs;
   Rx<TextEditingController> lastNameEditingController = TextEditingController().obs;
   Rx<TextEditingController> emailEditingController = TextEditingController().obs;
   Rx<TextEditingController> phoneNUmberEditingController = TextEditingController().obs;
-  Rx<TextEditingController> countryCodeEditingController = TextEditingController().obs;
+  Rx<TextEditingController> countryCodeEditingController = TextEditingController(text: "+91").obs;
   Rx<TextEditingController> passwordEditingController = TextEditingController().obs;
   Rx<TextEditingController> conformPasswordEditingController = TextEditingController().obs;
   Rx<TextEditingController> referralCodeEditingController = TextEditingController().obs;

@@ -51,7 +51,7 @@ class ReferFriendScreen extends StatelessWidget {
                                 const SizedBox(
                                   height: 60,
                                 ),
-                                Center(child: SvgPicture.asset("assets/images/referal_top.svg")),
+                                Center(child: Image.asset("assets/images/ic_launcher.png")),
                                 const SizedBox(
                                   height: 10,
                                 ),
@@ -92,8 +92,7 @@ class ReferFriendScreen extends StatelessWidget {
                                   height: 8,
                                 ),
                                 Text(
-                                  "${'Invite your friends to sign up with Foodie using your code, and you’ll earn'.tr} ${Constant.amountShow(amount: Constant.referralAmount)} ${'after their Success the first order! 💸🍔'.tr}"
-                                      .tr,
+                                  'Invite your friends to sign up with JippyMart using your code, and you\'ll earn ${Constant.amountShow(amount: Constant.referralAmount)} after their Success the first order! 💸🍔'.tr,
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     fontSize: 16,
@@ -190,9 +189,17 @@ class ReferFriendScreen extends StatelessWidget {
                                   width: 55,
                                   color: AppThemeData.secondary300,
                                   textColor: AppThemeData.grey50,
+                                  icon: Padding(
+                                    padding: const EdgeInsets.only(right: 10),
+                                    child: Image.asset(
+                                      "assets/images/playstore.png",
+                                      width: 24,
+                                      height: 24,
+                                    ),
+                                  ),
                                   onPress: () async {
                                     await Share.share(
-                                      "${"Hey there, thanks for choosing Foodie. Hope you love our product. If you do, share it with your friends using code".tr} ${controller.referralModel.value.referralCode.toString()} ${"and get".tr}${Constant.amountShow(amount: Constant.referralAmount.toString())} ${"when order completed".tr}",
+                                      "${"Hey there, thanks for choosing JippyMart. Hope you love our product. If you do, share it with your friends using code".tr} ${controller.referralModel.value.referralCode.toString()} ${"and get".tr}${Constant.amountShow(amount: Constant.referralAmount.toString())} ${"when order completed".tr}",
                                     );
                                   },
                                 ),

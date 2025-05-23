@@ -22,10 +22,11 @@ class ViewAllCategoryController extends GetxController {
       },
     );
 
-    if (Constant.restaurantList != null) {
-      List<String> usedCategoryIds = Constant.restaurantList!.expand((vendor) => vendor.categoryID ?? []).whereType<String>().toSet().toList();
-      vendorCategoryModel.value = vendorCategoryModel.where((category) => usedCategoryIds.contains(category.id)).toList();
-    }
+    // Comment out category filtering logic
+    // if (Constant.restaurantList != null) {
+    //   List<String> usedCategoryIds = Constant.restaurantList!.expand((vendor) => vendor.categoryID ?? []).whereType<String>().toSet().toList();
+    //   vendorCategoryModel.value = vendorCategoryModel.where((category) => usedCategoryIds.contains(category.id)).toList();
+    // }
 
     isLoading.value = false;
   }
