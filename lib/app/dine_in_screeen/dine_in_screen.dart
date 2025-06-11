@@ -935,46 +935,33 @@ class CategoryView extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 4),
               child: SizedBox(
                 width: 78,
-                child: Container(
-                  decoration: ShapeDecoration(
-                    color: themeChange.getThem() ? AppThemeData.grey900 : AppThemeData.grey50,
-                    shape: RoundedRectangleBorder(
-                      side: BorderSide(
-                        width: 1,
-                        strokeAlign: BorderSide.strokeAlignOutside,
-                        color: themeChange.getThem() ? AppThemeData.grey800 : AppThemeData.grey100,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 60,
+                      height: 60,
+                      child: ClipOval(
+                        child: NetworkImageWidget(
+                          imageUrl: vendorCategoryModel.photo.toString(),
+                          fit: BoxFit.cover,
+                        ),
                       ),
-                      borderRadius: BorderRadius.circular(100),
                     ),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        width: 60,
-                        height: 60,
-                        child: ClipOval(
-                          child: NetworkImageWidget(
-                            imageUrl: vendorCategoryModel.photo.toString(),
-                            fit: BoxFit.cover,
-                          ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                      child: Text(
+                        '${vendorCategoryModel.title}',
+                        textAlign: TextAlign.center,
+                        maxLines: 1,
+                        style: TextStyle(
+                          color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900,
+                          fontFamily: AppThemeData.medium,
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                        child: Text(
-                          '${vendorCategoryModel.title}',
-                          textAlign: TextAlign.center,
-                          maxLines: 1,
-                          style: TextStyle(
-                            color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900,
-                            fontFamily: AppThemeData.medium,
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
+                    )
+                  ],
                 ),
               ),
             ),

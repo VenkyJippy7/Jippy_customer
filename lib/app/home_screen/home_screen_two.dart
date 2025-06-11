@@ -871,125 +871,116 @@ class CategoryView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeChange = Provider.of<DarkThemeProvider>(context);
-    return Container(
-      decoration: ShapeDecoration(
-        color:
-            themeChange.getThem() ? AppThemeData.grey900 : AppThemeData.grey50,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
-        ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(
-              height: 10,
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          "Our Categories".tr,
-                          style: TextStyle(
-                            fontFamily: AppThemeData.semiBold,
-                            color: themeChange.getThem()
-                                ? AppThemeData.grey50
-                                : AppThemeData.grey900,
-                            fontSize: 18,
-                          ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(
+            height: 10,
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        "Our Categories".tr,
+                        style: TextStyle(
+                          fontFamily: AppThemeData.semiBold,
+                          color: themeChange.getThem()
+                              ? AppThemeData.grey50
+                              : AppThemeData.grey900,
+                          fontSize: 18,
                         ),
                       ),
-                      InkWell(
-                        onTap: () {
-                          Get.to(const ViewAllCategoryScreen());
-                        },
-                        child: Text(
-                          "See all".tr,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontFamily: AppThemeData.medium,
-                            color: themeChange.getThem()
-                                ? AppThemeData.primary300
-                                : AppThemeData.primary300,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  GradientText(
-                    'Best Servings Food'.tr,
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontFamily: 'Inter Tight',
-                      fontWeight: FontWeight.w800,
                     ),
-                    gradient: LinearGradient(colors: [
-                      Color(0xFF3961F1),
-                      Color(0xFF11D0EA),
-                    ]),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            GridView.builder(
-              padding: EdgeInsets.zero,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 4, childAspectRatio: 5 / 6),
-              itemCount: controller.vendorCategoryModel.length >= 8
-                  ? 8
-                  : controller.vendorCategoryModel.length,
-              physics: const NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              itemBuilder: (context, index) {
-                VendorCategoryModel vendorCategoryModel =
-                    controller.vendorCategoryModel[index];
-                return InkWell(
-                  onTap: () {
-                    Get.to(const CategoryRestaurantScreen(), arguments: {
-                      "vendorCategoryModel": vendorCategoryModel,
-                      "dineIn": false
-                    });
-                  },
-                  child: Column(
-                    children: [
-                      ClipOval(
-                        child: SizedBox(
-                          width: 60,
-                          height: 60,
-                          child: NetworkImageWidget(
-                              imageUrl: vendorCategoryModel.photo.toString(),
-                              fit: BoxFit.cover),
-                        ),
-                      ),
-                      Text(
-                        "${vendorCategoryModel.title}",
+                    InkWell(
+                      onTap: () {
+                        Get.to(const ViewAllCategoryScreen());
+                      },
+                      child: Text(
+                        "See all".tr,
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontFamily: AppThemeData.medium,
                           color: themeChange.getThem()
-                              ? AppThemeData.grey50
-                              : AppThemeData.grey900,
-                          fontSize: 12,
+                              ? AppThemeData.primary300
+                              : AppThemeData.primary300,
+                          fontSize: 14,
                         ),
                       ),
-                    ],
+                    ),
+                  ],
+                ),
+                GradientText(
+                  'Best Servings Food'.tr,
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontFamily: 'Inter Tight',
+                    fontWeight: FontWeight.w800,
                   ),
-                );
-              },
+                  gradient: LinearGradient(colors: [
+                    Color(0xFF3961F1),
+                    Color(0xFF11D0EA),
+                  ]),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          GridView.builder(
+            padding: EdgeInsets.zero,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 4, childAspectRatio: 0.8),
+            itemCount: controller.vendorCategoryModel.length >= 8
+                ? 8
+                : controller.vendorCategoryModel.length,
+            physics: const NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            itemBuilder: (context, index) {
+              VendorCategoryModel vendorCategoryModel =
+                  controller.vendorCategoryModel[index];
+              return InkWell(
+                onTap: () {
+                  Get.to(const CategoryRestaurantScreen(), arguments: {
+                    "vendorCategoryModel": vendorCategoryModel,
+                    "dineIn": false
+                  });
+                },
+                child: Column(
+                  children: [
+                    ClipOval(
+                      child: SizedBox(
+                        width: 60,
+                        height: 60,
+                        child: NetworkImageWidget(
+                            imageUrl: vendorCategoryModel.photo.toString(),
+                            fit: BoxFit.cover),
+                      ),
+                    ),
+                    Text(
+                      "${vendorCategoryModel.title}",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontFamily: AppThemeData.medium,
+                        color: themeChange.getThem()
+                            ? AppThemeData.grey50
+                            : AppThemeData.grey900,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
       ),
     );
   }
@@ -1192,74 +1183,79 @@ class BannerView extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       height: 150,
-      child: PageView.builder(
-        physics: const BouncingScrollPhysics(),
-        controller: controller.pageController.value,
-        scrollDirection: Axis.horizontal,
-        itemCount: controller.bannerModel.length,
-        padEnds: false,
-        pageSnapping: true,
-        onPageChanged: (value) {
-          controller.currentPage.value = value;
-        },
-        itemBuilder: (BuildContext context, int index) {
-          BannerModel bannerModel = controller.bannerModel[index];
-          return InkWell(
-            onTap: () async {
-              if (bannerModel.redirect_type == "store") {
-                ShowToastDialog.showLoader("Please wait".tr);
-                VendorModel? vendorModel = await FireStoreUtils.getVendorById(
-                    bannerModel.redirect_id.toString());
+      child: GestureDetector(
+        onPanStart: (_) => controller.stopBannerTimer(),
+        onPanEnd: (_) => controller.startBannerTimer(),
+        child: PageView.builder(
+          physics: const BouncingScrollPhysics(),
+          controller: controller.pageController.value,
+          scrollDirection: Axis.horizontal,
+          itemCount: controller.bannerModel.length,
+          padEnds: false,
+          pageSnapping: true,
+          onPageChanged: (value) {
+            controller.currentPage.value = value;
+          },
+          itemBuilder: (BuildContext context, int index) {
+            BannerModel bannerModel = controller.bannerModel[index];
+            return InkWell(
+              onTap: () async {
+                controller.stopBannerTimer();
+                if (bannerModel.redirect_type == "store") {
+                  ShowToastDialog.showLoader("Please wait".tr);
+                  VendorModel? vendorModel = await FireStoreUtils.getVendorById(
+                      bannerModel.redirect_id.toString());
 
-                if (vendorModel!.zoneId == Constant.selectedZone!.id) {
-                  ShowToastDialog.closeLoader();
-                  Get.to(const RestaurantDetailsScreen(),
-                      arguments: {"vendorModel": vendorModel});
-                } else {
-                  ShowToastDialog.closeLoader();
-                  ShowToastDialog.showToast(
-                      "Sorry, The Zone is not available in your area. change the other location first."
-                          .tr);
-                }
-              } else if (bannerModel.redirect_type == "product") {
-                ShowToastDialog.showLoader("Please wait".tr);
-                ProductModel? productModel =
-                    await FireStoreUtils.getProductById(
-                        bannerModel.redirect_id.toString());
-                VendorModel? vendorModel = await FireStoreUtils.getVendorById(
-                    productModel!.vendorID.toString());
+                  if (vendorModel!.zoneId == Constant.selectedZone!.id) {
+                    ShowToastDialog.closeLoader();
+                    Get.to(const RestaurantDetailsScreen(),
+                        arguments: {"vendorModel": vendorModel});
+                  } else {
+                    ShowToastDialog.closeLoader();
+                    ShowToastDialog.showToast(
+                        "Sorry, The Zone is not available in your area. change the other location first."
+                            .tr);
+                  }
+                } else if (bannerModel.redirect_type == "product") {
+                  ShowToastDialog.showLoader("Please wait".tr);
+                  ProductModel? productModel =
+                      await FireStoreUtils.getProductById(
+                          bannerModel.redirect_id.toString());
+                  VendorModel? vendorModel = await FireStoreUtils.getVendorById(
+                      productModel!.vendorID.toString());
 
-                if (vendorModel!.zoneId == Constant.selectedZone!.id) {
-                  ShowToastDialog.closeLoader();
-                  Get.to(const RestaurantDetailsScreen(),
-                      arguments: {"vendorModel": vendorModel});
-                } else {
-                  ShowToastDialog.closeLoader();
-                  ShowToastDialog.showToast(
-                      "Sorry, The Zone is not available in your area. change the other location first."
-                          .tr);
+                  if (vendorModel!.zoneId == Constant.selectedZone!.id) {
+                    ShowToastDialog.closeLoader();
+                    Get.to(const RestaurantDetailsScreen(),
+                        arguments: {"vendorModel": vendorModel});
+                  } else {
+                    ShowToastDialog.closeLoader();
+                    ShowToastDialog.showToast(
+                        "Sorry, The Zone is not available in your area. change the other location first."
+                            .tr);
+                  }
+                } else if (bannerModel.redirect_type == "external_link") {
+                  final uri = Uri.parse(bannerModel.redirect_id.toString());
+                  if (await canLaunchUrl(uri)) {
+                    await launchUrl(uri);
+                  } else {
+                    ShowToastDialog.showToast("Could not launch".tr);
+                  }
                 }
-              } else if (bannerModel.redirect_type == "external_link") {
-                final uri = Uri.parse(bannerModel.redirect_id.toString());
-                if (await canLaunchUrl(uri)) {
-                  await launchUrl(uri);
-                } else {
-                  ShowToastDialog.showToast("Could not launch".tr);
-                }
-              }
-            },
-            child: Padding(
-              padding: const EdgeInsets.only(right: 14),
-              child: ClipRRect(
-                borderRadius: const BorderRadius.all(Radius.circular(12)),
-                child: NetworkImageWidget(
-                  imageUrl: bannerModel.photo.toString(),
-                  fit: BoxFit.cover,
+              },
+              child: Padding(
+                padding: const EdgeInsets.only(right: 14),
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.all(Radius.circular(12)),
+                  child: NetworkImageWidget(
+                    imageUrl: bannerModel.photo.toString(),
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }
@@ -1785,7 +1781,7 @@ class RestaurantView extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(
-                              height: 10,
+                              width: 10,
                             ),
                           ],
                         ),

@@ -182,7 +182,7 @@ class LoginScreen extends StatelessWidget {
                       ),
                     ),
                     Visibility(
-                      visible: false,
+                      visible: true,
                       child: RoundedButtonFill(
                         title: "Continue with Mobile Number".tr,
                         textColor: themeChange.getThem() ? AppThemeData.grey100 : AppThemeData.grey900,
@@ -201,7 +201,7 @@ class LoginScreen extends StatelessWidget {
                       height: 12,
                     ),
                     Visibility(
-                      visible: false,
+                      visible: true,
                       child: Row(
                         children: [
                           Expanded(

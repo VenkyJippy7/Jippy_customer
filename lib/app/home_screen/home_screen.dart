@@ -51,6 +51,7 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../themes/text_field_widget.dart';
+// import 'package:carousel_slider/carousel_slider.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -130,7 +131,7 @@ class HomeScreen extends StatelessWidget {
                               color: AppThemeData.primary300,
                               textColor: AppThemeData.grey50,
                               onPress: () async {
-                                Get.offAll(const LocationPermissionScreen());
+                                Get.offAll(() => const LocationPermissionScreen());
                               },
                             ),
                           ],
@@ -203,7 +204,7 @@ class HomeScreen extends StatelessWidget {
                                                   Constant.userModel == null
                                                       ? InkWell(
                                                           onTap: () {
-                                                            Get.offAll(
+                                                            Get.offAll(() =>
                                                                 const LoginScreen());
                                                           },
                                                           child: Text(
@@ -593,6 +594,9 @@ class HomeScreen extends StatelessWidget {
                                                   child: BannerView(
                                                       controller: controller),
                                                 ),
+
+
+
                                           controller
                                                   .couponRestaurantList.isEmpty
                                               ? const SizedBox()
@@ -640,11 +644,10 @@ class HomeScreen extends StatelessWidget {
                                                   .isEmpty
                                               ? const SizedBox()
                                               : Container(
-                                                  decoration: const BoxDecoration(
-                                                      image: DecorationImage(
-                                                          image: AssetImage(
-                                                              "assets/images/ic_new_arrival_bg.png"),
-                                                          fit: BoxFit.cover)),
+                                                  decoration: BoxDecoration(
+                                                    color: const Color(0xFFFFDBBB),
+                                                    borderRadius: BorderRadius.circular(16),
+                                                  ),
                                                   child: Padding(
                                                     padding: const EdgeInsets
                                                         .symmetric(
@@ -673,11 +676,7 @@ class HomeScreen extends StatelessWidget {
                                                                       AppThemeData
                                                                           .semiBold,
                                                                   fontSize: 16,
-                                                                  color: themeChange.getThem()
-                                                                      ? AppThemeData
-                                                                          .grey50
-                                                                      : AppThemeData
-                                                                          .grey50,
+                                                                  color: AppThemeData.grey900,
                                                                 ),
                                                               ),
                                                             ),
@@ -707,11 +706,7 @@ class HomeScreen extends StatelessWidget {
                                                                   fontFamily:
                                                                       AppThemeData
                                                                           .regular,
-                                                                  color: themeChange.getThem()
-                                                                      ? AppThemeData
-                                                                          .primary300
-                                                                      : AppThemeData
-                                                                          .primary300,
+                                                                  color: AppThemeData.primary300,
                                                                 ),
                                                               ),
                                                             )
@@ -2737,10 +2732,16 @@ class CategoryView extends StatelessWidget {
     final themeChange = Provider.of<DarkThemeProvider>(context);
     return SizedBox(
       height: 124,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
+      child: GridView.builder(
         padding: EdgeInsets.zero,
-        itemCount: controller.vendorCategoryModel.length,
+        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+            maxCrossAxisExtent: 100, // Adjust as needed
+            childAspectRatio: 0.8, // Maintain aspect ratio
+            crossAxisSpacing: 10, // Add spacing between columns
+            mainAxisSpacing: 10), // Add spacing between rows
+        itemCount: controller.vendorCategoryModel.length >= 8
+            ? 8
+            : controller.vendorCategoryModel.length,
         itemBuilder: (context, index) {
           VendorCategoryModel vendorCategoryModel =
               controller.vendorCategoryModel[index];
@@ -2754,54 +2755,38 @@ class CategoryView extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
               child: SizedBox(
-                width: 78,
-                child: Container(
-                  decoration: ShapeDecoration(
-                    color: themeChange.getThem()
-                        ? AppThemeData.grey900
-                        : AppThemeData.grey50,
-                    shape: RoundedRectangleBorder(
-                      side: BorderSide(
-                        width: 1,
-                        strokeAlign: BorderSide.strokeAlignOutside,
-                        color: themeChange.getThem()
-                            ? AppThemeData.grey800
-                            : AppThemeData.grey100,
+                width: 75,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 60,
+                      height: 60,
+                      child: ClipOval(
+                        child: NetworkImageWidget(
+                          imageUrl: vendorCategoryModel.photo.toString(),
+                          fit: BoxFit.cover,
+                        ),
                       ),
-                      borderRadius: BorderRadius.circular(100),
                     ),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        width: 60,
-                        height: 60,
-                        child: ClipOval(
-                          child: NetworkImageWidget(
-                            imageUrl: vendorCategoryModel.photo.toString(),
-                            fit: BoxFit.cover,
-                          ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 10),
+                      child: Text(
+                        '${vendorCategoryModel.title}',
+                        textAlign: TextAlign.center,
+                        maxLines: 1,
+                        style: TextStyle(
+                          color: themeChange.getThem()
+                              ? AppThemeData.grey50
+                              : AppThemeData.grey900,
+
+                          fontFamily: AppThemeData.medium,
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 10),
-                        child: Text(
-                          '${vendorCategoryModel.title}',
-                          textAlign: TextAlign.center,
-                          maxLines: 1,
-                          style: TextStyle(
-                            color: themeChange.getThem()
-                                ? AppThemeData.grey50
-                                : AppThemeData.grey900,
-                            fontFamily: AppThemeData.medium,
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
+                    )
+                  ],
                 ),
               ),
             ),

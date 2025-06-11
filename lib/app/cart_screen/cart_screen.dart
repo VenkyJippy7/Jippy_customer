@@ -280,9 +280,9 @@ class CartScreen extends StatelessWidget {
                                                                   fontSize: 16,
                                                                   color: themeChange.getThem()
                                                                       ? AppThemeData
-                                                                          .grey50
+                                                                          .grey500
                                                                       : AppThemeData
-                                                                          .grey900,
+                                                                          .grey400,
                                                                   fontFamily:
                                                                       AppThemeData
                                                                           .semiBold,
@@ -845,86 +845,89 @@ class CartScreen extends StatelessWidget {
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(8)),
                                 ),
-                                child: InkWell(
-                                  onTap: () {
-                                    controller.deliveryType.value =
-                                        "schedule".tr;
-                                    BottomPicker.dateTime(
-                                      onSubmit: (index) {
-                                        controller.scheduleDateTime.value =
-                                            index;
-                                      },
-                                      minDateTime: DateTime.now(),
-                                      displaySubmitButton: true,
-                                      pickerTitle: Text('Schedule Time'.tr),
-                                      buttonSingleColor:
-                                          AppThemeData.primary300,
-                                    ).show(context);
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(10),
-                                    child: Row(
-                                      children: [
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                "Schedule Time".tr,
-                                                textAlign: TextAlign.start,
-                                                style: TextStyle(
-                                                  fontFamily:
-                                                      AppThemeData.medium,
-                                                  color: themeChange.getThem()
-                                                      ? AppThemeData.primary300
-                                                      : AppThemeData.primary300,
-                                                  fontSize: 16,
+                                child: Offstage(
+                                  offstage: true,
+                                  child: InkWell(
+                                    onTap: () {
+                                      controller.deliveryType.value =
+                                          "schedule".tr;
+                                      BottomPicker.dateTime(
+                                        onSubmit: (index) {
+                                          controller.scheduleDateTime.value =
+                                              index;
+                                        },
+                                        minDateTime: DateTime.now(),
+                                        displaySubmitButton: true,
+                                        pickerTitle: Text('Schedule Time'.tr),
+                                        buttonSingleColor:
+                                            AppThemeData.primary300,
+                                      ).show(context);
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(10),
+                                      child: Row(
+                                        children: [
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  "Schedule Time".tr,
+                                                  textAlign: TextAlign.start,
+                                                  style: TextStyle(
+                                                    fontFamily:
+                                                        AppThemeData.medium,
+                                                    color: themeChange.getThem()
+                                                        ? AppThemeData.primary300
+                                                        : AppThemeData.primary300,
+                                                    fontSize: 16,
+                                                  ),
                                                 ),
-                                              ),
-                                              const SizedBox(
-                                                height: 5,
-                                              ),
-                                              Text(
-                                                "${'Your preferred time'.tr} ${controller.deliveryType.value == "schedule" ? Constant.timestampToDateTime(Timestamp.fromDate(controller.scheduleDateTime.value)) : ""}",
-                                                textAlign: TextAlign.start,
-                                                style: TextStyle(
-                                                  fontFamily:
-                                                      AppThemeData.medium,
-                                                  fontSize: 12,
-                                                  color: themeChange.getThem()
-                                                      ? AppThemeData.grey400
-                                                      : AppThemeData.grey500,
+                                                const SizedBox(
+                                                  height: 5,
                                                 ),
-                                              ),
-                                            ],
+                                                Text(
+                                                  "${'Your preferred time'.tr} ${controller.deliveryType.value == "schedule" ? Constant.timestampToDateTime(Timestamp.fromDate(controller.scheduleDateTime.value)) : ""}",
+                                                  textAlign: TextAlign.start,
+                                                  style: TextStyle(
+                                                    fontFamily:
+                                                        AppThemeData.medium,
+                                                    fontSize: 12,
+                                                    color: themeChange.getThem()
+                                                        ? AppThemeData.grey400
+                                                        : AppThemeData.grey500,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
                                           ),
-                                        ),
-                                        Radio(
-                                          value: controller.deliveryType.value,
-                                          groupValue: "schedule".tr,
-                                          activeColor: AppThemeData.primary300,
-                                          onChanged: (value) {
-                                            controller.deliveryType.value =
-                                                "schedule".tr;
-                                            BottomPicker.dateTime(
-                                              initialDateTime: controller
-                                                  .scheduleDateTime.value,
-                                              onSubmit: (index) {
-                                                controller.scheduleDateTime
-                                                    .value = index;
-                                              },
-                                              minDateTime: controller
-                                                  .scheduleDateTime.value,
-                                              displaySubmitButton: true,
-                                              pickerTitle:
-                                                  Text('Schedule Time'.tr),
-                                              buttonSingleColor:
-                                                  AppThemeData.primary300,
-                                            ).show(context);
-                                          },
-                                        )
-                                      ],
+                                          Radio(
+                                            value: controller.deliveryType.value,
+                                            groupValue: "schedule".tr,
+                                            activeColor: AppThemeData.primary300,
+                                            onChanged: (value) {
+                                              controller.deliveryType.value =
+                                                  "schedule".tr;
+                                              BottomPicker.dateTime(
+                                                initialDateTime: controller
+                                                    .scheduleDateTime.value,
+                                                onSubmit: (index) {
+                                                  controller.scheduleDateTime
+                                                      .value = index;
+                                                },
+                                                minDateTime: controller
+                                                    .scheduleDateTime.value,
+                                                displaySubmitButton: true,
+                                                pickerTitle:
+                                                    Text('Schedule Time'.tr),
+                                                buttonSingleColor:
+                                                    AppThemeData.primary300,
+                                              ).show(context);
+                                            },
+                                          )
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),

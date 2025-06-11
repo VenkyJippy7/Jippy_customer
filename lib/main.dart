@@ -11,8 +11,8 @@ import 'package:customer/services/localization_service.dart';
 import 'package:customer/themes/styles.dart';
 import 'package:customer/utils/dark_theme_provider.dart';
 import 'package:customer/utils/preferences.dart';
-import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
@@ -24,26 +24,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Initialize Firebase
-  await Firebase.initializeApp(
-    name: 'default',
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-
-  await Firebase.initializeApp(
-    name: 'stagging',
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-
-  // App Check configuration
-  await FirebaseAppCheck.instance.activate(
-    androidProvider: kReleaseMode
-        ? AndroidProvider.playIntegrity   // Use in production
-        : AndroidProvider.debug,          // Use for local dev & emulator
-    appleProvider: kReleaseMode
-        ? AppleProvider.appAttest
-        : AppleProvider.debug,
-    webProvider: ReCaptchaV3Provider('recaptcha-v3-site-key'),
-  );
+  await Firebase.initializeApp();
 
   // Initialize other services
   await Get.putAsync(() => ApiService().init());

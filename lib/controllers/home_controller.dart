@@ -13,6 +13,7 @@ import 'package:customer/utils/fire_store_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'dart:async';
 
 class HomeController extends GetxController {
   DashBoardController dashBoardController = Get.find<DashBoardController>();
@@ -34,21 +35,54 @@ class HomeController extends GetxController {
   RxString selectedOrderTypeValue = "Delivery".tr.obs;
 
   Rx<PageController> pageController =
-      PageController(viewportFraction: 0.877).obs;
+      PageController(viewportFraction: 1.0).obs;
   Rx<PageController> pageBottomController =
-      PageController(viewportFraction: 0.877).obs;
+      PageController(viewportFraction: 1.0).obs;
   RxInt currentPage = 0.obs;
   RxInt currentBottomPage = 0.obs;
 
-  late TabController tabController;
+  Timer? _bannerTimer;
+
+  var selectedIndex = 0.obs;
 
   @override
   void onInit() {
     // TODO: implement onInit
     getVendorCategory();
     getData();
+    startBannerTimer();
     super.onInit();
   }
+
+  @override
+  void onClose() {
+    _bannerTimer?.cancel();
+    super.onClose();
+  }
+
+  void startBannerTimer() {
+    _bannerTimer?.cancel();
+    _bannerTimer = Timer.periodic(const Duration(seconds: 3), (timer) {
+      if (bannerModel.isNotEmpty) {
+        if (currentPage.value < bannerModel.length - 1) {
+          currentPage.value++;
+        } else {
+          currentPage.value = 0;
+        }
+        pageController.value.animateToPage(
+          currentPage.value,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
+        );
+      }
+    });
+  }
+
+  void stopBannerTimer() {
+    _bannerTimer?.cancel();
+  }
+
+  late TabController tabController;
 
   RxList<VendorCategoryModel> vendorCategoryModel = <VendorCategoryModel>[].obs;
 
