@@ -504,32 +504,7 @@ class HomeScreen extends StatelessWidget {
                                             )
                                           ],
                                         ),
-                                        const SizedBox(
-                                          height: 10,
-                                        ),
-                                        InkWell(
-                                          onTap: () {
-                                            Get.to(const SearchScreen(),
-                                                arguments: {
-                                                  "vendorList": controller
-                                                      .allNearestRestaurant
-                                                });
-                                          },
-                                          child: TextFieldWidget(
-                                            hintText:
-                                                'Search the dish, restaurant, food, meals'
-                                                    .tr,
-                                            controller: null,
-                                            enable: false,
-                                            prefix: Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 16),
-                                              child: SvgPicture.asset(
-                                                  "assets/icons/ic_search.svg"),
-                                            ),
-                                          ),
-                                        ),
+
                                         const SizedBox(
                                           height: 5,
                                         ),
@@ -2731,20 +2706,13 @@ class CategoryView extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeChange = Provider.of<DarkThemeProvider>(context);
     return SizedBox(
-      height: 124,
-      child: GridView.builder(
+      height: 90,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
         padding: EdgeInsets.zero,
-        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-            maxCrossAxisExtent: 100, // Adjust as needed
-            childAspectRatio: 0.8, // Maintain aspect ratio
-            crossAxisSpacing: 10, // Add spacing between columns
-            mainAxisSpacing: 10), // Add spacing between rows
-        itemCount: controller.vendorCategoryModel.length >= 8
-            ? 8
-            : controller.vendorCategoryModel.length,
+        itemCount: controller.vendorCategoryModel.length,
         itemBuilder: (context, index) {
-          VendorCategoryModel vendorCategoryModel =
-              controller.vendorCategoryModel[index];
+          VendorCategoryModel vendorCategoryModel = controller.vendorCategoryModel[index];
           return InkWell(
             onTap: () {
               Get.to(const CategoryRestaurantScreen(), arguments: {
@@ -2752,42 +2720,35 @@ class CategoryView extends StatelessWidget {
                 "dineIn": false
               });
             },
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-              child: SizedBox(
-                width: 75,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      width: 60,
-                      height: 60,
-                      child: ClipOval(
-                        child: NetworkImageWidget(
-                          imageUrl: vendorCategoryModel.photo.toString(),
-                          fit: BoxFit.cover,
-                        ),
+            child: Container(
+              width: 80,
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: 50,
+                    height: 50,
+                    child: ClipOval(
+                      child: NetworkImageWidget(
+                        imageUrl: vendorCategoryModel.photo.toString(),
+                        fit: BoxFit.cover,
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 10),
-                      child: Text(
-                        '${vendorCategoryModel.title}',
-                        textAlign: TextAlign.center,
-                        maxLines: 1,
-                        style: TextStyle(
-                          color: themeChange.getThem()
-                              ? AppThemeData.grey50
-                              : AppThemeData.grey900,
-
-                          fontFamily: AppThemeData.medium,
-                        ),
-                      ),
-                    )
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    "${vendorCategoryModel.title}",
+                    textAlign: TextAlign.center,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900,
+                      fontFamily: AppThemeData.medium,
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
               ),
             ),
           );
