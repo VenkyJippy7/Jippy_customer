@@ -1174,6 +1174,35 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
           ),
+          bottomNavigationBar: Container(
+            color: themeChange.getThem()
+                ? AppThemeData.surfaceDark
+                : AppThemeData.surface,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                InkWell(
+                  onTap: () {
+                    Get.to(const SearchScreen(),
+                        arguments: {"vendorList": controller.allNearestRestaurant});
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: TextFieldWidget(
+                      hintText: 'Search the dish, restaurant, food, meals'.tr,
+                      controller: null,
+                      enable: false,
+                      prefix: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: SvgPicture.asset("assets/icons/ic_search.svg"),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+              ],
+            ),
+          ),
         );
       },
     );
