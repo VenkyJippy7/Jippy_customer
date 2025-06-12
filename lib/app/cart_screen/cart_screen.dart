@@ -27,6 +27,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
+import 'dart:developer' as dev;
 
 class CartScreen extends StatelessWidget {
   const CartScreen({super.key});
@@ -175,8 +176,7 @@ class CartScreen extends StatelessWidget {
                                       .then((value) {
                                     productModel = value;
                                   });
-                                  print(
-                                      "cartItem[index] :: ${cartItem[index].extras} ::${cartItem[index].extrasPrice}");
+                                  dev.log('cartItem[index] :: ${cartItem[index].extras} ::${cartItem[index].extrasPrice}');
                                   return InkWell(
                                     onTap: () async {
                                       await FireStoreUtils.getVendorById(

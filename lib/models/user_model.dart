@@ -1,5 +1,6 @@
+import 'dart:convert';
+import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:customer/constant/constant.dart';
 import 'package:customer/models/subscription_plan_model.dart';
 
 class UserModel {
@@ -11,7 +12,7 @@ class UserModel {
   String? fcmToken;
   String? countryCode;
   String? phoneNumber;
-  num? walletAmount;
+  double? walletAmount;
   bool? active;
   bool? isActive;
   bool? isDocumentVerify;
@@ -34,123 +35,121 @@ class UserModel {
   Timestamp? subscriptionExpiryDate;
   SubscriptionPlanModel? subscriptionPlan;
 
-  UserModel(
-      {this.id,
-      this.firstName,
-      this.lastName,
-      this.active,
-      this.isActive,
-      this.isDocumentVerify,
-      this.email,
-      this.profilePictureURL,
-      this.fcmToken,
-      this.countryCode,
-      this.phoneNumber,
-      this.walletAmount,
-      this.createdAt,
-      this.role,
-      this.location,
-      this.shippingAddress,
-      this.carName,
-      this.carNumber,
-      this.carPictureURL,
-      this.inProgressOrderID,
-      this.orderRequestData,
-      this.vendorID,
-      this.zoneId,
-      this.rotation,
-      this.appIdentifier,
-      this.provider,
-      this.subscriptionPlanId,
-      this.subscriptionExpiryDate,
-      this.subscriptionPlan});
+  UserModel({
+    this.id,
+    this.firstName,
+    this.lastName,
+    this.active,
+    this.isActive,
+    this.isDocumentVerify,
+    this.email,
+    this.profilePictureURL,
+    this.fcmToken,
+    this.countryCode,
+    this.phoneNumber,
+    this.walletAmount,
+    this.createdAt,
+    this.role,
+    this.location,
+    this.shippingAddress,
+    this.carName,
+    this.carNumber,
+    this.carPictureURL,
+    this.inProgressOrderID,
+    this.orderRequestData,
+    this.vendorID,
+    this.zoneId,
+    this.rotation,
+    this.appIdentifier,
+    this.provider,
+    this.subscriptionPlanId,
+    this.subscriptionExpiryDate,
+    this.subscriptionPlan,
+  });
 
-  fullName() {
+  String fullName() {
     return "${firstName ?? ''} ${lastName ?? ''}";
   }
 
-  UserModel.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    email = json['email'];
-    firstName = json['firstName'];
-    lastName = json['lastName'];
-    profilePictureURL = json['profilePictureURL'];
-    fcmToken = json['fcmToken'];
-    countryCode = json['countryCode'];
-    phoneNumber = json['phoneNumber'];
-    walletAmount = json['wallet_amount'] ?? 0;
-    createdAt = json['createdAt'];
-    active = json['active'];
-    isActive = json['isActive'];
-    isDocumentVerify = json['isDocumentVerify'] ?? false;
-    role = json['role'] ?? 'user';
-    location = json['location'] != null ? UserLocation.fromJson(json['location']) : null;
-    userBankDetails = json['userBankDetails'] != null ? UserBankDetails.fromJson(json['userBankDetails']) : null;
-    if (json['shippingAddress'] != null) {
-      shippingAddress = <ShippingAddress>[];
-      json['shippingAddress'].forEach((v) {
-        shippingAddress!.add(ShippingAddress.fromJson(v));
-      });
+  factory UserModel.fromJson(Map<String, dynamic> json) {
+    try {
+      List<ShippingAddress>? addresses;
+      if (json['shippingAddress'] != null) {
+        if (json['shippingAddress'] is List) {
+          addresses = (json['shippingAddress'] as List).map((e) {
+            if (e is Map<String, dynamic>) {
+              return ShippingAddress.fromJson(e);
+            } else if (e is String) {
+              try {
+                return ShippingAddress.fromJson(jsonDecode(e));
+              } catch (e) {
+                log('Error parsing shipping address string: $e');
+                return ShippingAddress();
+              }
+            }
+            return ShippingAddress();
+          }).toList();
+        } else if (json['shippingAddress'] is Map) {
+          addresses = [ShippingAddress.fromJson(json['shippingAddress'] as Map<String, dynamic>)];
+        } else if (json['shippingAddress'] is String) {
+          try {
+            addresses = [ShippingAddress.fromJson(jsonDecode(json['shippingAddress']))];
+          } catch (e) {
+            log('Error parsing shipping address string: $e');
+            addresses = [];
+          }
+        } else {
+          addresses = [];
+        }
+      }
+
+      return UserModel(
+        id: json['id']?.toString(),
+        email: json['email']?.toString(),
+        firstName: json['firstName']?.toString(),
+        lastName: json['lastName']?.toString(),
+        profilePictureURL: json['profilePictureURL']?.toString(),
+        fcmToken: json['fcmToken']?.toString(),
+        countryCode: json['countryCode']?.toString(),
+        phoneNumber: json['phoneNumber']?.toString(),
+        walletAmount: (json['wallet_amount'] is num) ? (json['wallet_amount'] as num).toDouble() : 0.0,
+        createdAt: json['createdAt'] as Timestamp?,
+        active: json['active'] as bool?,
+        isActive: json['isActive'] as bool?,
+        role: json['role']?.toString(),
+        isDocumentVerify: json['isDocumentVerify'] as bool?,
+        zoneId: json['zoneId']?.toString(),
+        appIdentifier: json['appIdentifier']?.toString(),
+        provider: json['provider']?.toString(),
+        shippingAddress: addresses,
+      );
+    } catch (e) {
+      log('Error converting user data: $e');
+      rethrow;
     }
-    carName = json['carName'];
-    carNumber = json['carNumber'];
-    carPictureURL = json['carPictureURL'];
-    inProgressOrderID = json['inProgressOrderID'];
-    orderRequestData = json['orderRequestData'];
-    vendorID = json['vendorID'] ?? '';
-    zoneId = json['zoneId'] ?? '';
-    rotation = json['rotation'];
-    appIdentifier = json['appIdentifier'];
-    provider = json['provider'];
-    subscriptionPlanId = json['subscriptionPlanId'];
-    subscriptionExpiryDate = json['subscriptionExpiryDate'];
-    subscriptionPlan = json['subscription_plan'] != null ? SubscriptionPlanModel.fromJson(json['subscription_plan']) : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = id;
-    data['email'] = email;
-    data['firstName'] = firstName;
-    data['lastName'] = lastName;
-    data['profilePictureURL'] = profilePictureURL;
-    data['fcmToken'] = fcmToken;
-    data['countryCode'] = countryCode;
-    data['phoneNumber'] = phoneNumber;
-    data['wallet_amount'] = walletAmount ?? 0;
-    data['createdAt'] = createdAt;
-    data['active'] = active;
-    data['isActive'] = isActive;
-    data['role'] = role;
-    data['isDocumentVerify'] = isDocumentVerify;
-    data['zoneId'] = zoneId;
-    if (location != null) {
-      data['location'] = location!.toJson();
-    }
-    if (userBankDetails != null) {
-      data['userBankDetails'] = userBankDetails!.toJson();
-    }
-    if (shippingAddress != null) {
-      data['shippingAddress'] = shippingAddress!.map((v) => v.toJson()).toList();
-    }
-    if (role == Constant.userRoleDriver) {
-      data['carName'] = carName;
-      data['carNumber'] = carNumber;
-      data['carPictureURL'] = carPictureURL;
-      data['inProgressOrderID'] = inProgressOrderID;
-      data['orderRequestData'] = orderRequestData;
-      data['rotation'] = rotation;
-    }
-    if (role == Constant.userRoleVendor) {
-      data['vendorID'] = vendorID;
-      data['subscriptionPlanId'] = subscriptionPlanId;
-      data['subscriptionExpiryDate'] = subscriptionExpiryDate;
-      data['subscription_plan'] = subscriptionPlan?.toJson();
-    }
-    data['appIdentifier'] = appIdentifier;
-    data['provider'] = provider;
-
-    return data;
+    return {
+      'id': id,
+      'email': email,
+      'firstName': firstName,
+      'lastName': lastName,
+      'profilePictureURL': profilePictureURL,
+      'fcmToken': fcmToken,
+      'countryCode': countryCode,
+      'phoneNumber': phoneNumber,
+      'wallet_amount': walletAmount,
+      'createdAt': createdAt,
+      'active': active,
+      'isActive': isActive,
+      'role': role,
+      'isDocumentVerify': isDocumentVerify,
+      'zoneId': zoneId,
+      'appIdentifier': appIdentifier,
+      'provider': provider,
+      'shippingAddress': shippingAddress?.map((e) => e.toJson()).toList(),
+    };
   }
 }
 

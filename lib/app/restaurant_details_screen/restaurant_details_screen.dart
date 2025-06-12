@@ -1,6 +1,5 @@
 import 'package:badges/badges.dart' as badges;
 import 'package:customer/app/cart_screen/cart_screen.dart';
-import 'package:customer/app/dine_in_screeen/dine_in_details_screen.dart';
 import 'package:customer/app/review_list_screen/review_list_screen.dart';
 import 'package:customer/constant/constant.dart';
 import 'package:customer/constant/show_toast_dialog.dart';

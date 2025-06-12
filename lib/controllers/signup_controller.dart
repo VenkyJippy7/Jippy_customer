@@ -12,8 +12,6 @@ import 'package:customer/utils/notification_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:location/location.dart';
 
 class SignupController extends GetxController {
   Rx<TextEditingController> firstNameEditingController = TextEditingController().obs;

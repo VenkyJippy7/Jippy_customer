@@ -15,6 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
+import 'package:customer/utils/color_utils.dart';
 
 class AllAdvertisementScreen extends StatelessWidget {
   const AllAdvertisementScreen({super.key});
@@ -94,7 +95,7 @@ class AdvertisementCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: ColorUtils.withOpacity(Colors.black, 0.1),
               blurRadius: themeChange.getThem() ? 6 : 2,
               spreadRadius: 0,
               offset: Offset(0, themeChange.getThem() ? 3 : 1),

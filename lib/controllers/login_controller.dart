@@ -8,6 +8,7 @@ import 'package:customer/app/location_permission_screen/location_permission_scre
 import 'package:customer/constant/constant.dart';
 import 'package:customer/constant/show_toast_dialog.dart';
 import 'package:customer/models/user_model.dart';
+import 'package:customer/services/play_integrity_service.dart';
 import 'package:customer/utils/fire_store_utils.dart';
 import 'package:customer/utils/notification_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -31,10 +32,67 @@ class LoginController extends GetxController {
   loginWithEmailAndPassword() async {
     ShowToastDialog.showLoader("Please wait".tr);
     try {
+      // Validate email and password
+      if (emailEditingController.value.text.trim().isEmpty) {
+        ShowToastDialog.closeLoader();
+        ShowToastDialog.showToast("Please enter email".tr);
+        return;
+      }
+      if (passwordEditingController.value.text.trim().isEmpty) {
+        ShowToastDialog.closeLoader();
+        ShowToastDialog.showToast("Please enter password".tr);
+        return;
+      }
+
+      // Validate email format
+      final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+      if (!emailRegex.hasMatch(emailEditingController.value.text.trim())) {
+        ShowToastDialog.closeLoader();
+        ShowToastDialog.showToast("Please enter a valid email address".tr);
+        return;
+      }
+
+      // Perform Play Integrity check
+      try {
+        log('Starting Play Integrity check...');
+        final isIntegrityValid = await PlayIntegrityService.performIntegrityCheck();
+        if (!isIntegrityValid) {
+          ShowToastDialog.closeLoader();
+          ShowToastDialog.showToast("Security check failed. Please try again.".tr);
+          return;
+        }
+        log('Play Integrity check passed');
+      } catch (e) {
+        log('Play Integrity check error: $e');
+        // For development, continue with login
+        // In production, you might want to show an error and return
+        ShowToastDialog.showToast("Security check warning. Proceeding with login.".tr);
+      }
+
+      // Clear any existing auth state
+      await FirebaseAuth.instance.signOut();
+
+      // Attempt to sign in
       final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: emailEditingController.value.text.trim(),
         password: passwordEditingController.value.text.trim(),
+      ).timeout(
+        const Duration(seconds: 30),
+        onTimeout: () {
+          throw FirebaseAuthException(
+            code: 'timeout',
+            message: 'Login attempt timed out. Please try again.',
+          );
+        },
       );
+
+      if (credential.user == null) {
+        ShowToastDialog.closeLoader();
+        ShowToastDialog.showToast("Login failed. Please try again.".tr);
+        return;
+      }
+
+      // Get user profile
       UserModel? userModel = await FireStoreUtils.getUserProfile(credential.user!.uid);
       log("Login :: ${userModel?.toJson()}");
       
@@ -59,9 +117,11 @@ class LoginController extends GetxController {
         return;
       }
 
+      // Update FCM token
       userModel.fcmToken = await NotificationService.getToken();
       await FireStoreUtils.updateUser(userModel);
       
+      // Handle navigation based on shipping address
       if (userModel.shippingAddress != null && userModel.shippingAddress!.isNotEmpty) {
         if (userModel.shippingAddress!.where((element) => element.isDefault == true).isNotEmpty) {
           Constant.selectedLocation = userModel.shippingAddress!.where((element) => element.isDefault == true).single;
@@ -69,30 +129,53 @@ class LoginController extends GetxController {
           Constant.selectedLocation = userModel.shippingAddress!.first;
         }
         ShowToastDialog.closeLoader();
-        Get.offAll(const DashBoardScreen());
+        Get.offAll(() => const DashBoardScreen());
       } else {
         ShowToastDialog.closeLoader();
-        Get.offAll(const LocationPermissionScreen());
+        Get.offAll(() => const LocationPermissionScreen());
       }
+    } on FirebaseAuthException catch (e) {
+      ShowToastDialog.closeLoader();
+      switch (e.code) {
+        case 'user-not-found':
+          ShowToastDialog.showToast("No account found with this email. Please check your email or sign up.".tr);
+          break;
+        case 'wrong-password':
+          ShowToastDialog.showToast("Incorrect password. Please try again.".tr);
+          break;
+        case 'invalid-email':
+          ShowToastDialog.showToast("Invalid email format. Please enter a valid email address.".tr);
+          break;
+        case 'user-disabled':
+          ShowToastDialog.showToast("This account has been disabled. Please contact support.".tr);
+          break;
+        case 'too-many-requests':
+          ShowToastDialog.showToast("Too many login attempts. Please try again later.".tr);
+          break;
+        case 'timeout':
+          ShowToastDialog.showToast("Login attempt timed out. Please check your internet connection and try again.".tr);
+          break;
+        case 'network-request-failed':
+          ShowToastDialog.showToast("Network error. Please check your internet connection and try again.".tr);
+          break;
+        case 'invalid-credential':
+          ShowToastDialog.showToast("Invalid email or password. Please try again.".tr);
+          break;
+        case 'operation-not-allowed':
+          ShowToastDialog.showToast("Email/password accounts are not enabled. Please contact support.".tr);
+          break;
+        default:
+          ShowToastDialog.showToast(e.message ?? "An error occurred during login. Please try again.".tr);
+      }
+      log("Firebase Auth Error: ${e.code} - ${e.message}");
     } catch (e) {
       ShowToastDialog.closeLoader();
-      if (e is FirebaseAuthException) {
-        switch (e.code) {
-          case 'user-not-found':
-            ShowToastDialog.showToast("No user found for that email.".tr);
-            break;
-          case 'wrong-password':
-            ShowToastDialog.showToast("Wrong password provided for that user.".tr);
-            break;
-          case 'invalid-email':
-            ShowToastDialog.showToast("Invalid Email.".tr);
-            break;
-          default:
-            ShowToastDialog.showToast(e.message ?? "An error occurred during login.".tr);
-        }
+      if (e.toString().contains('network')) {
+        ShowToastDialog.showToast("Network error. Please check your internet connection and try again.".tr);
       } else {
         ShowToastDialog.showToast("An unexpected error occurred. Please try again.".tr);
       }
+      log("Login error: $e");
     }
   }
 

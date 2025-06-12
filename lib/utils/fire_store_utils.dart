@@ -98,20 +98,81 @@ class FireStoreUtils {
   }
 
   static Future<UserModel?> getUserProfile(String uuid) async {
-    UserModel? userModel;
-    await fireStore
-        .collection(CollectionName.users)
-        .doc(uuid)
-        .get()
-        .then((value) {
-      if (value.exists) {
-        userModel = UserModel.fromJson(value.data()!);
+    try {
+      DocumentSnapshot<Map<String, dynamic>> userDocument = await fireStore.collection(CollectionName.users).doc(uuid).get();
+      if (userDocument.data() != null) {
+        Map<String, dynamic> data = Map<String, dynamic>.from(userDocument.data()!);
+        data['id'] = uuid;
+        
+        try {
+          // Convert shipping address if it exists
+          if (data['shippingAddress'] != null) {
+            if (data['shippingAddress'] is List) {
+              List<Map<String, dynamic>> addresses = [];
+              for (var item in data['shippingAddress'] as List) {
+                if (item is Map) {
+                  addresses.add(Map<String, dynamic>.from(item));
+                } else if (item is String) {
+                  // Handle case where item is a string (JSON)
+                  try {
+                    Map<String, dynamic> addressMap = Map<String, dynamic>.from(json.decode(item));
+                    addresses.add(addressMap);
+                  } catch (e) {
+                    log('Error parsing shipping address string: $e');
+                  }
+                }
+              }
+              data['shippingAddress'] = addresses;
+            } else if (data['shippingAddress'] is Map) {
+              data['shippingAddress'] = [Map<String, dynamic>.from(data['shippingAddress'])];
+            } else if (data['shippingAddress'] is String) {
+              try {
+                Map<String, dynamic> addressMap = Map<String, dynamic>.from(json.decode(data['shippingAddress']));
+                data['shippingAddress'] = [addressMap];
+              } catch (e) {
+                log('Error parsing shipping address string: $e');
+                data['shippingAddress'] = [];
+              }
+            } else {
+              data['shippingAddress'] = [];
+            }
+          } else {
+            data['shippingAddress'] = [];
+          }
+
+          // Ensure wallet_amount is a number
+          if (data['wallet_amount'] != null) {
+            if (data['wallet_amount'] is String) {
+              data['wallet_amount'] = double.tryParse(data['wallet_amount']) ?? 0.0;
+            } else if (data['wallet_amount'] is num) {
+              data['wallet_amount'] = (data['wallet_amount'] as num).toDouble();
+            } else {
+              data['wallet_amount'] = 0.0;
+            }
+          } else {
+            data['wallet_amount'] = 0.0;
+          }
+
+          // Ensure all required fields have proper types
+          data['active'] = data['active'] is bool ? data['active'] : false;
+          data['isActive'] = data['isActive'] is bool ? data['isActive'] : false;
+          data['isDocumentVerify'] = data['isDocumentVerify'] is bool ? data['isDocumentVerify'] : false;
+          data['role'] = data['role']?.toString() ?? 'customer';
+          data['appIdentifier'] = data['appIdentifier']?.toString() ?? 'android';
+          data['provider'] = data['provider']?.toString() ?? 'email';
+
+          log('Processed user data: $data');
+          return UserModel.fromJson(data);
+        } catch (e) {
+          log('Error converting user data: $e');
+          return null;
+        }
       }
-    }).catchError((error) {
-      log("Failed to update user: $error");
-      userModel = null;
-    });
-    return userModel;
+      return null;
+    } catch (e) {
+      log('Error getting user profile: $e');
+      return null;
+    }
   }
 
   static Future<bool?> updateUserWallet(

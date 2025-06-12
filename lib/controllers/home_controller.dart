@@ -34,10 +34,8 @@ class HomeController extends GetxController {
   RxBool isPopular = true.obs;
   RxString selectedOrderTypeValue = "Delivery".tr.obs;
 
-  Rx<PageController> pageController =
-      PageController(viewportFraction: 1.0).obs;
-  Rx<PageController> pageBottomController =
-      PageController(viewportFraction: 1.0).obs;
+  Rx<PageController> pageController = PageController(viewportFraction: 1.0).obs;
+  Rx<PageController> pageBottomController = PageController(viewportFraction: 1.0).obs;
   RxInt currentPage = 0.obs;
   RxInt currentBottomPage = 0.obs;
 
@@ -47,7 +45,6 @@ class HomeController extends GetxController {
 
   @override
   void onInit() {
-    // TODO: implement onInit
     getVendorCategory();
     getData();
     startBannerTimer();
@@ -57,6 +54,8 @@ class HomeController extends GetxController {
   @override
   void onClose() {
     _bannerTimer?.cancel();
+    pageController.value.dispose();
+    pageBottomController.value.dispose();
     super.onClose();
   }
 
