@@ -49,12 +49,12 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'YOUR_ANDROID_API_KEY',
-    appId: 'YOUR_ANDROID_APP_ID',
-    messagingSenderId: 'YOUR_ANDROID_MESSAGING_SENDER_ID',
-    projectId: 'YOUR_ANDROID_PROJECT_ID',
-    databaseURL: 'YOUR_ANDROID_DATABASE_URL',
-    storageBucket: 'YOUR_ANDROID_STORAGE_BUCKET',
+    apiKey: 'AIzaSyBRdk2BoUowc2FgvAwI0oDF_0fhbazoTQs',
+    appId: '1:592427852800:android:2b3bdce60d524d02d1a4e5',
+    messagingSenderId: '592427852800',
+    projectId: 'jippymart-27c08',
+    databaseURL: 'https://jippymart-27c08-default-rtdb.firebaseio.com',
+    storageBucket: 'jippymart-27c08.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(

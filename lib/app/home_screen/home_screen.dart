@@ -1187,7 +1187,7 @@ class HomeScreen extends StatelessWidget {
                         arguments: {"vendorList": controller.allNearestRestaurant});
                   },
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 50.0),
                     child: TextFieldWidget(
                       hintText: 'Search the dish, restaurant, food, meals'.tr,
                       controller: null,

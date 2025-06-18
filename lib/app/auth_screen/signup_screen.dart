@@ -39,7 +39,7 @@ class SignupScreen extends StatelessWidget {
                         style: TextStyle(color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900, fontSize: 22, fontFamily: AppThemeData.semiBold),
                       ),
                       Text(
-                        "Sign up to start your shopping adventure with JippyMart".tr,
+                        "Sign up to start your food adventure with Foodie".tr,
                         style: TextStyle(color: themeChange.getThem() ? AppThemeData.grey400 : AppThemeData.grey500, fontSize: 16, fontFamily: AppThemeData.regular),
                       ),
                       const SizedBox(
@@ -119,98 +119,98 @@ class SignupScreen extends StatelessWidget {
                             controller.countryCodeEditingController.value.text = value.dialCode.toString();
                           },
                           dialogTextStyle:
-                              TextStyle(color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900, fontWeight: FontWeight.w500, fontFamily: AppThemeData.medium),
+                          TextStyle(color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900, fontWeight: FontWeight.w500, fontFamily: AppThemeData.medium),
                           dialogBackgroundColor: themeChange.getThem() ? AppThemeData.grey800 : AppThemeData.grey100,
                           initialSelection: controller.countryCodeEditingController.value.text,
                           comparator: (a, b) => b.name!.compareTo(a.name.toString()),
                           textStyle: TextStyle(fontSize: 14, color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900, fontFamily: AppThemeData.medium),
                           searchDecoration: InputDecoration(iconColor: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900),
                           searchStyle:
-                              TextStyle(color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900, fontWeight: FontWeight.w500, fontFamily: AppThemeData.medium),
+                          TextStyle(color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900, fontWeight: FontWeight.w500, fontFamily: AppThemeData.medium),
                         ),
                       ),
                       controller.type.value == "google" || controller.type.value == "apple" || controller.type.value == "mobileNumber"
                           ? const SizedBox()
                           : Column(
-                              children: [
-                                TextFieldWidget(
-                                  title: 'Password'.tr,
-                                  controller: controller.passwordEditingController.value,
-                                  hintText: 'Enter Password'.tr,
-                                  obscureText: controller.passwordVisible.value,
-                                  prefix: Padding(
-                                    padding: const EdgeInsets.all(12),
-                                    child: SvgPicture.asset(
-                                      "assets/icons/ic_lock.svg",
-                                      colorFilter: ColorFilter.mode(
-                                        themeChange.getThem() ? AppThemeData.grey300 : AppThemeData.grey600,
-                                        BlendMode.srcIn,
-                                      ),
-                                    ),
-                                  ),
-                                  suffix: Padding(
-                                    padding: const EdgeInsets.all(12),
-                                    child: InkWell(
-                                        onTap: () {
-                                          controller.passwordVisible.value = !controller.passwordVisible.value;
-                                        },
-                                        child: controller.passwordVisible.value
-                                            ? SvgPicture.asset(
-                                                "assets/icons/ic_password_show.svg",
-                                                colorFilter: ColorFilter.mode(
-                                                  themeChange.getThem() ? AppThemeData.grey300 : AppThemeData.grey600,
-                                                  BlendMode.srcIn,
-                                                ),
-                                              )
-                                            : SvgPicture.asset(
-                                                "assets/icons/ic_password_close.svg",
-                                                colorFilter: ColorFilter.mode(
-                                                  themeChange.getThem() ? AppThemeData.grey300 : AppThemeData.grey600,
-                                                  BlendMode.srcIn,
-                                                ),
-                                              )),
-                                  ),
+                        children: [
+                          TextFieldWidget(
+                            title: 'Password'.tr,
+                            controller: controller.passwordEditingController.value,
+                            hintText: 'Enter Password'.tr,
+                            obscureText: controller.passwordVisible.value,
+                            prefix: Padding(
+                              padding: const EdgeInsets.all(12),
+                              child: SvgPicture.asset(
+                                "assets/icons/ic_lock.svg",
+                                colorFilter: ColorFilter.mode(
+                                  themeChange.getThem() ? AppThemeData.grey300 : AppThemeData.grey600,
+                                  BlendMode.srcIn,
                                 ),
-                                TextFieldWidget(
-                                  title: 'Confirm Password'.tr,
-                                  controller: controller.conformPasswordEditingController.value,
-                                  hintText: 'Enter Confirm Password'.tr,
-                                  obscureText: controller.conformPasswordVisible.value,
-                                  prefix: Padding(
-                                    padding: const EdgeInsets.all(12),
-                                    child: SvgPicture.asset(
-                                      "assets/icons/ic_lock.svg",
-                                      colorFilter: ColorFilter.mode(
-                                        themeChange.getThem() ? AppThemeData.grey300 : AppThemeData.grey600,
-                                        BlendMode.srcIn,
-                                      ),
-                                    ),
-                                  ),
-                                  suffix: Padding(
-                                    padding: const EdgeInsets.all(12),
-                                    child: InkWell(
-                                        onTap: () {
-                                          controller.conformPasswordVisible.value = !controller.conformPasswordVisible.value;
-                                        },
-                                        child: controller.conformPasswordVisible.value
-                                            ? SvgPicture.asset(
-                                                "assets/icons/ic_password_show.svg",
-                                                colorFilter: ColorFilter.mode(
-                                                  themeChange.getThem() ? AppThemeData.grey300 : AppThemeData.grey600,
-                                                  BlendMode.srcIn,
-                                                ),
-                                              )
-                                            : SvgPicture.asset(
-                                                "assets/icons/ic_password_close.svg",
-                                                colorFilter: ColorFilter.mode(
-                                                  themeChange.getThem() ? AppThemeData.grey300 : AppThemeData.grey600,
-                                                  BlendMode.srcIn,
-                                                ),
-                                              )),
-                                  ),
-                                ),
-                              ],
+                              ),
                             ),
+                            suffix: Padding(
+                              padding: const EdgeInsets.all(12),
+                              child: InkWell(
+                                  onTap: () {
+                                    controller.passwordVisible.value = !controller.passwordVisible.value;
+                                  },
+                                  child: controller.passwordVisible.value
+                                      ? SvgPicture.asset(
+                                    "assets/icons/ic_password_show.svg",
+                                    colorFilter: ColorFilter.mode(
+                                      themeChange.getThem() ? AppThemeData.grey300 : AppThemeData.grey600,
+                                      BlendMode.srcIn,
+                                    ),
+                                  )
+                                      : SvgPicture.asset(
+                                    "assets/icons/ic_password_close.svg",
+                                    colorFilter: ColorFilter.mode(
+                                      themeChange.getThem() ? AppThemeData.grey300 : AppThemeData.grey600,
+                                      BlendMode.srcIn,
+                                    ),
+                                  )),
+                            ),
+                          ),
+                          TextFieldWidget(
+                            title: 'Confirm Password'.tr,
+                            controller: controller.conformPasswordEditingController.value,
+                            hintText: 'Enter Confirm Password'.tr,
+                            obscureText: controller.conformPasswordVisible.value,
+                            prefix: Padding(
+                              padding: const EdgeInsets.all(12),
+                              child: SvgPicture.asset(
+                                "assets/icons/ic_lock.svg",
+                                colorFilter: ColorFilter.mode(
+                                  themeChange.getThem() ? AppThemeData.grey300 : AppThemeData.grey600,
+                                  BlendMode.srcIn,
+                                ),
+                              ),
+                            ),
+                            suffix: Padding(
+                              padding: const EdgeInsets.all(12),
+                              child: InkWell(
+                                  onTap: () {
+                                    controller.conformPasswordVisible.value = !controller.conformPasswordVisible.value;
+                                  },
+                                  child: controller.conformPasswordVisible.value
+                                      ? SvgPicture.asset(
+                                    "assets/icons/ic_password_show.svg",
+                                    colorFilter: ColorFilter.mode(
+                                      themeChange.getThem() ? AppThemeData.grey300 : AppThemeData.grey600,
+                                      BlendMode.srcIn,
+                                    ),
+                                  )
+                                      : SvgPicture.asset(
+                                    "assets/icons/ic_password_close.svg",
+                                    colorFilter: ColorFilter.mode(
+                                      themeChange.getThem() ? AppThemeData.grey300 : AppThemeData.grey600,
+                                      BlendMode.srcIn,
+                                    ),
+                                  )),
+                            ),
+                          ),
+                        ],
+                      ),
                       TextFieldWidget(
                         title: 'Referral Code(Optional)'.tr,
                         controller: controller.referralCodeEditingController.value,

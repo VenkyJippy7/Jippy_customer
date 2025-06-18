@@ -12,19 +12,34 @@ import kotlinx.coroutines.tasks.await
 import android.os.Bundle
 import android.util.Log
 import io.flutter.plugins.GeneratedPluginRegistrant
+import com.google.firebase.appcheck.FirebaseAppCheck
+import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
 
 class MainActivity : FlutterActivity() {
     private val CHANNEL = "com.jippymart.customer/play_integrity"
     private val TAG = "MainActivity"
+    private val API_KEY = "AIzaSyCdLXK7dE_uPBxZ0tzVuL85o9-vyXkwIyk"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Initialize Play Integrity service
-        // playIntegrityService = PlayIntegrityService(context)
+        
+        // Initialize Firebase App Check
+        val firebaseAppCheck = FirebaseAppCheck.getInstance()
+        firebaseAppCheck.installAppCheckProviderFactory(
+            PlayIntegrityAppCheckProviderFactory.getInstance()
+        )
+        
+        // For debug builds, also install the debug provider
+        if (BuildConfig.DEBUG) {
+            firebaseAppCheck.installAppCheckProviderFactory(
+                com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory.getInstance()
+            )
+        }
     }
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+        flutterEngine.plugins.add(PlayIntegrityPlugin())
         
         val integrityManager = IntegrityManagerFactory.create(applicationContext)
         
@@ -44,7 +59,10 @@ class MainActivity : FlutterActivity() {
                             .build()
                         
                         val response = integrityManager.requestIntegrityToken(request).await()
-                        result.success(response.token())
+                        result.success(mapOf(
+                            "token" to response.token(),
+                            "nonce" to nonce
+                        ))
                     } catch (e: Exception) {
                         Log.e(TAG, "Error getting integrity token", e)
                         result.error("INTEGRITY_ERROR", e.message, null)

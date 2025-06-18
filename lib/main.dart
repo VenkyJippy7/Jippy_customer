@@ -12,6 +12,7 @@ import 'package:customer/themes/styles.dart';
 import 'package:customer/utils/dark_theme_provider.dart';
 import 'package:customer/utils/preferences.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
@@ -43,6 +44,14 @@ void main() async {
     alert: true,
     badge: true,
     sound: true,
+  );
+
+  // Initialize Firebase App Check
+  await FirebaseAppCheck.instance.activate(
+    // Use Play Integrity provider for Android
+    androidProvider: AndroidProvider.playIntegrity,
+    // Use Device Check provider for iOS
+    appleProvider: AppleProvider.deviceCheck,
   );
 
   runApp(

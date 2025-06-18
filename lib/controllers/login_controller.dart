@@ -55,22 +55,25 @@ class LoginController extends GetxController {
       // Perform Play Integrity check
       try {
         log('Starting Play Integrity check...');
-        final isIntegrityValid = await PlayIntegrityService.performIntegrityCheck();
+        final isIntegrityValid = await PlayIntegrityService.verifyIntegrity();
+        log('Play Integrity check result: $isIntegrityValid');
+        
         if (!isIntegrityValid) {
           ShowToastDialog.closeLoader();
-          ShowToastDialog.showToast("Security check failed. Please try again.".tr);
+          ShowToastDialog.showToast("Security check failed. Please try again or contact support.".tr);
           return;
         }
-        log('Play Integrity check passed');
+        log('Play Integrity check passed, proceeding with login');
       } catch (e) {
         log('Play Integrity check error: $e');
-        // For development, continue with login
-        // In production, you might want to show an error and return
-        ShowToastDialog.showToast("Security check warning. Proceeding with login.".tr);
+        ShowToastDialog.closeLoader();
+        ShowToastDialog.showToast("Security check error: ${e.toString()}".tr);
+        return;
       }
 
       // Clear any existing auth state
       await FirebaseAuth.instance.signOut();
+      log('Cleared existing auth state');
 
       // Attempt to sign in
       final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
@@ -86,6 +89,8 @@ class LoginController extends GetxController {
         },
       );
 
+      log('Firebase auth response: ${credential.user?.uid}');
+
       if (credential.user == null) {
         ShowToastDialog.closeLoader();
         ShowToastDialog.showToast("Login failed. Please try again.".tr);
@@ -94,7 +99,7 @@ class LoginController extends GetxController {
 
       // Get user profile
       UserModel? userModel = await FireStoreUtils.getUserProfile(credential.user!.uid);
-      log("Login :: ${userModel?.toJson()}");
+      log("User profile: ${userModel?.toJson()}");
       
       if (userModel == null) {
         await FirebaseAuth.instance.signOut();
@@ -120,6 +125,7 @@ class LoginController extends GetxController {
       // Update FCM token
       userModel.fcmToken = await NotificationService.getToken();
       await FireStoreUtils.updateUser(userModel);
+      log('Updated user FCM token');
       
       // Handle navigation based on shipping address
       if (userModel.shippingAddress != null && userModel.shippingAddress!.isNotEmpty) {
@@ -136,6 +142,7 @@ class LoginController extends GetxController {
       }
     } on FirebaseAuthException catch (e) {
       ShowToastDialog.closeLoader();
+      log('Firebase Auth Error: ${e.code} - ${e.message}');
       switch (e.code) {
         case 'user-not-found':
           ShowToastDialog.showToast("No account found with this email. Please check your email or sign up.".tr);
@@ -161,21 +168,17 @@ class LoginController extends GetxController {
         case 'invalid-credential':
           ShowToastDialog.showToast("Invalid email or password. Please try again.".tr);
           break;
-        case 'operation-not-allowed':
-          ShowToastDialog.showToast("Email/password accounts are not enabled. Please contact support.".tr);
-          break;
         default:
           ShowToastDialog.showToast(e.message ?? "An error occurred during login. Please try again.".tr);
       }
-      log("Firebase Auth Error: ${e.code} - ${e.message}");
     } catch (e) {
       ShowToastDialog.closeLoader();
+      log('Login error: $e');
       if (e.toString().contains('network')) {
         ShowToastDialog.showToast("Network error. Please check your internet connection and try again.".tr);
       } else {
         ShowToastDialog.showToast("An unexpected error occurred. Please try again.".tr);
       }
-      log("Login error: $e");
     }
   }
 

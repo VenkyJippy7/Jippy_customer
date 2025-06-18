@@ -55,7 +55,7 @@ class TextFieldWidget extends StatelessWidget {
             const SizedBox(height: 4),
           ],
           Material(
-            elevation: 4,
+            elevation: 2,
             shadowColor: themeChange.getThem() ? AppThemeData.grey900 : AppThemeData.grey400,
             borderRadius: BorderRadius.circular(10),
             child: TextFormField(
@@ -78,7 +78,7 @@ class TextFieldWidget extends StatelessWidget {
                 filled: true,
                 enabled: enable ?? true,
                 isDense: true,
-                contentPadding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+                contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
                 fillColor: themeChange.getThem() ? AppThemeData.grey900 : AppThemeData.grey50,
                 prefixIcon: prefix,
                 suffixIcon: suffix,
