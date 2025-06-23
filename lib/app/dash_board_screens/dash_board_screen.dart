@@ -65,7 +65,7 @@ class DashBoardScreen extends StatelessWidget {
                         navigationBarItem(
                           themeChange,
                           index: 0,
-                          assetIcon: "assets/images/ic_logo.png",
+                          assetIcon: "assets/images/ic_home_icon.png",
                           label: 'Home'.tr,
                           controller: controller,
                         ),
@@ -95,7 +95,7 @@ class DashBoardScreen extends StatelessWidget {
                         navigationBarItem(
                           themeChange,
                           index: 0,
-                          assetIcon: "assets/images/ic_logo.png",
+                          assetIcon: "assets/images/ic_home_icon.png",
                           label: 'Home'.tr,
                           controller: controller,
                         ),

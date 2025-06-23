@@ -37,51 +37,56 @@ class ViewAllCategoryScreen extends StatelessWidget {
                 ? Constant.loader()
                 : Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: GridView.builder(
-                      padding: EdgeInsets.zero,
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4, childAspectRatio: 3.5 / 6, crossAxisSpacing: 6),
-                      itemCount: controller.vendorCategoryModel.length,
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemBuilder: (context, index) {
-                        VendorCategoryModel vendorCategoryModel = controller.vendorCategoryModel[index];
-                        return InkWell(
-                          onTap: () {
-                            Get.to(const CategoryRestaurantScreen(), arguments: {"vendorCategoryModel": vendorCategoryModel, "dineIn": false});
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                SizedBox(
-                                  width: 60,
-                                  height: 60,
-                                  child: ClipOval(
-                                    child: NetworkImageWidget(
-                                      imageUrl: vendorCategoryModel.photo.toString(),
-                                      fit: BoxFit.cover,
+                    child: Scrollbar(
+                      thumbVisibility: true,
+                      child: SingleChildScrollView(
+                        child: GridView.builder(
+                          padding: EdgeInsets.zero,
+                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4, childAspectRatio: 3.5 / 6, crossAxisSpacing: 6),
+                          itemCount: controller.vendorCategoryModel.length,
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemBuilder: (context, index) {
+                            VendorCategoryModel vendorCategoryModel = controller.vendorCategoryModel[index];
+                            return InkWell(
+                              onTap: () {
+                                Get.to(const CategoryRestaurantScreen(), arguments: {"vendorCategoryModel": vendorCategoryModel, "dineIn": false});
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    SizedBox(
+                                      width: 60,
+                                      height: 60,
+                                      child: ClipOval(
+                                        child: NetworkImageWidget(
+                                          imageUrl: vendorCategoryModel.photo.toString(),
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
                                     ),
-                                  ),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                                      child: Text(
+                                        '${vendorCategoryModel.title}',
+                                        textAlign: TextAlign.center,
+                                        maxLines: 2,
+                                        style: TextStyle(
+                                          color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900,
+                                          fontFamily: AppThemeData.medium,
+                                        ),
+                                      ),
+                                    )
+                                  ],
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                                  child: Text(
-                                    '${vendorCategoryModel.title}',
-                                    textAlign: TextAlign.center,
-                                    maxLines: 2,
-                                    style: TextStyle(
-                                      color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900,
-                                      fontFamily: AppThemeData.medium,
-                                    ),
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
-                        );
-                      },
+                              ),
+                            );
+                          },
+                        ),
+                      ),
                     ),
                   ),
           );

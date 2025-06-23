@@ -58,14 +58,15 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'YOUR_IOS_API_KEY',
-    appId: 'YOUR_IOS_APP_ID',
-    messagingSenderId: 'YOUR_IOS_MESSAGING_SENDER_ID',
-    projectId: 'YOUR_IOS_PROJECT_ID',
-    databaseURL: 'YOUR_IOS_DATABASE_URL',
-    storageBucket: 'YOUR_IOS_STORAGE_BUCKET',
-    androidClientId: 'YOUR_ANDROID_CLIENT_ID',
-    iosClientId: 'YOUR_IOS_CLIENT_ID',
-    iosBundleId: 'YOUR_IOS_BUNDLE_ID',
+    apiKey: 'AIzaSyBydj69AqryFDCzRSUcc5EwbGm0vXdGvsQ',
+    appId: '1:592427852800:ios:7042882250c904b6d1a4e5',
+    messagingSenderId: '592427852800',
+    projectId: 'jippymart-27c08',
+    databaseURL: 'https://jippymart-27c08-default-rtdb.firebaseio.com',
+    storageBucket: 'jippymart-27c08.firebasestorage.app',
+    androidClientId: '592427852800-0vu074e55r2l1v3h48qi8bkvd6u52h20.apps.googleusercontent.com',
+    iosClientId: '592427852800-g5n5pd4to75i8lq6l22o37bsbq8jfir3.apps.googleusercontent.com',
+    iosBundleId: 'com.foodies.customer.ios',
   );
+
 }

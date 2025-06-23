@@ -47,7 +47,7 @@ class OrderPlacingScreen extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              "Your delicious meal is on its way! Sit tight and we’ll handle the rest.".tr,
+                              "Your delicious meal is on its way! Sit tight and we'll handle the rest.".tr,
                               textAlign: TextAlign.start,
                               style: TextStyle(
                                 color: themeChange.getThem() ? AppThemeData.grey300 : AppThemeData.grey600,
@@ -295,7 +295,7 @@ class OrderPlacingScreen extends StatelessWidget {
                         onPress: () async {
                           Get.offAll(const DashBoardScreen());
                           DashBoardController controller = Get.put(DashBoardController());
-                          controller.selectedIndex.value = 3;
+                          controller.selectedIndex.value = Constant.walletSetting == false ? 2 : 3;
                         },
                       )
                     : RoundedButtonFill(

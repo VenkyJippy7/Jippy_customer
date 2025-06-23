@@ -562,7 +562,7 @@ class CartController extends GetxController {
                 paymentIntentClientSecret: paymentIntentData['client_secret'],
                 allowsDelayedPaymentMethods: false,
                 googlePay: const PaymentSheetGooglePay(
-                  merchantCountryCode: 'US',
+                  merchantCountryCode: 'IN',
                   testEnv: true,
                   currencyCode: "USD",
                 ),
@@ -610,7 +610,7 @@ class CartController extends GetxController {
         "shipping[address][postal_code]": "98140",
         "shipping[address][city]": "San Francisco",
         "shipping[address][state]": "CA",
-        "shipping[address][country]": "US",
+        "shipping[address][country]": "IN",
       };
       var stripeSecret = stripeModel.value.stripeSecret;
       var response = await http.post(

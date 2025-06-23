@@ -9,12 +9,25 @@ class PhoneNumberController extends GetxController {
   Rx<TextEditingController> countryCodeEditingController = TextEditingController().obs;
   String? verificationId;
 
+  PhoneNumberController() {
+    countryCodeEditingController.value.text = '+91';
+  }
+
   sendCode() async {
+    final rawNumber = phoneNUmberEditingController.value.text.trim();
+    final countryCode = countryCodeEditingController.value.text.trim();
+    print('DEBUG: rawNumber="' + rawNumber + '", countryCode="' + countryCode + '"');
+    // Only allow 10-digit numbers for India
+    if (countryCode != '+91' || rawNumber.length != 10 || !RegExp(r'^[0-9]{10}$').hasMatch(rawNumber)) {
+      ShowToastDialog.showToast('Please enter a valid 10-digit Indian mobile number.');
+      return;
+    }
+    final e164Number = '+91$rawNumber';
     try {
       ShowToastDialog.showLoader("Please wait".tr);
       
       await FirebaseAuth.instance.verifyPhoneNumber(
-        phoneNumber: countryCodeEditingController.value.text + phoneNUmberEditingController.value.text,
+        phoneNumber: e164Number,
         verificationCompleted: (PhoneAuthCredential credential) async {
           ShowToastDialog.closeLoader();
           await signInWithPhoneAuthCredential(credential);
@@ -31,8 +44,8 @@ class PhoneNumberController extends GetxController {
           ShowToastDialog.closeLoader();
           this.verificationId = verificationId;
           Get.to(() => const OtpScreen(), arguments: {
-            "countryCode": countryCodeEditingController.value.text,
-            "phoneNumber": phoneNUmberEditingController.value.text,
+            "countryCode": countryCode,
+            "phoneNumber": rawNumber,
             "verificationId": verificationId,
           });
         },

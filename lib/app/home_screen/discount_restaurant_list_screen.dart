@@ -8,6 +8,7 @@ import 'package:customer/themes/responsive.dart';
 import 'package:customer/utils/dark_theme_provider.dart';
 import 'package:customer/utils/network_image_widget.dart';
 import 'package:dotted_border/dotted_border.dart';
+import 'package:dotted_border/src/dotted_border_options.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -180,10 +181,12 @@ class DiscountRestaurantListScreen extends StatelessWidget {
                                           Container(
                                             color: themeChange.getThem() ? AppThemeData.primary600 : AppThemeData.primary50,
                                             child: DottedBorder(
-                                              color: themeChange.getThem() ? AppThemeData.primary300 : AppThemeData.primary300,
-                                              strokeWidth: 1,
-                                              borderType: BorderType.RRect,
-                                              radius: const Radius.circular(6),
+                                              options: RoundedRectDottedBorderOptions(
+                                                color: themeChange.getThem() ? AppThemeData.primary300 : AppThemeData.primary300,
+                                                strokeWidth: 1,
+                                                radius: const Radius.circular(12),
+                                                dashPattern: const [6, 6],
+                                              ),
                                               child: Padding(
                                                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
                                                 child: Text(

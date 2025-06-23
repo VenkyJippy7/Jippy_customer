@@ -8,6 +8,7 @@ import 'package:customer/themes/text_field_widget.dart';
 import 'package:customer/utils/dark_theme_provider.dart';
 import 'package:customer/widget/my_separator.dart';
 import 'package:dotted_border/dotted_border.dart';
+import 'package:dotted_border/src/dotted_border_options.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
@@ -125,10 +126,12 @@ class CouponListScreen extends StatelessWidget {
                                 Row(
                                   children: [
                                     DottedBorder(
-                                      color: themeChange.getThem() ? AppThemeData.grey400 : AppThemeData.grey500,
-                                      strokeWidth: 1,
-                                      borderType: BorderType.RRect,
-                                      radius: const Radius.circular(6),
+                                      options: RoundedRectDottedBorderOptions(
+                                        color: themeChange.getThem() ? AppThemeData.grey400 : AppThemeData.grey500,
+                                        strokeWidth: 1,
+                                        radius: const Radius.circular(12),
+                                        dashPattern: const [6, 6],
+                                      ),
                                       child: Padding(
                                         padding: const EdgeInsets.symmetric(horizontal: 16),
                                         child: Text(

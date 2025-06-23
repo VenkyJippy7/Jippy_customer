@@ -1,0 +1,85 @@
+No,File Name,Relative Path,Purpose
+1,login_screen.dart,lib/app/auth_screen/login_screen.dart,Login UI
+2,otp_screen.dart,lib/app/auth_screen/otp_screen.dart,OTP verification UI
+3,phone_number_screen.dart,lib/app/auth_screen/phone_number_screen.dart,Phone number input UI
+4,signup_screen.dart,lib/app/auth_screen/signup_screen.dart,User registration UI
+5,login_controller.dart,lib/controllers/login_controller.dart,Login functionality and authentication logic
+6,api_service.dart,lib/services/api_service.dart,Backend API service (includes login API)
+7,main.dart,lib/main.dart,App entry point and initialization
+8,firebase_options.dart,lib/firebase_options.dart,Firebase configuration for Flutter
+9,firebase.json,firebase.json,Firebase CLI project configuration
+10,google-services.json,android/app/google-services.json,Firebase Android config
+11,GoogleService-Info.plist,ios/Runner/GoogleService-Info.plist,Firebase iOS config
+12,pubspec.yaml,pubspec.yaml,Flutter and Dart dependencies/config
+13,database_helper.dart,lib/services/database_helper.dart,Local database helper
+14,cart_provider.dart,lib/services/cart_provider.dart,Cart state management
+15,mock_api_service.dart,lib/services/mock_api_service.dart,Mock backend API service for testing
+16,color_utils.dart,lib/utils/color_utils.dart,Color utility functions
+17,dark_theme_preference.dart,lib/utils/dark_theme_preference.dart,Dark theme preference storage
+18,dark_theme_provider.dart,lib/utils/dark_theme_provider.dart,Dark theme state management
+19,fire_store_utils.dart,lib/utils/fire_store_utils.dart,Firebase Firestore utility functions
+20,network_image_widget.dart,lib/utils/network_image_widget.dart,Network image widget utility
+21,notification_service.dart,lib/utils/notification_service.dart,Push notification service
+22,preferences.dart,lib/utils/preferences.dart,App preferences utility
+23,utils.dart,lib/utils/utils.dart,General utility functions
+24,app_them_data.dart,lib/themes/app_them_data.dart,App theme data and colors
+25,custom_dialog_box.dart,lib/themes/custom_dialog_box.dart,Custom dialog UI component
+26,responsive.dart,lib/themes/responsive.dart,Responsive UI helper
+27,round_button_border.dart,lib/themes/round_button_border.dart,UI button style
+28,round_button_fill.dart,lib/themes/round_button_fill.dart,UI button style
+29,styles.dart,lib/themes/styles.dart,Text and widget styles
+30,text_field_widget.dart,lib/themes/text_field_widget.dart,Reusable text field widget
+31,splash_screen.dart,lib/app/splash_screen.dart,App splash/loading screen
+32,on_boarding_screen.dart,lib/app/on_boarding_screen.dart,Onboarding UI screen
+33,widget_test.dart,test/widget_test.dart,Widget test file
+34,README.md,README.md,Project documentation
+35,analysis_options.yaml,analysis_options.yaml,Static analysis configuration
+36,api_keys.txt,api_keys.txt,API keys (if used)
+37,key.properties,key.properties,Android signing keys config
+38,devtools_options.yaml,devtools_options.yaml,Devtools configuration
+39,address_add_controller.dart,lib/controllers/address_add_controller.dart,Add address logic
+40,address_list_controller.dart,lib/controllers/address_list_controller.dart,Address list management
+41,advertisement_list_controller.dart,lib/controllers/advertisement_list_controller.dart,Advertisement list logic
+42,cart_controller.dart,lib/controllers/cart_controller.dart,Cart management and logic
+43,category_restaurant_controller.dart,lib/controllers/category_restaurant_controller.dart,Category-based restaurant logic
+44,change_language_controller.dart,lib/controllers/change_language_controller.dart,Language change logic
+45,chat_controller.dart,lib/controllers/chat_controller.dart,Chat functionality
+46,coupon_controller.dart,lib/controllers/coupon_controller.dart,Coupon management
+47,customer_support_controller.dart,lib/controllers/customer_support_controller.dart,Customer support logic
+48,dash_board_controller.dart,lib/controllers/dash_board_controller.dart,Dashboard logic
+49,dine_in_booking_controller.dart,lib/controllers/dine_in_booking_controller.dart,Dine-in booking logic
+50,dine_in_booking_details_controller.dart,lib/controllers/dine_in_booking_details_controller.dart,Dine-in booking details logic
+51,dine_in_controller.dart,lib/controllers/dine_in_controller.dart,Dine-in restaurant logic
+52,dine_in_restaurant_details_controller.dart,lib/controllers/dine_in_restaurant_details_controller.dart,Dine-in restaurant details logic
+53,discount_restaurant_list_controller.dart,lib/controllers/discount_restaurant_list_controller.dart,Discounted restaurant list logic
+54,edit_profile_controller.dart,lib/controllers/edit_profile_controller.dart,Edit profile logic
+55,favourite_controller.dart,lib/controllers/favourite_controller.dart,Favourite items logic
+56,forgot_password_controller.dart,lib/controllers/forgot_password_controller.dart,Forgot password logic
+57,gift_card_controller.dart,lib/controllers/gift_card_controller.dart,Gift card management
+58,gift_cards_model.dart,lib/controllers/gift_cards_model.dart,Gift card data model
+59,global_setting_controller.dart,lib/controllers/global_setting_controller.dart,Global settings logic
+60,history_gift_card_controller.dart,lib/controllers/history_gift_card_controller.dart,Gift card history logic
+61,home_controller.dart,lib/controllers/home_controller.dart,Home screen logic
+62,live_tracking_controller.dart,lib/controllers/live_tracking_controller.dart,Order live tracking logic
+63,location_permission_controller.dart,lib/controllers/location_permission_controller.dart,Location permission logic
+64,map_view_controller.dart,lib/controllers/map_view_controller.dart,Map view logic
+65,my_profile_controller.dart,lib/controllers/my_profile_controller.dart,User profile logic
+66,on_boarding_controller.dart,lib/controllers/on_boarding_controller.dart,Onboarding logic
+67,order_controller.dart,lib/controllers/order_controller.dart,Order management
+68,order_details_controller.dart,lib/controllers/order_details_controller.dart,Order details logic
+69,order_placing_controller.dart,lib/controllers/order_placing_controller.dart,Order placing logic
+70,otp_controller.dart,lib/controllers/otp_controller.dart,OTP logic
+71,phone_number_controller.dart,lib/controllers/phone_number_controller.dart,Phone number logic
+72,rate_product_controller.dart,lib/controllers/rate_product_controller.dart,Product rating logic
+73,redeem_gift_card_controller.dart,lib/controllers/redeem_gift_card_controller.dart,Gift card redemption logic
+74,refer_friend_controller.dart,lib/controllers/refer_friend_controller.dart,Refer a friend logic
+75,restaurant_details_controller.dart,lib/controllers/restaurant_details_controller.dart,Restaurant details logic
+76,restaurant_list_controller.dart,lib/controllers/restaurant_list_controller.dart,Restaurant list logic
+77,review_list_controller.dart,lib/controllers/review_list_controller.dart,Review list logic
+78,scan_qr_code_controller.dart,lib/controllers/scan_qr_code_controller.dart,QR code scanning logic
+79,search_controller.dart,lib/controllers/search_controller.dart,Search logic
+80,signup_controller.dart,lib/controllers/signup_controller.dart,Signup logic
+81,splash_controller.dart,lib/controllers/splash_controller.dart,Splash screen logic
+82,view_all_category_controller.dart,lib/controllers/view_all_category_controller.dart,View all categories logic
+83,wallet_controller.dart,lib/controllers/wallet_controller.dart,Wallet management logic
+// ... existing code ... 

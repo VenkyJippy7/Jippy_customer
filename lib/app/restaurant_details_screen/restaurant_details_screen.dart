@@ -605,16 +605,18 @@ class RestaurantDetailsScreen extends StatelessWidget {
                                           "assets/icons/ic_search.svg"),
                                     ),
                                   ),
+                                  const SizedBox(height: 16), // Add spacing between search bar and filters
                                   Row(
+                                    // mainAxisAlignment: MainAxisAlignment.center,
+                                    // crossAxisAlignment: CrossAxisAlignment.center,
                                     children: [
                                       InkWell(
                                         onTap: () {
-                                          if (controller.isVag.value == true) {
-                                            controller.isVag.value = false;
-                                          } else {
+                                          if (!controller.isVag.value) {
                                             controller.isVag.value = true;
+                                            controller.isNonVag.value = false;
+                                            controller.filterRecord();
                                           }
-                                          controller.filterRecord();
                                         },
                                         child: Container(
                                           padding: const EdgeInsets.symmetric(
@@ -685,13 +687,11 @@ class RestaurantDetailsScreen extends StatelessWidget {
                                       ),
                                       InkWell(
                                         onTap: () {
-                                          if (controller.isNonVag.value ==
-                                              true) {
-                                            controller.isNonVag.value = false;
-                                          } else {
+                                          if (!controller.isNonVag.value) {
                                             controller.isNonVag.value = true;
+                                            controller.isVag.value = false;
+                                            controller.filterRecord();
                                           }
-                                          controller.filterRecord();
                                         },
                                         child: Container(
                                           padding: const EdgeInsets.symmetric(
@@ -1415,42 +1415,44 @@ class ProductListView extends StatelessWidget {
                                 const SizedBox(
                                   height: 5,
                                 ),
-                                InkWell(
-                                  onTap: () {
-                                    showDialog(
-                                      context: context,
-                                      builder: (BuildContext context) {
-                                        return infoDialog(controller,
-                                            themeChange, productModel);
-                                      },
-                                    );
-                                  },
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        Icons.info,
-                                        color: themeChange.getThem()
-                                            ? AppThemeData.secondary300
-                                            : AppThemeData.secondary300,
-                                        size: 18,
-                                      ),
-                                      const SizedBox(
-                                        width: 8,
-                                      ),
-                                      Text(
-                                        "Info".tr,
-                                        maxLines: 2,
-                                        style: TextStyle(
-                                          overflow: TextOverflow.ellipsis,
-                                          fontSize: 16,
+                                Visibility(
+                                  visible: false,
+                                  child: InkWell(
+                                    onTap: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return infoDialog(controller, themeChange, productModel);
+                                        },
+                                      );
+                                    },
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.info,
                                           color: themeChange.getThem()
                                               ? AppThemeData.secondary300
                                               : AppThemeData.secondary300,
-                                          fontFamily: AppThemeData.regular,
-                                          fontWeight: FontWeight.w400,
+                                          size: 18,
                                         ),
-                                      ),
-                                    ],
+                                        const SizedBox(
+                                          width: 8,
+                                        ),
+                                        Text(
+                                          "Info".tr,
+                                          maxLines: 2,
+                                          style: TextStyle(
+                                            overflow: TextOverflow.ellipsis,
+                                            fontSize: 16,
+                                            color: themeChange.getThem()
+                                                ? AppThemeData.secondary300
+                                                : AppThemeData.secondary300,
+                                            fontFamily: AppThemeData.regular,
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ],

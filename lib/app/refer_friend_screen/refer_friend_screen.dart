@@ -50,7 +50,7 @@ class ReferFriendScreen extends StatelessWidget {
                                 const SizedBox(
                                   height: 60,
                                 ),
-                                Center(child: Image.asset("assets/images/ic_launcher.png")),
+                                Center(child: Image.asset("assets/images/ic_logo.png")),
                                 const SizedBox(
                                   height: 10,
                                 ),

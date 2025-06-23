@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:customer/app/splash_screen.dart';
 import 'package:customer/constant/constant.dart';
@@ -12,28 +13,31 @@ import 'package:customer/themes/styles.dart';
 import 'package:customer/utils/dark_theme_provider.dart';
 import 'package:customer/utils/preferences.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
 
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+  log('App startup: Initializing Firebase...');
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  // Log App Check enforcement status (manual flag, update as needed)
+  const bool appCheckEnforced = false; // Set to true if enforced in Firebase Console
+  log('App Check: Enforcement is ${appCheckEnforced ? 'ENABLED' : 'DISABLED'}');
   try {
-    // Initialize Firebase
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
+    log('App Check: Activating...');
+    await FirebaseAppCheck.instance.activate(
+      androidProvider: AndroidProvider.playIntegrity,
     );
+    log('App Check: Activated successfully.');
   } catch (e) {
-    if (e.toString().contains('duplicate-app')) {
-      // Firebase is already initialized, continue
-    } else {
-      rethrow;
-    }
+    log('App Check: Activation failed: $e');
   }
 
   // Initialize other services
@@ -44,14 +48,6 @@ void main() async {
     alert: true,
     badge: true,
     sound: true,
-  );
-
-  // Initialize Firebase App Check
-  await FirebaseAppCheck.instance.activate(
-    // Use Play Integrity provider for Android
-    androidProvider: AndroidProvider.playIntegrity,
-    // Use Device Check provider for iOS
-    appleProvider: AppleProvider.deviceCheck,
   );
 
   runApp(
