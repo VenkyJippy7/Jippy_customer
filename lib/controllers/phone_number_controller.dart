@@ -16,13 +16,12 @@ class PhoneNumberController extends GetxController {
   sendCode() async {
     final rawNumber = phoneNUmberEditingController.value.text.trim();
     final countryCode = countryCodeEditingController.value.text.trim();
-    print('DEBUG: rawNumber="' + rawNumber + '", countryCode="' + countryCode + '"');
     // Only allow 10-digit numbers for India
     if (countryCode != '+91' || rawNumber.length != 10 || !RegExp(r'^[0-9]{10}$').hasMatch(rawNumber)) {
       ShowToastDialog.showToast('Please enter a valid 10-digit Indian mobile number.');
       return;
     }
-    final e164Number = '+91$rawNumber';
+    final e164Number = '+91' + rawNumber;
     try {
       ShowToastDialog.showLoader("Please wait".tr);
       
@@ -43,6 +42,7 @@ class PhoneNumberController extends GetxController {
         codeSent: (String verificationId, int? resendToken) {
           ShowToastDialog.closeLoader();
           this.verificationId = verificationId;
+          print('Navigating to OtpScreen with verificationId: ' + verificationId);
           Get.to(() => const OtpScreen(), arguments: {
             "countryCode": countryCode,
             "phoneNumber": rawNumber,
@@ -65,7 +65,12 @@ class PhoneNumberController extends GetxController {
       final UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
       if (userCredential.user != null) {
         // Handle successful sign in
-        Get.offAll(() => const OtpScreen());
+        print('Auto sign-in: Navigating to OtpScreen with verificationId: ' + (this.verificationId ?? 'null'));
+        Get.offAll(() => const OtpScreen(), arguments: {
+          "countryCode": countryCodeEditingController.value.text.trim(),
+          "phoneNumber": phoneNUmberEditingController.value.text.trim(),
+          "verificationId": this.verificationId ?? '',
+        });
       }
     } catch (e) {
       ShowToastDialog.showToast("Failed to sign in with phone number".tr);

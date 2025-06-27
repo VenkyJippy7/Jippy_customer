@@ -1848,4 +1848,12 @@ class FireStoreUtils {
     });
     return advertisementModel;
   }
+
+  static Future<void> setUsedCoupon({required String userId, required String couponId}) async {
+    await fireStore.collection('used_coupons').add({
+      'userId': userId,
+      'couponId': couponId,
+      'usedAt': Timestamp.now(),
+    });
+  }
 }

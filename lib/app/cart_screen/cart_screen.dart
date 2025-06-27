@@ -28,9 +28,25 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'dart:developer' as dev;
+import 'package:customer/models/coupon_model.dart';
 
-class CartScreen extends StatelessWidget {
-  const CartScreen({super.key});
+class CartScreen extends StatefulWidget {
+  const CartScreen({Key? key}) : super(key: key);
+
+  @override
+  _CartScreenState createState() => _CartScreenState();
+}
+
+class _CartScreenState extends State<CartScreen> {
+  late CartController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = Get.put(CartController());
+    // Preload coupon data when the cart screen is opened
+    controller.getCartData();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -958,7 +974,11 @@ class CartScreen extends StatelessWidget {
                                 height: 10,
                               ),
                               InkWell(
-                                onTap: () {
+                                onTap: () async {
+                                  // Show loading indicator while fetching coupons
+                                  ShowToastDialog.showLoader("Loading coupons...");
+                                  await controller.getCartData();
+                                  ShowToastDialog.closeLoader();
                                   Get.to(const CouponListScreen());
                                 },
                                 child: Container(
@@ -1158,6 +1178,38 @@ class CartScreen extends StatelessWidget {
                                       const SizedBox(
                                         height: 10,
                                       ),
+                                      Row(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              "Platform Fee".tr,
+                                              textAlign: TextAlign.start,
+                                              style: TextStyle(
+                                                fontFamily: AppThemeData.regular,
+                                                color: themeChange.getThem()
+                                                    ? AppThemeData.grey300
+                                                    : AppThemeData.grey600,
+                                                fontSize: 16,
+                                              ),
+                                            ),
+                                          ),
+                                          Text(
+                                            '15.00',
+                                            textAlign: TextAlign.start,
+                                            style: TextStyle(
+                                              fontFamily: AppThemeData.regular,
+                                              color: AppThemeData.danger300,
+                                              fontSize: 16,
+                                              decoration: TextDecoration.lineThrough,
+                                              decorationColor: AppThemeData.danger300,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
                                       MySeparator(
                                           color: themeChange.getThem()
                                               ? AppThemeData.grey700
@@ -1166,8 +1218,7 @@ class CartScreen extends StatelessWidget {
                                         height: 10,
                                       ),
                                       Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           Expanded(
                                             child: Text(
@@ -1183,16 +1234,41 @@ class CartScreen extends StatelessWidget {
                                               ),
                                             ),
                                           ),
-                                          Text(
-                                            "- (${Constant.amountShow(amount: controller.couponAmount.value.toString())})",
-                                            textAlign: TextAlign.start,
-                                            style: TextStyle(
-                                              fontFamily: AppThemeData.regular,
-                                              color: themeChange.getThem()
-                                                  ? AppThemeData.danger300
-                                                  : AppThemeData.danger300,
-                                              fontSize: 16,
-                                            ),
+                                          Row(
+                                            children: [
+                                              Text(
+                                                "- (" + Constant.amountShow(amount: controller.couponAmount.value.toString()) + ")",
+                                                textAlign: TextAlign.start,
+                                                style: TextStyle(
+                                                  fontFamily: AppThemeData.regular,
+                                                  color: themeChange.getThem()
+                                                      ? AppThemeData.danger300
+                                                      : AppThemeData.danger300,
+                                                  fontSize: 16,
+                                                ),
+                                              ),
+                                              controller.selectedCouponModel.value.id != null && controller.selectedCouponModel.value.id!.isNotEmpty
+                                                  ? Padding(
+                                                      padding: const EdgeInsets.only(left: 8.0),
+                                                      child: InkWell(
+                                                        onTap: () {
+                                                          controller.selectedCouponModel.value = CouponModel();
+                                                          controller.couponCodeController.value.text = '';
+                                                          controller.calculatePrice();
+                                                        },
+                                                        child: Text(
+                                                          "Remove",
+                                                          style: TextStyle(
+                                                            color: AppThemeData.danger300,
+                                                            fontFamily: AppThemeData.medium,
+                                                            fontSize: 14,
+                                                            decoration: TextDecoration.underline,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    )
+                                                  : SizedBox.shrink(),
+                                            ],
                                           ),
                                         ],
                                       ),
@@ -1367,7 +1443,7 @@ class CartScreen extends StatelessWidget {
                                               children: [
                                                 Expanded(
                                                   child: Text(
-                                                    "${taxModel.title.toString()} (${taxModel.type == "fix" ? Constant.amountShow(amount: taxModel.tax) : "${taxModel.tax}%"})",
+                                                    "Taxes & Charges",
                                                     textAlign: TextAlign.start,
                                                     style: TextStyle(
                                                       fontFamily:

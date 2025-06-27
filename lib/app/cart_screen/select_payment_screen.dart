@@ -123,7 +123,7 @@ class SelectPaymentScreen extends StatelessWidget {
                       child: Column(
                         children: [
                           Visibility(
-                            visible: controller.flutterWaveModel.value.isEnable == true,
+                            visible: false,
                             child: cardDecoration(controller, PaymentGateway.stripe, themeChange, "assets/images/stripe.png"),
                           ),
                           Visibility(
@@ -139,11 +139,11 @@ class SelectPaymentScreen extends StatelessWidget {
                             child: cardDecoration(controller, PaymentGateway.mercadoPago, themeChange, "assets/images/mercado-pago.png"),
                           ),
                           Visibility(
-                            visible: controller.flutterWaveModel.value.isEnable == true,
+                            visible: false,
                             child: cardDecoration(controller, PaymentGateway.flutterWave, themeChange, "assets/images/flutterwave_logo.png"),
                           ),
                           Visibility(
-                            visible: controller.payFastModel.value.isEnable == true,
+                            visible: false,
                             child: cardDecoration(controller, PaymentGateway.payFast, themeChange, "assets/images/payfast.png"),
                           ),
                           Visibility(

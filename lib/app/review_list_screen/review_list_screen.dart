@@ -164,7 +164,7 @@ class ReviewListScreen extends StatelessWidget {
                                                   }),
                                               RatingBar.builder(
                                                 ignoreGestures: true,
-                                                initialRating: value == null ? 0.0 : value ?? 0.0,
+                                                initialRating: value == null ? 0.0 : (value is num ? value.toDouble() : 0.0),
                                                 minRating: 1,
                                                 direction: Axis.horizontal,
                                                 itemCount: 5,

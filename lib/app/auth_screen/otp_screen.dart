@@ -26,7 +26,7 @@ class OtpScreen extends StatefulWidget {
 }
 
 class _OtpScreenState extends State<OtpScreen> {
-  late TextEditingController otpController;
+  late TextEditingController? otpController;
   late OtpController controller;
 
   @override
@@ -38,7 +38,10 @@ class _OtpScreenState extends State<OtpScreen> {
 
   @override
   void dispose() {
-    otpController.dispose();
+    // Debug: Confirm controller disposal
+    print('OtpScreen disposed, disposing otpController');
+    otpController?.dispose();
+    otpController = null;
     super.dispose();
   }
 
@@ -135,13 +138,28 @@ class _OtpScreenState extends State<OtpScreen> {
                         textColor: AppThemeData.grey50,
                         onPress: () async {
                           _unfocus();
-                          if (otpController.text.length == 6) {
+                          // Defensive: Check for disposed controller
+                          if (otpController == null) return;
+                          // Defensive: Check for empty verificationId
+                          if (controller.verificationId.value.isEmpty) {
+                            ShowToastDialog.showToast("Verification ID is missing. Please try again.");
+                            return;
+                          }
+                          if (otpController!.text.trim().length == 6) {
                             ShowToastDialog.showLoader("Verify otp".tr);
-
+                            // Debug: Print verificationId and OTP
+                            print('Verifying with verificationId: \\${controller.verificationId.value}, otp: \\${otpController!.text.trim()}');
+                            try {
+                              // Defensive: Check for both values
+                              if (controller.verificationId.value.isEmpty || otpController!.text.trim().isEmpty) {
+                                ShowToastDialog.showToast("Missing OTP or verification ID. Please try again.");
+                                return;
+                              }
                             PhoneAuthCredential credential =
-                                PhoneAuthProvider.credential(verificationId: controller.verificationId.value, smsCode: otpController.text);
+                                  PhoneAuthProvider.credential(verificationId: controller.verificationId.value, smsCode: otpController!.text.trim());
                             String fcmToken = await NotificationService.getToken();
                             await FirebaseAuth.instance.signInWithCredential(credential).then((value) async {
+                                if (!mounted) return; // Prevent using disposed widget
                               if (value.additionalUserInfo!.isNewUser) {
                                 UserModel userModel = UserModel();
                                 userModel.id = value.user!.uid;
@@ -156,7 +174,8 @@ class _OtpScreenState extends State<OtpScreen> {
                                   "userModel": userModel,
                                   "type": "mobileNumber",
                                 });
-                              
+                                } else {
+                                  // Existing user logic (unchanged)
                                 await FireStoreUtils.userExistOrNot(value.user!.uid).then((userExit) async {
                                   ShowToastDialog.closeLoader();
                                   if (userExit == true) {
@@ -177,7 +196,7 @@ class _OtpScreenState extends State<OtpScreen> {
                                           _unfocus();
                                           Get.offAll(const LocationPermissionScreen());
                                         }
-                                      
+                                        } else {
                                         ShowToastDialog.showToast("This user is disable please contact to administrator".tr);
                                         await FirebaseAuth.instance.signOut();
                                         _unfocus();
@@ -204,10 +223,13 @@ class _OtpScreenState extends State<OtpScreen> {
                                   }
                                 });
                               }
-                            }).catchError((error) {
+                              });
+                            } catch (error) {
+                              // Debug: Log the actual error
+                              print('FirebaseAuthException: \\${error.toString()}');
                               ShowToastDialog.closeLoader();
                               ShowToastDialog.showToast("Invalid Code".tr);
-                            });
+                            }
                           } else {
                             ShowToastDialog.showToast("Enter Valid otp".tr);
                           }
@@ -230,7 +252,7 @@ class _OtpScreenState extends State<OtpScreen> {
                             TextSpan(
                               recognizer: TapGestureRecognizer()
                                 ..onTap = () {
-                                  otpController.clear();
+                                  otpController?.clear();
                                   controller.sendOTP();
                                 },
                               text: 'Send Again'.tr,

@@ -1951,13 +1951,11 @@ class NewArrival extends StatelessWidget {
                       vendorModel.title.toString(),
                       textAlign: TextAlign.start,
                       maxLines: 1,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 16,
                         overflow: TextOverflow.ellipsis,
                         fontFamily: AppThemeData.semiBold,
-                        color: themeChange.getThem()
-                            ? AppThemeData.grey50
-                            : AppThemeData.grey50,
+                        color: Colors.black,
                       ),
                     ),
                     SingleChildScrollView(
@@ -1979,13 +1977,11 @@ class NewArrival extends StatelessWidget {
                                   "Free Delivery",
                                   textAlign: TextAlign.start,
                                   maxLines: 1,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     overflow: TextOverflow.ellipsis,
                                     fontFamily: AppThemeData.medium,
                                     fontWeight: FontWeight.w500,
-                                    color: themeChange.getThem()
-                                        ? AppThemeData.grey400
-                                        : AppThemeData.grey400,
+                                    color: Colors.black,
                                   ),
                                 ),
                                 const SizedBox(
@@ -2008,13 +2004,11 @@ class NewArrival extends StatelessWidget {
                                 "${Constant.calculateReview(reviewCount: vendorModel.reviewsCount.toString(), reviewSum: vendorModel.reviewsSum.toString())} (${vendorModel.reviewsCount!.toStringAsFixed(0)})",
                                 textAlign: TextAlign.start,
                                 maxLines: 1,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   overflow: TextOverflow.ellipsis,
                                   fontFamily: AppThemeData.medium,
                                   fontWeight: FontWeight.w500,
-                                  color: themeChange.getThem()
-                                      ? AppThemeData.grey400
-                                      : AppThemeData.grey400,
+                                  color: Colors.black,
                                 ),
                               ),
                             ],
@@ -2042,13 +2036,11 @@ class NewArrival extends StatelessWidget {
                                 )} ${Constant.distanceType}",
                                 textAlign: TextAlign.start,
                                 maxLines: 1,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   overflow: TextOverflow.ellipsis,
                                   fontFamily: AppThemeData.medium,
                                   fontWeight: FontWeight.w500,
-                                  color: themeChange.getThem()
-                                      ? AppThemeData.grey400
-                                      : AppThemeData.grey400,
+                                  color: Colors.black,
                                 ),
                               ),
                             ],
@@ -2060,13 +2052,11 @@ class NewArrival extends StatelessWidget {
                       vendorModel.location.toString(),
                       textAlign: TextAlign.start,
                       maxLines: 1,
-                      style: TextStyle(
+                      style: const TextStyle(
                         overflow: TextOverflow.ellipsis,
                         fontFamily: AppThemeData.medium,
                         fontWeight: FontWeight.w500,
-                        color: themeChange.getThem()
-                            ? AppThemeData.grey400
-                            : AppThemeData.grey400,
+                        color: Colors.black,
                       ),
                     )
                   ],

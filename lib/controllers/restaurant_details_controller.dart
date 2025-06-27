@@ -168,6 +168,15 @@ class RestaurantDetailsController extends GetxController {
           couponList.value = value;
         },
       );
+      // Fetch global coupons (resturant_id: 'ALL', null, or empty)
+      await FireStoreUtils.getHomeCoupon().then((globalCoupons) {
+        final filteredGlobalCoupons = globalCoupons.where((c) =>
+          c.resturantId == null ||
+          c.resturantId == '' ||
+          c.resturantId?.toUpperCase() == 'ALL'
+        ).toList();
+        couponList.addAll(filteredGlobalCoupons.where((g) => !couponList.any((c) => c.id == g.id)));
+      });
     }
     await getAttributeData();
     update();

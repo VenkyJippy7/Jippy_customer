@@ -70,6 +70,17 @@ class CartProvider with ChangeNotifier {
     _initCart();
   }
 
+  // Helper to compare two lists (order and content)
+  bool _listEquals(List<dynamic>? a, List<dynamic>? b) {
+    if (a == null && b == null) return true;
+    if (a == null || b == null) return false;
+    if (a.length != b.length) return false;
+    for (int i = 0; i < a.length; i++) {
+      if (a[i] != b[i]) return false;
+    }
+    return true;
+  }
+
   Future<void> removeFromCart(CartProductModel product, int quantity) async {
     _cartItems = await DatabaseHelper.instance.fetchCartProducts();
     var index = _cartItems.indexWhere((item) => item.id == product.id);

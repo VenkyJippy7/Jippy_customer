@@ -19,9 +19,30 @@ class CouponListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeChange = Provider.of<DarkThemeProvider>(context);
-    return GetX(
+    return GetX<CartController>(
         init: CartController(),
         builder: (controller) {
+          // Show loading indicator if couponList is empty and cart is still loading
+          if (controller.couponList.isEmpty) {
+            return Scaffold(
+              backgroundColor: themeChange.getThem() ? AppThemeData.surfaceDark : AppThemeData.surface,
+              appBar: AppBar(
+                backgroundColor: themeChange.getThem() ? AppThemeData.surfaceDark : AppThemeData.surface,
+                centerTitle: false,
+                titleSpacing: 0,
+                title: Text(
+                  "Coupon Code".tr,
+                  textAlign: TextAlign.start,
+                  style: TextStyle(
+                    fontFamily: AppThemeData.medium,
+                    fontSize: 16,
+                    color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900,
+                  ),
+                ),
+              ),
+              body: const Center(child: CircularProgressIndicator()),
+            );
+          }
           return Scaffold(
             backgroundColor: themeChange.getThem() ? AppThemeData.surfaceDark : AppThemeData.surface,
             appBar: AppBar(
@@ -48,8 +69,14 @@ class CouponListScreen extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                       child: InkWell(
                         onTap: () {
-                          if (controller.allCouponList.where((p0) => p0.code!.toLowerCase() == controller.couponCodeController.value.text.toLowerCase()).isNotEmpty) {
-                            CouponModel element = controller.allCouponList.firstWhere((p0) => p0.code!.toLowerCase() == controller.couponCodeController.value.text.toLowerCase());
+                          final enteredCode = controller.couponCodeController.value.text.toLowerCase();
+                          final found = controller.allCouponList.where((p0) => p0.code!.toLowerCase() == enteredCode);
+                          if (found.isNotEmpty) {
+                            CouponModel element = found.first;
+                            if (element.isEnabled == false) {
+                              ShowToastDialog.showToast("You have already used this coupon".tr);
+                              return;
+                            }
                             controller.selectedCouponModel.value = element;
                             controller.calculatePrice();
                             Get.back();
@@ -82,7 +109,9 @@ class CouponListScreen extends StatelessWidget {
                   child: Container(
                     height: Responsive.height(16, context),
                     decoration: ShapeDecoration(
-                      color: themeChange.getThem() ? AppThemeData.grey900 : AppThemeData.grey50,
+                      color: couponModel.isEnabled == false
+                          ? (themeChange.getThem() ? AppThemeData.grey800 : AppThemeData.grey200)
+                          : (themeChange.getThem() ? AppThemeData.grey900 : AppThemeData.grey50),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     ),
                     child: Row(
@@ -127,9 +156,11 @@ class CouponListScreen extends StatelessWidget {
                                   children: [
                                     DottedBorder(
                                       options: RoundedRectDottedBorderOptions(
-                                        color: themeChange.getThem() ? AppThemeData.grey400 : AppThemeData.grey500,
+                                        color: couponModel.isEnabled == false
+                                            ? (themeChange.getThem() ? AppThemeData.grey600 : AppThemeData.grey400)
+                                            : (themeChange.getThem() ? AppThemeData.grey400 : AppThemeData.grey500),
                                         strokeWidth: 1,
-                                        radius: const Radius.circular(12),
+                                        radius: const Radius.circular(6),
                                         dashPattern: const [6, 6],
                                       ),
                                       child: Padding(
@@ -140,33 +171,52 @@ class CouponListScreen extends StatelessWidget {
                                           style: TextStyle(
                                             fontFamily: AppThemeData.semiBold,
                                             fontSize: 16,
-                                            color: themeChange.getThem() ? AppThemeData.grey400 : AppThemeData.grey500,
+                                            color: couponModel.isEnabled == false
+                                                ? (themeChange.getThem() ? AppThemeData.grey600 : AppThemeData.grey400)
+                                                : (themeChange.getThem() ? AppThemeData.grey400 : AppThemeData.grey500),
                                           ),
                                         ),
                                       ),
                                     ),
-                                    const Expanded(
-                                        child: SizedBox(
-                                      height: 10,
-                                    )),
+                                    const SizedBox(width: 8),
+                                    if (couponModel.isEnabled == false)
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                        decoration: BoxDecoration(
+                                          color: themeChange.getThem() ? AppThemeData.grey700 : AppThemeData.grey300,
+                                          borderRadius: BorderRadius.circular(6),
+                                        ),
+                                        child: Text(
+                                          "Used",
+                                          style: TextStyle(
+                                            color: themeChange.getThem() ? AppThemeData.grey200 : AppThemeData.grey800,
+                                            fontFamily: AppThemeData.medium,
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                      ),
+                                    const Expanded(child: SizedBox(height: 10)),
                                     InkWell(
-                                      onTap: () {
-                                        double couponAmount = Constant.calculateDiscount(amount: controller.subTotal.value.toString(), offerModel: couponModel);
-
-                                        if (couponAmount < controller.subTotal.value) {
-                                          controller.selectedCouponModel.value = couponModel;
-                                          controller.calculatePrice();
-                                          Get.back();
-                                        } else {
-                                          ShowToastDialog.showToast("Coupon code not applied".tr);
-                                        }
-                                      },
+                                      onTap: couponModel.isEnabled == false
+                                          ? null
+                                          : () {
+                                              double couponAmount = Constant.calculateDiscount(amount: controller.subTotal.value.toString(), offerModel: couponModel);
+                                              if (couponAmount < controller.subTotal.value) {
+                                                controller.selectedCouponModel.value = couponModel;
+                                                controller.calculatePrice();
+                                                Get.back();
+                                              } else {
+                                                ShowToastDialog.showToast("Coupon code not applied".tr);
+                                              }
+                                            },
                                       child: Text(
-                                        "Tap To Apply".tr,
+                                        couponModel.isEnabled == false ? "Used" : "Tap To Apply".tr,
                                         textAlign: TextAlign.start,
                                         style: TextStyle(
                                           fontFamily: AppThemeData.medium,
-                                          color: themeChange.getThem() ? AppThemeData.primary300 : AppThemeData.primary300,
+                                          color: couponModel.isEnabled == false
+                                              ? (themeChange.getThem() ? AppThemeData.grey600 : AppThemeData.grey400)
+                                              : (themeChange.getThem() ? AppThemeData.primary300 : AppThemeData.primary300),
                                         ),
                                       ),
                                     ),

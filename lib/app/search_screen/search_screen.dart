@@ -60,9 +60,7 @@ class SearchScreen extends StatelessWidget {
                 ),
               ),
             ),
-            body: controller.isLoading.value
-                ? Constant.loader()
-                : Padding(
+            body: Padding(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 16, vertical: 10),
                     child: SingleChildScrollView(
@@ -124,8 +122,7 @@ class SearchScreen extends StatelessWidget {
                                             ClipRRect(
                                               borderRadius:
                                                   const BorderRadius.only(
-                                                      topLeft:
-                                                          Radius.circular(16),
+                                                topLeft: Radius.circular(16),
                                                       topRight:
                                                           Radius.circular(16)),
                                               child: Stack(
@@ -372,8 +369,7 @@ class SearchScreen extends StatelessWidget {
                                                 maxLines: 1,
                                                 style: TextStyle(
                                                   fontSize: 18,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
+                                            overflow: TextOverflow.ellipsis,
                                                   fontFamily:
                                                       AppThemeData.semiBold,
                                                   color: themeChange.getThem()
@@ -386,10 +382,8 @@ class SearchScreen extends StatelessWidget {
                                                 textAlign: TextAlign.start,
                                                 maxLines: 1,
                                                 style: TextStyle(
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  fontFamily:
-                                                      AppThemeData.medium,
+                                            overflow: TextOverflow.ellipsis,
+                                            fontFamily: AppThemeData.medium,
                                                   fontWeight: FontWeight.w500,
                                                   color: themeChange.getThem()
                                                       ? AppThemeData.grey400
@@ -444,7 +438,7 @@ class SearchScreen extends StatelessWidget {
                                   builder: (context, snapshot) {
                                     if (snapshot.connectionState ==
                                         ConnectionState.waiting) {
-                                      return Constant.loader();
+                                return SizedBox.shrink();
                                     } else {
                                       if (snapshot.hasError) {
                                         return Center(

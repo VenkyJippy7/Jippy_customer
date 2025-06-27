@@ -4,7 +4,6 @@ import 'package:customer/app/order_list_screen/order_details_screen.dart';
 import 'package:customer/constant/constant.dart';
 import 'package:customer/constant/show_toast_dialog.dart';
 import 'package:customer/controllers/order_controller.dart';
-import 'package:customer/models/cart_product_model.dart';
 import 'package:customer/models/order_model.dart';
 import 'package:customer/themes/app_them_data.dart';
 import 'package:customer/themes/responsive.dart';
@@ -58,7 +57,7 @@ class OrderScreen extends StatelessWidget {
                                 height: 5,
                               ),
                               Text(
-                                "You’re not logged in. Please sign in to access your account and explore all features."
+                                "You're not logged in. Please sign in to access your account and explore all features."
                                     .tr,
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
@@ -438,52 +437,33 @@ class OrderScreen extends StatelessWidget {
               const SizedBox(
                 height: 10,
               ),
-              ListView.builder(
-                itemCount: orderModel.products!.length,
-                shrinkWrap: true,
-                padding: EdgeInsets.zero,
-                physics: const NeverScrollableScrollPhysics(),
-                itemBuilder: (context, index) {
-                  CartProductModel cartProduct = orderModel.products![index];
-                  return Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          "${cartProduct.quantity} x ${cartProduct.name.toString()}",
-                          style: TextStyle(
-                            color: themeChange.getThem()
-                                ? AppThemeData.grey50
-                                : AppThemeData.grey900,
-                            fontFamily: AppThemeData.regular,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      "Total to Pay",
+                      style: TextStyle(
+                        color: themeChange.getThem()
+                            ? AppThemeData.grey50
+                            : AppThemeData.grey900,
+                        fontFamily: AppThemeData.semiBold,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
                       ),
-                      Text(
-                        Constant.amountShow(
-                            amount: double.parse(
-                                        cartProduct.discountPrice.toString()) <=
-                                    0
-                                ? (double.parse('${cartProduct.price ?? 0}') *
-                                        double.parse(
-                                            '${cartProduct.quantity ?? 0}'))
-                                    .toString()
-                                : (double.parse(
-                                            '${cartProduct.discountPrice ?? 0}') *
-                                        double.parse(
-                                            '${cartProduct.quantity ?? 0}'))
-                                    .toString()),
-                        style: TextStyle(
-                          color: themeChange.getThem()
-                              ? AppThemeData.grey50
-                              : AppThemeData.grey900,
-                          fontFamily: AppThemeData.semiBold,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      )
-                    ],
-                  );
-                },
+                    ),
+                  ),
+                  Text(
+                    Constant.amountShow(amount: calculateOrderTotal(orderModel).toString()),
+                    style: TextStyle(
+                      color: themeChange.getThem()
+                          ? AppThemeData.primary300
+                          : AppThemeData.primary300,
+                      fontFamily: AppThemeData.semiBold,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 14),
@@ -492,6 +472,55 @@ class OrderScreen extends StatelessWidget {
                         ? AppThemeData.grey700
                         : AppThemeData.grey200),
               ),
+              ///////////
+
+              // ListView.builder(
+              //   itemCount: orderModel.products!.length,
+              //   shrinkWrap: true,
+              //   padding: EdgeInsets.zero,
+              //   physics: const NeverScrollableScrollPhysics(),
+              //   itemBuilder: (context, index) {
+              //     CartProductModel cartProduct = orderModel.products![index];
+              //     return Row(
+              //       children: [
+              //         Expanded(
+              //           child: Text(
+              //             "${cartProduct.quantity} x ${cartProduct.name.toString()}",
+              //             style: TextStyle(
+              //               color: themeChange.getThem()
+              //                   ? AppThemeData.grey50
+              //                   : AppThemeData.grey900,
+              //               fontFamily: AppThemeData.regular,
+              //               fontWeight: FontWeight.w400,
+              //             ),
+              //           ),
+              //         ),
+              //         Text(
+              //           Constant.amountShow(
+              //               amount: double.parse(
+              //                           cartProduct.discountPrice.toString()) <=
+              //                       0
+              //                   ? (double.parse('${cartProduct.price ?? 0}') *
+              //                           double.parse(
+              //                               '${cartProduct.quantity ?? 0}'))
+              //                       .toString()
+              //                   : (double.parse(
+              //                               '${cartProduct.discountPrice ?? 0}') *
+              //                           double.parse(
+              //                               '${cartProduct.quantity ?? 0}'))
+              //                       .toString()),
+              //           style: TextStyle(
+              //             color: themeChange.getThem()
+              //                 ? AppThemeData.grey50
+              //                 : AppThemeData.grey900,
+              //             fontFamily: AppThemeData.semiBold,
+              //             fontWeight: FontWeight.w500,
+              //           ),
+              //         )
+              //       ],
+              //     );
+              //   },
+              ///////
               Row(
                 children: [
                   orderModel.status == Constant.orderCompleted
@@ -569,5 +598,45 @@ class OrderScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  // Helper function to calculate the 'To Pay' value for an order
+  double calculateOrderTotal(OrderModel order) {
+    double subTotal = 0.0;
+    double specialDiscountAmount = 0.0;
+    double taxAmount = 0.0;
+    double totalAmount = 0.0;
+
+    if (order.products != null) {
+      for (var element in order.products!) {
+        if (double.parse(element.discountPrice.toString()) <= 0) {
+          subTotal = subTotal +
+              double.parse(element.price.toString()) * double.parse(element.quantity.toString()) +
+              (double.parse(element.extrasPrice.toString()) * double.parse(element.quantity.toString()));
+        } else {
+          subTotal = subTotal +
+              double.parse(element.discountPrice.toString()) * double.parse(element.quantity.toString()) +
+              (double.parse(element.extrasPrice.toString()) * double.parse(element.quantity.toString()));
+        }
+      }
+    }
+
+    if (order.specialDiscount != null && order.specialDiscount!['special_discount'] != null) {
+      specialDiscountAmount = double.parse(order.specialDiscount!['special_discount'].toString());
+    }
+
+    if (order.taxSetting != null) {
+      for (var element in order.taxSetting!) {
+        taxAmount = taxAmount +
+            Constant.calculateTax(amount: (subTotal - double.parse(order.discount.toString()) - specialDiscountAmount).toString(), taxModel: element);
+      }
+    }
+
+    totalAmount = (subTotal - double.parse(order.discount.toString()) - specialDiscountAmount) +
+        taxAmount +
+        double.parse(order.deliveryCharge.toString()) +
+        double.parse(order.tipAmount.toString());
+
+    return totalAmount;
   }
 }

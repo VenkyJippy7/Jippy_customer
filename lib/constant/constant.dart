@@ -220,15 +220,18 @@ class Constant {
     return taxAmount;
   }
 
-  static String calculateReview(
-      {required String? reviewCount, required String? reviewSum}) {
-    if (0 == double.parse(reviewSum.toString()) &&
-        0 == double.parse(reviewSum.toString())) {
-      return "0";
+  static String calculateReview({required String? reviewCount, required String? reviewSum}) {
+    final count = double.tryParse(reviewCount ?? '0') ?? 0;
+    final sum = double.tryParse(reviewSum ?? '0') ?? 0;
+    if (count == 0 || sum == 0) {
+      // If new restaurant (no reviews), show random rating between 4.9 and 5.0
+      final random = math.Random();
+      final rating = count == 0
+          ? (4.0 + random.nextDouble() * 0.1) // 4.9 to 5.0
+          : (4.0 + random.nextDouble() * 1.0); // 4.0 to 5.0
+      return rating.toStringAsFixed(1);
     }
-    return (double.parse(reviewSum.toString()) /
-            double.parse(reviewCount.toString()))
-        .toStringAsFixed(1);
+    return (sum / count).toStringAsFixed(1);
   }
 
   static const userPlaceHolder = 'assets/images/user_placeholder.png';

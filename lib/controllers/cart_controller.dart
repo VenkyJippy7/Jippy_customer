@@ -133,8 +133,7 @@ class CartController extends GetxController {
       },
     );
 
-    await FireStoreUtils.getAllVendorPublicCoupons(
-            vendorModel.value.id.toString())
+    await FireStoreUtils.getAllVendorPublicCoupons(vendorModel.value.id.toString())
         .then(
       (value) {
         couponList.value = value;
@@ -147,6 +146,34 @@ class CartController extends GetxController {
         allCouponList.value = value;
       },
     );
+
+    // Fetch global coupons (resturant_id: 'ALL', null, or empty)
+    await FireStoreUtils.getHomeCoupon().then((globalCoupons) {
+      // Filter for coupons where resturant_id is 'ALL', null, or empty
+      final filteredGlobalCoupons = globalCoupons.where((c) =>
+        c.resturantId == null ||
+        c.resturantId == '' ||
+        c.resturantId?.toUpperCase() == 'ALL'
+      ).toList();
+      // Add to both lists if not already present
+      couponList.addAll(filteredGlobalCoupons.where((g) => !couponList.any((c) => c.id == g.id)));
+      allCouponList.addAll(filteredGlobalCoupons.where((g) => !allCouponList.any((c) => c.id == g.id)));
+    });
+
+    // Fetch used coupons for the current user
+    final usedCouponsSnapshot = await FirebaseFirestore.instance
+        .collection('used_coupons')
+        .where('userId', isEqualTo: FireStoreUtils.getCurrentUid())
+        .get();
+    final usedCouponIds = usedCouponsSnapshot.docs.map((doc) => doc['couponId'] as String).toSet();
+
+    // Mark used coupons in both lists
+    for (var coupon in couponList) {
+      coupon.isEnabled = !usedCouponIds.contains(coupon.id);
+    }
+    for (var coupon in allCouponList) {
+      coupon.isEnabled = !usedCouponIds.contains(coupon.id);
+    }
   }
 
   calculatePrice() async {
@@ -438,6 +465,10 @@ class CartController extends GetxController {
     await FireStoreUtils.setOrder(orderModel).then(
       (value) async {
         ShowToastDialog.closeLoader();
+        // Record used coupon for this user if a coupon was used
+        if (orderModel.couponId != null && orderModel.couponId!.isNotEmpty) {
+          await markCouponAsUsed(orderModel.couponId!);
+        }
         await FireStoreUtils.getUserProfile(
                 orderModel.vendor!.author.toString())
             .then(
@@ -1250,5 +1281,17 @@ class CartController extends GetxController {
     } catch (e) {
       return XenditModel();
     }
+  }
+
+  // Add this method to mark a coupon as used for the current user
+  Future<void> markCouponAsUsed(String couponId) async {
+    final userId = FireStoreUtils.getCurrentUid();
+    await FirebaseFirestore.instance.collection('used_coupons').add({
+      'userId': userId,
+      'couponId': couponId,
+      'usedAt': FieldValue.serverTimestamp(),
+    });
+    // After marking as used, re-fetch coupon lists to update their status
+    await getCartData();
   }
 }

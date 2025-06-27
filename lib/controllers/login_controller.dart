@@ -29,140 +29,49 @@ class LoginController extends GetxController {
   }
 
   loginWithEmailAndPassword() async {
-    log('Login: Starting login process');
     ShowToastDialog.showLoader("Please wait".tr);
     try {
-      // Validate email and password
-      if (emailEditingController.value.text.trim().isEmpty) {
-        ShowToastDialog.closeLoader();
-        ShowToastDialog.showToast("Please enter email".tr);
-        log('Login: Email is empty');
-        return;
-      }
-      if (passwordEditingController.value.text.trim().isEmpty) {
-        ShowToastDialog.closeLoader();
-        ShowToastDialog.showToast("Please enter password".tr);
-        log('Login: Password is empty');
-        return;
-      }
-      // Validate email format
-      final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-      if (!emailRegex.hasMatch(emailEditingController.value.text.trim())) {
-        ShowToastDialog.closeLoader();
-        ShowToastDialog.showToast("Please enter a valid email address".tr);
-        log('Login: Invalid email format');
-        return;
-      }
-      // Clear any existing auth state
-      await FirebaseAuth.instance.signOut();
-      log('Login: Cleared existing auth state');
-      // Firebase Auth login
-      log('Login: Attempting Firebase Auth sign-in...');
       final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: emailEditingController.value.text.trim(),
         password: passwordEditingController.value.text.trim(),
-      ).timeout(
-        const Duration(seconds: 30),
-        onTimeout: () {
-          log('Login: Firebase Auth sign-in timed out');
-          throw FirebaseAuthException(
-            code: 'timeout',
-            message: 'Login attempt timed out. Please try again.',
-          );
-        },
       );
-      log('Login: Firebase Auth response: [32m${credential.user?.uid}[0m');
-      if (credential.user == null) {
-        ShowToastDialog.closeLoader();
-        ShowToastDialog.showToast("Login failed. Please try again.".tr);
-        log('Login: Firebase Auth returned null user');
-        return;
-      }
-      // Get user profile
-      log('Login: Fetching user profile from Firestore...');
       UserModel? userModel = await FireStoreUtils.getUserProfile(credential.user!.uid);
-      log("Login: User profile: [32m${userModel?.toJson()}\u001b[0m");
-      if (userModel == null) {
-        await FirebaseAuth.instance.signOut();
-        ShowToastDialog.closeLoader();
-        ShowToastDialog.showToast("User profile not found. Please try again.".tr);
-        log('Login: User profile not found');
-        return;
-      }
-      if (userModel.role != Constant.userRoleCustomer) {
-        await FirebaseAuth.instance.signOut();
-        ShowToastDialog.closeLoader();
-        ShowToastDialog.showToast("Invalid user role. Please contact administrator.".tr);
-        log('Login: Invalid user role');
-        return;
-      }
-      if (userModel.active != true) {
-        await FirebaseAuth.instance.signOut();
-        ShowToastDialog.closeLoader();
-        ShowToastDialog.showToast("This user is disabled. Please contact administrator.".tr);
-        log('Login: User is disabled');
-        return;
-      }
-      // Update FCM token
-      log('Login: Updating FCM token...');
-      userModel.fcmToken = await NotificationService.getToken();
-      await FireStoreUtils.updateUser(userModel);
-      log('Login: Updated user FCM token');
-      // Handle navigation based on shipping address
-      if (userModel.shippingAddress != null && userModel.shippingAddress!.isNotEmpty) {
-        if (userModel.shippingAddress!.where((element) => element.isDefault == true).isNotEmpty) {
-          Constant.selectedLocation = userModel.shippingAddress!.where((element) => element.isDefault == true).single;
+      log("Login :: ${userModel?.toJson()}");
+      if (userModel?.role == Constant.userRoleCustomer) {
+        if (userModel?.active == true) {
+          userModel?.fcmToken = await NotificationService.getToken();
+          await FireStoreUtils.updateUser(userModel!);
+          if (userModel.shippingAddress != null && userModel.shippingAddress!.isNotEmpty) {
+            if (userModel.shippingAddress!.where((element) => element.isDefault == true).isNotEmpty) {
+              Constant.selectedLocation = userModel.shippingAddress!.where((element) => element.isDefault == true).single;
+            } else {
+              Constant.selectedLocation = userModel.shippingAddress!.first;
+            }
+            Get.offAll(const DashBoardScreen());
+          } else {
+            Get.offAll(const LocationPermissionScreen());
+          }
         } else {
-          Constant.selectedLocation = userModel.shippingAddress!.first;
+          await FirebaseAuth.instance.signOut();
+          ShowToastDialog.showToast("This user is disable please contact to administrator".tr);
         }
-        ShowToastDialog.closeLoader();
-        log('Login: Navigation to DashBoardScreen');
-        Get.offAll(() => const DashBoardScreen());
       } else {
-        ShowToastDialog.closeLoader();
-        log('Login: Navigation to LocationPermissionScreen');
-        Get.offAll(() => const LocationPermissionScreen());
+        await FirebaseAuth.instance.signOut();
+        // ShowToastDialog.showToast("This user is disable please contact to administrator".tr);
       }
     } on FirebaseAuthException catch (e) {
-      ShowToastDialog.closeLoader();
-      log('Login: Firebase Auth Error: ${e.code} - ${e.message}');
-      switch (e.code) {
-        case 'user-not-found':
-          ShowToastDialog.showToast("No account found with this email. Please check your email or sign up.".tr);
-          break;
-        case 'wrong-password':
-          ShowToastDialog.showToast("Incorrect password. Please try again.".tr);
-          break;
-        case 'invalid-email':
-          ShowToastDialog.showToast("Invalid email format. Please enter a valid email address.".tr);
-          break;
-        case 'user-disabled':
-          ShowToastDialog.showToast("This account has been disabled. Please contact support.".tr);
-          break;
-        case 'too-many-requests':
-          ShowToastDialog.showToast("Too many login attempts. Please try again later.".tr);
-          break;
-        case 'timeout':
-          ShowToastDialog.showToast("Login attempt timed out. Please check your internet connection and try again.".tr);
-          break;
-        case 'network-request-failed':
-          ShowToastDialog.showToast("Network error. Please check your internet connection and try again.".tr);
-          break;
-        case 'invalid-credential':
-          ShowToastDialog.showToast("Invalid email or password. Please try again.".tr);
-          break;
-        default:
-          ShowToastDialog.showToast(e.message ?? "An error occurred during login. Please try again.".tr);
-      }
-    } catch (e, stack) {
-      ShowToastDialog.closeLoader();
-      log('Login: Error occurred: $e\n$stack');
-      if (e.toString().contains('network')) {
-        ShowToastDialog.showToast("Network error. Please check your internet connection and try again.".tr);
+      print(e.code);
+      if (e.code == 'user-not-found') {
+        ShowToastDialog.showToast("No user found for that email.".tr);
+      } else if (e.code == 'wrong-password') {
+        ShowToastDialog.showToast("Wrong password provided for that user.".tr);
+      } else if (e.code == 'invalid-email') {
+        ShowToastDialog.showToast("Invalid Email.");
       } else {
-        ShowToastDialog.showToast("An unexpected error occurred. Please try again.".tr);
+        ShowToastDialog.showToast("${e.message}");
       }
     }
+    ShowToastDialog.closeLoader();
   }
 
   loginWithGoogle() async {
@@ -354,8 +263,8 @@ class LoginController extends GetxController {
       // not match the nonce in `appleCredential.identityToken`, sign in will fail.
       UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(oauthCredential);
       return {"appleCredential": appleCredential, "userCredential": userCredential};
-    } catch (e, stack) {
-      debugPrint('signInWithApple error: $e\n$stack');
+    } catch (e) {
+      debugPrint(e.toString());
     }
     return null;
   }

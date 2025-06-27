@@ -1060,6 +1060,7 @@ class CouponListView extends StatelessWidget {
           return Padding(
             padding: const EdgeInsets.only(right: 10),
             child: Container(
+              width: 250, // fixed width for coupon card
               clipBehavior: Clip.antiAlias,
               decoration: ShapeDecoration(
                 color: themeChange.getThem()
@@ -1075,41 +1076,44 @@ class CouponListView extends StatelessWidget {
                 ),
               ),
               child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                child: SizedBox(
-                  width: Responsive.width(80, context),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Container(
-                        width: 60,
-                        decoration: const BoxDecoration(
-                            image: DecorationImage(
-                                image:
-                                    AssetImage("assets/images/offer_gif.gif"),
-                                fit: BoxFit.fill)),
-                        child: Center(
-                            child: Text(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 60,
+                      height: 60,
+                      decoration: const BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage("assets/images/offer_gif.gif"),
+                          fit: BoxFit.fill,
+                        ),
+                      ),
+                      child: Center(
+                        child: Text(
                           offerModel.discountType == "Fix Price"
                               ? Constant.amountShow(amount: offerModel.discount)
                               : "${offerModel.discount}%",
                           style: TextStyle(
-                              color: themeChange.getThem()
-                                  ? AppThemeData.grey50
-                                  : AppThemeData.grey50,
-                              fontFamily: AppThemeData.semiBold,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 12),
-                        )),
+                            color: themeChange.getThem()
+                                ? AppThemeData.grey50
+                                : AppThemeData.grey50,
+                            fontFamily: AppThemeData.semiBold,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 12,
+                          ),
+                        ),
                       ),
-                      const SizedBox(width: 10),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             offerModel.description.toString(),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               fontSize: 16,
                               color: themeChange.getThem()
@@ -1119,57 +1123,69 @@ class CouponListView extends StatelessWidget {
                               fontWeight: FontWeight.w600,
                             ),
                           ),
-                          InkWell(
-                            onTap: () {
-                              Clipboard.setData(ClipboardData(
+                          offerModel.isEnabled == false
+                            ? Padding(
+                                padding: const EdgeInsets.only(top: 4.0),
+                                child: Text(
+                                  "Used",
+                                  style: TextStyle(
+                                    fontFamily: AppThemeData.medium,
+                                    color: AppThemeData.grey400,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              )
+                            : InkWell(
+                                onTap: () {
+                                  Clipboard.setData(ClipboardData(
                                       text: offerModel.code.toString()))
-                                  .then(
-                                (value) {
-                                  ShowToastDialog.showToast("Copied".tr);
+                                      .then((value) {
+                                    ShowToastDialog.showToast("Copied".tr);
+                                  });
                                 },
-                              );
-                            },
-                            child: Row(
-                              children: [
-                                Text(
-                                  offerModel.code.toString(),
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: themeChange.getThem()
-                                        ? AppThemeData.grey400
-                                        : AppThemeData.grey500,
-                                    fontFamily: AppThemeData.semiBold,
-                                    fontWeight: FontWeight.w600,
-                                  ),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        offerModel.code.toString(),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: themeChange.getThem()
+                                              ? AppThemeData.grey400
+                                              : AppThemeData.grey500,
+                                          fontFamily: AppThemeData.semiBold,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 5),
+                                    SvgPicture.asset("assets/icons/ic_copy.svg"),
+                                    const SizedBox(height: 10, child: VerticalDivider()),
+                                    const SizedBox(width: 5),
+                                    Expanded(
+                                      child: Text(
+                                        Constant.timestampToDateTime(offerModel.expiresAt!),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: themeChange.getThem()
+                                              ? AppThemeData.grey400
+                                              : AppThemeData.grey500,
+                                          fontFamily: AppThemeData.semiBold,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                const SizedBox(
-                                  width: 5,
-                                ),
-                                SvgPicture.asset("assets/icons/ic_copy.svg"),
-                                const SizedBox(
-                                    height: 10, child: VerticalDivider()),
-                                const SizedBox(
-                                  width: 5,
-                                ),
-                                Text(
-                                  Constant.timestampToDateTime(
-                                      offerModel.expiresAt!),
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: themeChange.getThem()
-                                        ? AppThemeData.grey400
-                                        : AppThemeData.grey500,
-                                    fontFamily: AppThemeData.semiBold,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
+                              ),
                         ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -1724,12 +1740,9 @@ class ProductListView extends StatelessWidget {
                                                                         child: const Icon(
                                                                             Icons.remove)),
                                                                     Padding(
-                                                                      padding: const EdgeInsets
-                                                                          .symmetric(
-                                                                          horizontal:
-                                                                              14),
-                                                                      child:
-                                                                          Text(
+                                                                      padding: const EdgeInsets.symmetric(horizontal: 8), // reduced from 14 to 8
+                                                                      child: Flexible(
+                                                                        child: Text(
                                                                         cartItem
                                                                             .where((p0) =>
                                                                                 p0.id ==
@@ -1754,6 +1767,7 @@ class ProductListView extends StatelessWidget {
                                                                           color: themeChange.getThem()
                                                                               ? AppThemeData.grey100
                                                                               : AppThemeData.grey800,
+                                                                          ),
                                                                         ),
                                                                       ),
                                                                     ),
