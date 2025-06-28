@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'package:country_code_picker/country_code_picker.dart';
-import 'package:customer/app/splash_screen.dart';
+import 'package:customer/app/video_splash_screen.dart';
 import 'package:customer/constant/constant.dart';
 import 'package:customer/controllers/global_setting_controller.dart';
 import 'package:customer/firebase_options.dart';
@@ -123,7 +123,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
             home: GetBuilder<GlobalSettingController>(
               init: GlobalSettingController(),
               builder: (context) {
-                return const SplashScreen();
+                return const VideoSplashScreen();
               },
             ),
           );
