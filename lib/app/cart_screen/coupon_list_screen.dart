@@ -107,7 +107,6 @@ class CouponListScreen extends StatelessWidget {
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                   child: Container(
-                    height: Responsive.height(16, context),
                     decoration: ShapeDecoration(
                       color: couponModel.isEnabled == false
                           ? (themeChange.getThem() ? AppThemeData.grey800 : AppThemeData.grey200)
@@ -115,35 +114,40 @@ class CouponListScreen extends StatelessWidget {
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     ),
                     child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         ClipRRect(
                           borderRadius: const BorderRadius.only(topLeft: Radius.circular(10), bottomLeft: Radius.circular(10)),
-                          child: Stack(
-                            children: [
-                              Image.asset(
-                                "assets/images/ic_coupon_image.png",
-                                height: Responsive.height(16, context),
-                                fit: BoxFit.fill,
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 10),
-                                child: Align(
-                                  alignment: Alignment.center,
-                                  child: RotatedBox(
-                                    quarterTurns: -1,
-                                    child: Text(
-                                      "${couponModel.discountType == "Fix Price" ? Constant.amountShow(amount: couponModel.discount) : "${couponModel.discount}%"} ${'Off'.tr}",
-                                      textAlign: TextAlign.start,
-                                      style: TextStyle(
-                                        fontFamily: AppThemeData.semiBold,
-                                        fontSize: 16,
-                                        color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey50,
+                          child: SizedBox(
+                            width: 60,
+                            child: Stack(
+                              children: [
+                                Positioned.fill(
+                                  child: Image.asset(
+                                    "assets/images/ic_coupon_image.png",
+                                    fit: BoxFit.fill,
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 10),
+                                  child: Align(
+                                    alignment: Alignment.center,
+                                    child: RotatedBox(
+                                      quarterTurns: -1,
+                                      child: Text(
+                                        "${couponModel.discountType == "Fix Price" ? Constant.amountShow(amount: couponModel.discount) : "${couponModel.discount}%"} ${'Off'.tr}",
+                                        textAlign: TextAlign.start,
+                                        style: TextStyle(
+                                          fontFamily: AppThemeData.semiBold,
+                                          fontSize: 16,
+                                          color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey50,
+                                        ),
                                       ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                         Expanded(
@@ -151,6 +155,7 @@ class CouponListScreen extends StatelessWidget {
                             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
                               children: [
                                 Row(
                                   children: [
@@ -200,15 +205,15 @@ class CouponListScreen extends StatelessWidget {
                                       onTap: couponModel.isEnabled == false
                                           ? null
                                           : () {
-                                              double couponAmount = Constant.calculateDiscount(amount: controller.subTotal.value.toString(), offerModel: couponModel);
-                                              if (couponAmount < controller.subTotal.value) {
-                                                controller.selectedCouponModel.value = couponModel;
-                                                controller.calculatePrice();
-                                                Get.back();
-                                              } else {
-                                                ShowToastDialog.showToast("Coupon code not applied".tr);
-                                              }
-                                            },
+                                        double couponAmount = Constant.calculateDiscount(amount: controller.subTotal.value.toString(), offerModel: couponModel);
+                                        if (couponAmount < controller.subTotal.value) {
+                                          controller.selectedCouponModel.value = couponModel;
+                                          controller.calculatePrice();
+                                          Get.back();
+                                        } else {
+                                          ShowToastDialog.showToast("Coupon code not applied".tr);
+                                        }
+                                      },
                                       child: Text(
                                         couponModel.isEnabled == false ? "Used" : "Tap To Apply".tr,
                                         textAlign: TextAlign.start,
