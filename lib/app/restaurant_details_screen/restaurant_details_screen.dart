@@ -469,43 +469,60 @@ class RestaurantDetailsScreen extends StatelessWidget {
                                   ),
                                   Row(
                                     children: [
+                                      if (controller.vendorModel.value.reststatus == false) ...[
+                                        Container(
+                                          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                                          decoration: BoxDecoration(
+                                            color: Colors.red,
+                                            borderRadius: BorderRadius.circular(24),
+                                          ),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Icon(Icons.lock, color: Colors.white, size: 16),
+                                              SizedBox(width: 6),
+                                              Text('Closed', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                                            ],
+                                          ),
+                                        ),
+                                      ] else ...[
+                                        Container(
+                                          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                                          decoration: BoxDecoration(
+                                            color: controller.isOpen.value ? Colors.green : Colors.red,
+                                            borderRadius: BorderRadius.circular(24),
+                                          ),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Icon(
+                                                controller.isOpen.value ? Icons.check_circle : Icons.lock,
+                                                color: Colors.white,
+                                                size: 16,
+                                              ),
+                                              SizedBox(width: 6),
                                       Text(
-                                        controller.isOpen.value
-                                            ? "Open".tr
-                                            : "Close".tr,
-                                        textAlign: TextAlign.start,
-                                        maxLines: 1,
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          overflow: TextOverflow.ellipsis,
-                                          fontFamily: AppThemeData.semiBold,
-                                          fontWeight: FontWeight.w600,
-                                          color: controller.isOpen.value
-                                              ? AppThemeData.success400
-                                              : AppThemeData.danger300,
+                                                controller.isOpen.value ? 'Open' : 'Closed',
+                                                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                              ),
+                                            ],
                                         ),
                                       ),
+                                      ],
                                       Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 10),
+                                        padding: const EdgeInsets.symmetric(horizontal: 10),
                                         child: Icon(
                                           Icons.circle,
                                           size: 5,
-                                          color: themeChange.getThem()
-                                              ? AppThemeData.grey400
-                                              : AppThemeData.grey500,
+                                          color: themeChange.getThem() ? AppThemeData.grey400 : AppThemeData.grey500,
                                         ),
                                       ),
                                       InkWell(
                                         onTap: () {
-                                          if (controller.vendorModel.value
-                                              .workingHours!.isEmpty) {
-                                            ShowToastDialog.showToast(
-                                                "Timing is not added by restaurant"
-                                                    .tr);
+                                          if (controller.vendorModel.value.workingHours!.isEmpty) {
+                                            ShowToastDialog.showToast("Timing is not added by restaurant".tr);
                                           } else {
-                                            timeShowBottomSheet(
-                                                context, controller);
+                                            timeShowBottomSheet(context, controller);
                                           }
                                         },
                                         child: Text(
@@ -514,16 +531,12 @@ class RestaurantDetailsScreen extends StatelessWidget {
                                           maxLines: 1,
                                           style: TextStyle(
                                             fontSize: 14,
-                                            decoration:
-                                                TextDecoration.underline,
-                                            decorationColor:
-                                                AppThemeData.secondary300,
+                                            decoration: TextDecoration.underline,
+                                            decorationColor: AppThemeData.secondary300,
                                             overflow: TextOverflow.ellipsis,
                                             fontFamily: AppThemeData.semiBold,
                                             fontWeight: FontWeight.w600,
-                                            color: themeChange.getThem()
-                                                ? AppThemeData.secondary300
-                                                : AppThemeData.secondary300,
+                                            color: themeChange.getThem() ? AppThemeData.secondary300 : AppThemeData.secondary300,
                                           ),
                                         ),
                                       ),
@@ -765,86 +778,28 @@ class RestaurantDetailsScreen extends StatelessWidget {
                             const SizedBox(
                               height: 20,
                             ),
+                            if (controller.vendorModel.value.reststatus == false) ...[
+                              const SizedBox(height: 20),
+                              Center(
+                                child: Column(
+                                  children: [
+                                    Icon(Icons.lock, color: Colors.red, size: 48),
+                                    SizedBox(height: 8),
+                                    Text(
+                                      'This restaurant is currently closed.',
+                                      style: TextStyle(fontSize: 18, color: Colors.red, fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+                            ],
                             ProductListView(controller: controller),
                           ],
                         ),
                       ),
                     ),
             ),
-            // floatingActionButton: PopupMenuButton(
-            //   offset: const Offset(0, -260),
-            //   onOpened: () {
-            //     controller.isMenuOpen.value = true;
-            //   },
-            //   onCanceled: () {
-            //     controller.isMenuOpen.value = false;
-            //   },
-            //   onSelected: (value) {
-            //     controller.isMenuOpen.value = false;
-            //   },
-            //   color: themeChange.getThem() ? AppThemeData.grey900 : AppThemeData.grey50,
-            //   shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16.0))),
-            //   itemBuilder: (context) {
-            //     return List.generate(controller.vendorCategoryList.length, (index) {
-            //       VendorCategoryModel vendorCategoryModel = controller.vendorCategoryList[index];
-            //       return PopupMenuItem(
-            //         value: index,
-            //         onTap: () {},
-            //         child: SizedBox(
-            //           width: 230,
-            //           child: Text(
-            //             vendorCategoryModel.title.toString(),
-            //             textAlign: TextAlign.start,
-            //             maxLines: 1,
-            //             style: TextStyle(
-            //               fontSize: 14,
-            //               overflow: TextOverflow.ellipsis,
-            //               fontFamily: AppThemeData.semiBold,
-            //               fontWeight: FontWeight.w600,
-            //               color: themeChange.getThem() ? AppThemeData.grey100 : AppThemeData.grey800,
-            //             ),
-            //           ),
-            //         ),
-            //       );
-            //     });
-            //   },
-            //   child: Container(
-            //     width: 60,
-            //     height: 60,
-            //     padding: const EdgeInsets.all(10),
-            //     decoration: ShapeDecoration(
-            //       color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900,
-            //       shape: RoundedRectangleBorder(
-            //         borderRadius: BorderRadius.circular(120),
-            //       ),
-            //     ),
-            //     child: controller.isMenuOpen.value
-            //         ? Icon(
-            //             Icons.close,
-            //             color: themeChange.getThem() ? AppThemeData.grey900 : AppThemeData.grey50,
-            //           )
-            //         : Column(
-            //             mainAxisSize: MainAxisSize.min,
-            //             mainAxisAlignment: MainAxisAlignment.center,
-            //             crossAxisAlignment: CrossAxisAlignment.center,
-            //             children: [
-            //               SvgPicture.asset("assets/icons/ic_book.svg"),
-            //               Text(
-            //                 "Menu",
-            //                 textAlign: TextAlign.start,
-            //                 maxLines: 1,
-            //                 style: TextStyle(
-            //                   fontSize: 12,
-            //                   overflow: TextOverflow.ellipsis,
-            //                   fontFamily: AppThemeData.medium,
-            //                   fontWeight: FontWeight.w500,
-            //                   color: themeChange.getThem() ? AppThemeData.grey900 : AppThemeData.grey50,
-            //                 ),
-            //               ),
-            //             ],
-            //           ),
-            //   ),
-            // ),
           );
         });
   }
@@ -1204,6 +1159,10 @@ class ProductListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeChange = Provider.of<DarkThemeProvider>(context);
+    // Remove the closed message here, just return nothing if closed
+    if (controller.vendorModel.value.reststatus == false) {
+      return SizedBox.shrink();
+    }
     return Container(
       color: themeChange.getThem() ? AppThemeData.grey900 : AppThemeData.grey50,
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -1556,281 +1515,283 @@ class ProductListView extends StatelessWidget {
                                         Constant.userModel == null
                                     ? const SizedBox()
                                     : Positioned(
-                                        bottom: 10,
-                                        left: 20,
-                                        right: 20,
-                                        child:
-                                            selectedVariants.isNotEmpty ||
-                                                    (productModel.addOnsTitle !=
-                                                            null &&
-                                                        productModel
-                                                            .addOnsTitle!
-                                                            .isNotEmpty)
-                                                ? RoundedButtonFill(
-                                                    title: "Add".tr,
-                                                    width: 10,
-                                                    height: 4,
-                                                    color: themeChange.getThem()
-                                                        ? AppThemeData.grey900
-                                                        : AppThemeData.grey50,
-                                                    textColor:
-                                                        AppThemeData.primary300,
-                                                    onPress: () async {
-                                                      controller
-                                                          .selectedVariants
-                                                          .clear();
-                                                      controller
-                                                          .selectedIndexVariants
-                                                          .clear();
-                                                      controller
-                                                          .selectedIndexArray
-                                                          .clear();
-                                                      controller.selectedAddOns
-                                                          .clear();
-                                                      controller
-                                                          .quantity.value = 1;
-                                                      if (productModel
-                                                              .itemAttribute !=
-                                                          null) {
-                                                        if (productModel
-                                                            .itemAttribute!
-                                                            .attributes!
-                                                            .isNotEmpty) {
-                                                          for (var element
-                                                              in productModel
-                                                                  .itemAttribute!
-                                                                  .attributes!) {
-                                                            if (element
-                                                                .attributeOptions!
-                                                                .isNotEmpty) {
-                                                              controller.selectedVariants.add(productModel
-                                                                  .itemAttribute!
-                                                                  .attributes![productModel
-                                                                      .itemAttribute!
-                                                                      .attributes!
-                                                                      .indexOf(
-                                                                          element)]
-                                                                  .attributeOptions![
-                                                                      0]
-                                                                  .toString());
-                                                              controller
-                                                                  .selectedIndexVariants
-                                                                  .add(
-                                                                      '${productModel.itemAttribute!.attributes!.indexOf(element)} _${productModel.itemAttribute!.attributes![0].attributeOptions![0].toString()}');
-                                                              controller
-                                                                  .selectedIndexArray
-                                                                  .add(
-                                                                      '${productModel.itemAttribute!.attributes!.indexOf(element)}_0');
-                                                            }
-                                                          }
-                                                        }
-                                                        final bool
-                                                            productIsInList =
-                                                            cartItem.any(
-                                                                (product) =>
-                                                                    product
-                                                                        .id ==
-                                                                    "${productModel.id}~${productModel.itemAttribute!.variants!.where((element) => element.variantSku == controller.selectedVariants.join('-')).isNotEmpty ? productModel.itemAttribute!.variants!.where((element) => element.variantSku == controller.selectedVariants.join('-')).first.variantId.toString() : ""}");
+                                  bottom: 10,
+                                  left: 20,
+                                  right: 20,
+                                  child:
+                                  selectedVariants.isNotEmpty ||
+                                      (productModel.addOnsTitle !=
+                                          null &&
+                                          productModel
+                                              .addOnsTitle!
+                                              .isNotEmpty)
+                                      ? RoundedButtonFill(
+                                    title: "Add".tr,
+                                    width: 10,
+                                    height: 4,
+                                    color: themeChange.getThem()
+                                        ? AppThemeData.grey900
+                                        : AppThemeData.grey50,
+                                    textColor:
+                                    AppThemeData.primary300,
+                                    onPress: () async {
+                                      controller
+                                          .selectedVariants
+                                          .clear();
+                                      controller
+                                          .selectedIndexVariants
+                                          .clear();
+                                      controller
+                                          .selectedIndexArray
+                                          .clear();
+                                      controller.selectedAddOns
+                                          .clear();
+                                      controller
+                                          .quantity.value = 1;
+                                      if (productModel
+                                          .itemAttribute !=
+                                          null) {
+                                        if (productModel
+                                            .itemAttribute!
+                                            .attributes!
+                                            .isNotEmpty) {
+                                          for (var element
+                                          in productModel
+                                              .itemAttribute!
+                                              .attributes!) {
+                                            if (element
+                                                .attributeOptions!
+                                                .isNotEmpty) {
+                                              controller.selectedVariants.add(productModel
+                                                  .itemAttribute!
+                                                  .attributes![productModel
+                                                  .itemAttribute!
+                                                  .attributes!
+                                                  .indexOf(
+                                                  element)]
+                                                  .attributeOptions![
+                                              0]
+                                                  .toString());
+                                              controller
+                                                  .selectedIndexVariants
+                                                  .add(
+                                                  '${productModel.itemAttribute!.attributes!.indexOf(element)} _${productModel.itemAttribute!.attributes![0].attributeOptions![0].toString()}');
+                                              controller
+                                                  .selectedIndexArray
+                                                  .add(
+                                                  '${productModel.itemAttribute!.attributes!.indexOf(element)}_0');
+                                            }
+                                          }
+                                        }
+                                        final bool
+                                        productIsInList =
+                                        cartItem.any(
+                                                (product) =>
+                                            product
+                                                .id ==
+                                                "${productModel.id}~${productModel.itemAttribute!.variants!.where((element) => element.variantSku == controller.selectedVariants.join('-')).isNotEmpty ? productModel.itemAttribute!.variants!.where((element) => element.variantSku == controller.selectedVariants.join('-')).first.variantId.toString() : ""}");
 
-                                                        if (productIsInList) {
-                                                          CartProductModel
-                                                              element =
-                                                              cartItem.firstWhere(
-                                                                  (product) =>
-                                                                      product
-                                                                          .id ==
-                                                                      "${productModel.id}~${productModel.itemAttribute!.variants!.where((element) => element.variantSku == controller.selectedVariants.join('-')).isNotEmpty ? productModel.itemAttribute!.variants!.where((element) => element.variantSku == controller.selectedVariants.join('-')).first.variantId.toString() : ""}");
-                                                          controller.quantity
-                                                                  .value =
-                                                              element.quantity!;
-                                                          if (element.extras !=
-                                                              null) {
-                                                            for (var element
-                                                                in element
-                                                                    .extras!) {
-                                                              controller
-                                                                  .selectedAddOns
-                                                                  .add(element);
-                                                            }
-                                                          }
-                                                        }
-                                                      } else {
-                                                        if (cartItem
-                                                            .where((product) =>
-                                                                product.id ==
-                                                                "${productModel.id}")
-                                                            .isNotEmpty) {
-                                                          CartProductModel
-                                                              element =
-                                                              cartItem.firstWhere(
-                                                                  (product) =>
-                                                                      product
-                                                                          .id ==
-                                                                      "${productModel.id}");
-                                                          controller.quantity
-                                                                  .value =
-                                                              element.quantity!;
-                                                          if (element.extras !=
-                                                              null) {
-                                                            for (var element
-                                                                in element
-                                                                    .extras!) {
-                                                              controller
-                                                                  .selectedAddOns
-                                                                  .add(element);
-                                                            }
-                                                          }
-                                                        }
-                                                      }
-                                                      controller.update();
-                                                      controller.calculatePrice(
-                                                          productModel);
-                                                      productDetailsBottomSheet(
-                                                          context,
-                                                          productModel);
-                                                    },
-                                                  )
-                                                : Obx(
-                                                    () =>
-                                                        cartItem
-                                                                .where((p0) =>
-                                                                    p0.id ==
-                                                                    productModel
-                                                                        .id)
-                                                                .isNotEmpty
-                                                            ? Container(
-                                                                width: Responsive
-                                                                    .width(100,
-                                                                        context),
-                                                                height: Responsive
-                                                                    .height(4,
-                                                                        context),
-                                                                decoration:
-                                                                    ShapeDecoration(
-                                                                  color: themeChange.getThem()
-                                                                      ? AppThemeData
-                                                                          .grey900
-                                                                      : AppThemeData
-                                                                          .grey50,
-                                                                  shape:
-                                                                      RoundedRectangleBorder(
-                                                                    borderRadius:
-                                                                        BorderRadius.circular(
-                                                                            200),
-                                                                  ),
-                                                                ),
-                                                                child: Row(
-                                                                  mainAxisAlignment:
-                                                                      MainAxisAlignment
-                                                                          .center,
-                                                                  crossAxisAlignment:
-                                                                      CrossAxisAlignment
-                                                                          .center,
-                                                                  children: [
-                                                                    InkWell(
-                                                                        onTap:
-                                                                            () {
-                                                                          controller.addToCart(
-                                                                              productModel: productModel,
-                                                                              price: price,
-                                                                              discountPrice: disPrice,
-                                                                              isIncrement: false,
-                                                                              quantity: cartItem.where((p0) => p0.id == productModel.id).first.quantity! - 1);
-                                                                        },
-                                                                        child: const Icon(
-                                                                            Icons.remove)),
-                                                                    Padding(
-                                                                      padding: const EdgeInsets.symmetric(horizontal: 8), // reduced from 14 to 8
-                                                                      child: Flexible(
-                                                                        child: Text(
-                                                                        cartItem
-                                                                            .where((p0) =>
-                                                                                p0.id ==
-                                                                                productModel.id)
-                                                                            .first
-                                                                            .quantity
-                                                                            .toString(),
-                                                                        textAlign:
-                                                                            TextAlign.start,
-                                                                        maxLines:
-                                                                            1,
-                                                                        style:
-                                                                            TextStyle(
-                                                                          fontSize:
-                                                                              16,
-                                                                          overflow:
-                                                                              TextOverflow.ellipsis,
-                                                                          fontFamily:
-                                                                              AppThemeData.medium,
-                                                                          fontWeight:
-                                                                              FontWeight.w500,
-                                                                          color: themeChange.getThem()
-                                                                              ? AppThemeData.grey100
-                                                                              : AppThemeData.grey800,
-                                                                          ),
-                                                                        ),
-                                                                      ),
-                                                                    ),
-                                                                    InkWell(
-                                                                        onTap:
-                                                                            () {
-                                                                          if ((cartItem.where((p0) => p0.id == productModel.id).first.quantity ?? 0) < (productModel.quantity ?? 0) ||
-                                                                              (productModel.quantity ?? 0) == -1) {
-                                                                            controller.addToCart(
-                                                                                productModel: productModel,
-                                                                                price: price,
-                                                                                discountPrice: disPrice,
-                                                                                isIncrement: true,
-                                                                                quantity: cartItem.where((p0) => p0.id == productModel.id).first.quantity! + 1);
-                                                                          } else {
-                                                                            ShowToastDialog.showToast("Out of stock".tr);
-                                                                          }
-                                                                        },
-                                                                        child: const Icon(
-                                                                            Icons.add)),
-                                                                  ],
-                                                                ),
-                                                              )
-                                                            : RoundedButtonFill(
-                                                                title: "Add".tr,
-                                                                width: 10,
-                                                                height: 4,
-                                                                color: themeChange.getThem()
-                                                                    ? AppThemeData
-                                                                        .grey900
-                                                                    : AppThemeData
-                                                                        .grey50,
-                                                                textColor:
-                                                                    AppThemeData
-                                                                        .primary300,
-                                                                onPress:
-                                                                    () async {
-                                                                  if (1 <=
-                                                                          (productModel.quantity ??
-                                                                              0) ||
-                                                                      (productModel.quantity ??
-                                                                              0) ==
-                                                                          -1) {
-                                                                    controller.addToCart(
-                                                                        productModel:
-                                                                            productModel,
-                                                                        price:
-                                                                            price,
-                                                                        discountPrice:
-                                                                            disPrice,
-                                                                        isIncrement:
-                                                                            true,
-                                                                        quantity:
-                                                                            1);
-                                                                  } else {
-                                                                    ShowToastDialog.showToast(
-                                                                        "Out of stock"
-                                                                            .tr);
-                                                                  }
-                                                                },
-                                                              ),
-                                                  ),
-                                      )
+                                        if (productIsInList) {
+                                          CartProductModel
+                                          element =
+                                          cartItem.firstWhere(
+                                                  (product) =>
+                                              product
+                                                  .id ==
+                                                  "${productModel.id}~${productModel.itemAttribute!.variants!.where((element) => element.variantSku == controller.selectedVariants.join('-')).isNotEmpty ? productModel.itemAttribute!.variants!.where((element) => element.variantSku == controller.selectedVariants.join('-')).first.variantId.toString() : ""}");
+                                          controller.quantity
+                                              .value =
+                                          element.quantity!;
+                                          if (element.extras !=
+                                              null) {
+                                            for (var element
+                                            in element
+                                                .extras!) {
+                                              controller
+                                                  .selectedAddOns
+                                                  .add(element);
+                                            }
+                                          }
+                                        }
+                                      } else {
+                                        if (cartItem
+                                            .where((product) =>
+                                        product.id ==
+                                            "${productModel.id}")
+                                            .isNotEmpty) {
+                                          CartProductModel
+                                          element =
+                                          cartItem.firstWhere(
+                                                  (product) =>
+                                              product
+                                                  .id ==
+                                                  "${productModel.id}");
+                                          controller.quantity
+                                              .value =
+                                          element.quantity!;
+                                          if (element.extras !=
+                                              null) {
+                                            for (var element
+                                            in element
+                                                .extras!) {
+                                              controller
+                                                  .selectedAddOns
+                                                  .add(element);
+                                            }
+                                          }
+                                        }
+                                      }
+                                      controller.update();
+                                      controller.calculatePrice(
+                                          productModel);
+                                      productDetailsBottomSheet(
+                                          context,
+                                          productModel);
+                                    },
+                                  )
+                                      : Obx(
+                                        () =>
+                                    cartItem
+                                        .where((p0) =>
+                                    p0.id ==
+                                        productModel
+                                            .id)
+                                        .isNotEmpty
+                                        ? Container(
+                                      width: Responsive
+                                          .width(100,
+                                          context),
+                                      height: Responsive
+                                          .height(4,
+                                          context),
+                                      decoration:
+                                      ShapeDecoration(
+                                        color: themeChange.getThem()
+                                            ? AppThemeData
+                                            .grey900
+                                            : AppThemeData
+                                            .grey50,
+                                        shape:
+                                        RoundedRectangleBorder(
+                                          borderRadius:
+                                          BorderRadius.circular(
+                                              200),
+                                        ),
+                                      ),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                        MainAxisAlignment
+                                            .center,
+                                        crossAxisAlignment:
+                                        CrossAxisAlignment
+                                            .center,
+                                        children: [
+                                          InkWell(
+                                              onTap:
+                                                  () {
+                                                controller.addToCart(
+                                                    productModel: productModel,
+                                                    price: price,
+                                                    discountPrice: disPrice,
+                                                    isIncrement: false,
+                                                    quantity: cartItem.where((p0) => p0.id == productModel.id).first.quantity! - 1);
+                                              },
+                                              child: const Icon(
+                                                  Icons.remove)),
+                                          Padding(
+                                            padding: const EdgeInsets
+                                                .symmetric(
+                                                horizontal:
+                                                14),
+                                            child:
+                                            Text(
+                                              cartItem
+                                                  .where((p0) =>
+                                              p0.id ==
+                                                  productModel.id)
+                                                  .first
+                                                  .quantity
+                                                  .toString(),
+                                              textAlign:
+                                              TextAlign.start,
+                                              maxLines:
+                                              1,
+                                              style:
+                                              TextStyle(
+                                                fontSize:
+                                                16,
+                                                overflow:
+                                                TextOverflow.ellipsis,
+                                                fontFamily:
+                                                AppThemeData.medium,
+                                                fontWeight:
+                                                FontWeight.w500,
+                                                color: themeChange.getThem()
+                                                    ? AppThemeData.grey100
+                                                    : AppThemeData.grey800,
+                                              ),
+                                            ),
+                                          ),
+                                          InkWell(
+                                              onTap:
+                                                  () {
+                                                if ((cartItem.where((p0) => p0.id == productModel.id).first.quantity ?? 0) < (productModel.quantity ?? 0) ||
+                                                    (productModel.quantity ?? 0) == -1) {
+                                                  controller.addToCart(
+                                                      productModel: productModel,
+                                                      price: price,
+                                                      discountPrice: disPrice,
+                                                      isIncrement: true,
+                                                      quantity: cartItem.where((p0) => p0.id == productModel.id).first.quantity! + 1);
+                                                } else {
+                                                  ShowToastDialog.showToast("Out of stock".tr);
+                                                }
+                                              },
+                                              child: const Icon(
+                                                  Icons.add)),
+                                        ],
+                                      ),
+                                    )
+                                        : RoundedButtonFill(
+                                      title: "Add".tr,
+                                      width: 10,
+                                      height: 4,
+                                      color: themeChange.getThem()
+                                          ? AppThemeData
+                                          .grey900
+                                          : AppThemeData
+                                          .grey50,
+                                      textColor:
+                                      AppThemeData
+                                          .primary300,
+                                      onPress:
+                                          () async {
+                                        if (1 <=
+                                            (productModel.quantity ??
+                                                0) ||
+                                            (productModel.quantity ??
+                                                0) ==
+                                                -1) {
+                                          controller.addToCart(
+                                              productModel:
+                                              productModel,
+                                              price:
+                                              price,
+                                              discountPrice:
+                                              disPrice,
+                                              isIncrement:
+                                              true,
+                                              quantity:
+                                              1);
+                                        } else {
+                                          ShowToastDialog.showToast(
+                                              "Out of stock"
+                                                  .tr);
+                                        }
+                                      },
+                                    ),
+                                  ),
+                                )
                               ],
                             ),
                           )
@@ -2257,10 +2218,6 @@ class ProductDetailsView extends StatelessWidget {
                                               )
                                             : SvgPicture.asset(
                                                 "assets/icons/ic_like.svg",
-                                                colorFilter:
-                                                    const ColorFilter.mode(
-                                                        AppThemeData.grey500,
-                                                        BlendMode.srcIn),
                                               ),
                                       ),
                                     )
@@ -2732,7 +2689,7 @@ class ProductDetailsView extends StatelessWidget {
                                   controller.update();
                                 }
                               },
-                              child: const Icon(Icons.remove),
+                              child: const Icon(Icons.remove, color: Colors.black),
                             ),
                             Padding(
                               padding:
@@ -2785,7 +2742,7 @@ class ProductDetailsView extends StatelessWidget {
                                     }
                                   }
                                 },
-                                child: const Icon(Icons.add)),
+                                child: const Icon(Icons.add, color: Colors.black)),
                           ],
                         ),
                       ),

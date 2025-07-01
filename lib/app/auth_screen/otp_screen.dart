@@ -253,7 +253,7 @@ class _OtpScreenState extends State<OtpScreen> {
                               recognizer: TapGestureRecognizer()
                                 ..onTap = () {
                                   otpController?.clear();
-                                  controller.sendOTP();
+                                  controller.resendOtp(controller.phoneNumber.value, controller.countryCode.value);
                                 },
                               text: 'Send Again'.tr,
                               style: TextStyle(

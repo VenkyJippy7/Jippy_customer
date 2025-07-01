@@ -52,7 +52,14 @@ class RestaurantListScreen extends StatelessWidget {
                         VendorModel vendorModel =
                             controller.vendorSearchList[index];
                         return InkWell(
-                          onTap: () {
+                          onTap: vendorModel.reststatus == false
+                              ? () {
+                                  // Optionally show a dialog or toast
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text('This restaurant is currently closed.')),
+                                  );
+                                }
+                              : () {
                             Get.to(const RestaurantDetailsScreen(),
                                     arguments: {"vendorModel": vendorModel})
                                 ?.then((v) {
@@ -96,6 +103,31 @@ class RestaurantListScreen extends StatelessWidget {
                                                   colors: [
                                                     Colors.black.withOpacity(0),
                                                     const Color(0xFF111827)
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                            if (vendorModel.reststatus == false)
+                                              Positioned(
+                                                left: 0,
+                                                top: 0,
+                                                child: Container(
+                                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.red,
+                                                    borderRadius: const BorderRadius.only(
+                                                      topLeft: Radius.circular(16),
+                                                      bottomRight: Radius.circular(16),
+                                                    ),
+                                                  ),
+                                                  child: Row(
+                                                    children: [
+                                                      Icon(Icons.lock, color: Colors.white, size: 16),
+                                                      SizedBox(width: 4),
+                                                      Text(
+                                                        'Closed',
+                                                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                                      ),
                                                   ],
                                                 ),
                                               ),

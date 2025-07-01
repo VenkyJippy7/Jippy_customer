@@ -4,6 +4,7 @@ import 'package:country_code_picker/country_code_picker.dart';
 import 'package:customer/app/video_splash_screen.dart';
 import 'package:customer/constant/constant.dart';
 import 'package:customer/controllers/global_setting_controller.dart';
+import 'package:customer/controllers/otp_controller.dart';
 import 'package:customer/firebase_options.dart';
 import 'package:customer/models/language_model.dart';
 import 'package:customer/services/api_service.dart';
@@ -49,6 +50,9 @@ void main() async {
     badge: true,
     sound: true,
   );
+
+  // Register OtpController as a permanent dependency
+  Get.put(OtpController(), permanent: true);
 
   runApp(
     const MyApp(),

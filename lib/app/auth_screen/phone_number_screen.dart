@@ -74,7 +74,9 @@ class PhoneNumberScreen extends StatelessWidget {
                     const SizedBox(
                       height: 36,
                     ),
-                    RoundedButtonFill(
+                    Obx(() => controller.isLoading.value
+                        ? Center(child: CircularProgressIndicator())
+                        : RoundedButtonFill(
                       title: "Send OTP".tr,
                       color: AppThemeData.primary300,
                       textColor: AppThemeData.grey50,
@@ -85,7 +87,7 @@ class PhoneNumberScreen extends StatelessWidget {
                           controller.sendCode();
                         }
                       },
-                    ),
+                          )),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 40),
                       child: Row(

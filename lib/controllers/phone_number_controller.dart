@@ -7,7 +7,8 @@ import 'package:get/get.dart';
 class PhoneNumberController extends GetxController {
   Rx<TextEditingController> phoneNUmberEditingController = TextEditingController().obs;
   Rx<TextEditingController> countryCodeEditingController = TextEditingController().obs;
-  String? verificationId;
+  RxBool isLoading = false.obs;
+  RxString verificationId = ''.obs;
 
   PhoneNumberController() {
     countryCodeEditingController.value.text = '+91';
@@ -41,7 +42,7 @@ class PhoneNumberController extends GetxController {
         },
         codeSent: (String verificationId, int? resendToken) {
           ShowToastDialog.closeLoader();
-          this.verificationId = verificationId;
+          this.verificationId.value = verificationId;
           print('Navigating to OtpScreen with verificationId: ' + verificationId);
           Get.to(() => const OtpScreen(), arguments: {
             "countryCode": countryCode,
@@ -50,7 +51,7 @@ class PhoneNumberController extends GetxController {
           });
         },
         codeAutoRetrievalTimeout: (String verificationId) {
-          this.verificationId = verificationId;
+          this.verificationId.value = verificationId;
         },
       );
     } catch (e) {
@@ -65,11 +66,11 @@ class PhoneNumberController extends GetxController {
       final UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
       if (userCredential.user != null) {
         // Handle successful sign in
-        print('Auto sign-in: Navigating to OtpScreen with verificationId: ' + (this.verificationId ?? 'null'));
+        print('Auto sign-in: Navigating to OtpScreen with verificationId: ' + (this.verificationId.value ?? 'null'));
         Get.offAll(() => const OtpScreen(), arguments: {
           "countryCode": countryCodeEditingController.value.text.trim(),
           "phoneNumber": phoneNUmberEditingController.value.text.trim(),
-          "verificationId": this.verificationId ?? '',
+          "verificationId": this.verificationId.value ?? '',
         });
       }
     } catch (e) {

@@ -25,7 +25,8 @@ class SplashController extends GetxController {
       Get.offAll(const OnBoardingScreen());
     } else {
       bool isLogin = await FireStoreUtils.isLogin();
-      if (isLogin == true) {
+      bool isOtpVerified = Preferences.getBoolean('isOtpVerified');
+      if (isLogin && isOtpVerified) {
         await FireStoreUtils.getUserProfile(FireStoreUtils.getCurrentUid()).then((value) async {
           if (value != null) {
             UserModel userModel = value;
@@ -46,16 +47,19 @@ class SplashController extends GetxController {
                 }
               } else {
                 await FirebaseAuth.instance.signOut();
+                await Preferences.setBoolean('isOtpVerified', false);
                 Get.offAll(const LoginScreen());
               }
             } else {
               await FirebaseAuth.instance.signOut();
+              await Preferences.setBoolean('isOtpVerified', false);
               Get.offAll(const LoginScreen());
             }
           }
         });
       } else {
         await FirebaseAuth.instance.signOut();
+        await Preferences.setBoolean('isOtpVerified', false);
         Get.offAll(const LoginScreen());
       }
     }

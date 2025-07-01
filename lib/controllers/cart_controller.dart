@@ -338,6 +338,14 @@ class CartController extends GetxController {
   setOrder() async {
     ShowToastDialog.showLoader("Please wait".tr);
 
+    // Double-check restaurant open status before placing order
+    final latestVendor = await FireStoreUtils.getVendorById(vendorModel.value.id!);
+    if (latestVendor?.reststatus == false) {
+      ShowToastDialog.closeLoader();
+      ShowToastDialog.showToast("This restaurant is currently closed. Please try again later.".tr);
+      return;
+    }
+
     if ((Constant.isSubscriptionModelApplied == true ||
             Constant.adminCommission?.isEnabled == true) &&
         vendorModel.value.subscriptionPlan != null) {
