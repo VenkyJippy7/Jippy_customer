@@ -27,6 +27,7 @@ class ProductModel {
   String? categoryID;
   String? description;
   Timestamp? createdAt;
+  bool? isAvailable;
 
   ProductModel({
     this.fats,
@@ -55,6 +56,7 @@ class ProductModel {
     this.categoryID,
     this.description,
     this.createdAt,
+    this.isAvailable,
   });
 
   ProductModel.fromJson(Map<String, dynamic> json) {
@@ -84,6 +86,7 @@ class ProductModel {
     categoryID = json['categoryID'];
     description = json['description'];
     createdAt = json['createdAt'];
+    isAvailable = json['isAvailable'];
   }
 
   Map<String, dynamic> toJson() {
@@ -121,6 +124,7 @@ class ProductModel {
     data['categoryID'] = categoryID;
     data['description'] = description;
     data['createdAt'] = createdAt;
+    data['isAvailable'] = isAvailable;
     return data;
   }
 }
