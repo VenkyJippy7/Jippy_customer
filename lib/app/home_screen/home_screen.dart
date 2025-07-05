@@ -1188,13 +1188,23 @@ class HomeScreen extends StatelessWidget {
                   },
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 50.0),
-                    child: TextFieldWidget(
-                      hintText: 'Search the dish, restaurant, food, meals'.tr,
-                      controller: null,
-                      enable: false,
-                      prefix: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: SvgPicture.asset("assets/icons/ic_search.svg"),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: AppThemeData.primary200,
+                          width: 2,
+                        ),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: TextFieldWidget(
+                        hintText: 'Search the dish, restaurant, food, meals'.tr,
+                        controller: null,
+                        enable: false,
+                        prefix: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: SvgPicture.asset("assets/icons/ic_search.svg"),
+                        ),
+
                       ),
                     ),
                   ),

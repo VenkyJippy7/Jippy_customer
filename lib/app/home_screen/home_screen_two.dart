@@ -36,6 +36,9 @@ import 'package:customer/utils/network_image_widget.dart';
 import 'package:customer/utils/preferences.dart';
 import 'package:customer/widget/gradiant_text.dart';
 import 'package:customer/widget/osm_map/map_picker_page.dart';
+import 'package:customer/widget/animated_search_hint.dart';
+import 'package:customer/widget/mini_cart_bar.dart';
+import 'package:badges/badges.dart' as badges;
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geocoding/geocoding.dart';
@@ -43,6 +46,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_place_picker_mb/google_maps_place_picker.dart';
+import 'package:path/path.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -61,6 +65,8 @@ class HomeScreenTwo extends StatelessWidget {
           backgroundColor: themeChange.getThem()
               ? AppThemeData.surfaceDark
               : AppThemeData.surface,
+          floatingActionButton: const MiniCartBar(),
+          floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
           body: controller.isLoading.value
               ? Constant.loader()
               : Constant.isZoneAvailable == false
@@ -421,62 +427,106 @@ class HomeScreenTwo extends StatelessWidget {
                                           const SizedBox(
                                             width: 5,
                                           ),
-                                          InkWell(
-                                            onTap: () async {
-                                              (await Get.to(
-                                                  const CartScreen()));
-                                              controller.getCartData();
-                                            },
-                                            child: ClipOval(
-                                              child: Container(
-                                                  padding:
-                                                      const EdgeInsets.all(8.0),
-                                                  color: themeChange.getThem()
-                                                      ? AppThemeData.grey900
-                                                      : AppThemeData.grey50,
-                                                  child: SvgPicture.asset(
-                                                    "assets/icons/ic_shoping_cart.svg",
-                                                    colorFilter:
-                                                        ColorFilter.mode(
-                                                            themeChange
-                                                                    .getThem()
-                                                                ? AppThemeData
-                                                                    .grey50
-                                                                : AppThemeData
-                                                                    .grey900,
-                                                            BlendMode.srcIn),
-                                                  )),
-                                            ),
-                                          )
+                                          // InkWell(
+                                          //   onTap: () async {
+                                          //     (await Get.to(
+                                          //         const CartScreen()));
+                                          //     controller.getCartData();
+                                          //   },
+                                          //   child: ClipOval(
+                                          //     child: Container(
+                                          //         padding:
+                                          //             const EdgeInsets.all(8.0),
+                                          //         color: themeChange.getThem()
+                                          //             ? AppThemeData.grey900
+                                          //             : AppThemeData.grey50,
+                                          //         child: SvgPicture.asset(
+                                          //           "assets/icons/ic_shoping_cart.svg",
+                                          //           colorFilter:
+                                          //               ColorFilter.mode(
+                                          //                   themeChange
+                                          //                           .getThem()
+                                          //                       ? AppThemeData
+                                          //                           .grey50
+                                          //                       : AppThemeData
+                                          //                           .grey900,
+                                          //                   BlendMode.srcIn),
+                                          //         )),
+                                          //   ),
+                                          // )
                                         ],
                                       ),
                                       const SizedBox(
-                                        height: 10,
+                                        height: 20,
                                       ),
                                       InkWell(
                                         onTap: () {
-                                          Get.to(const SearchScreen(),
-                                              arguments: {
-                                                "vendorList": controller
-                                                    .allNearestRestaurant
-                                              });
+                                          Get.to(const SearchScreen(), arguments: {
+                                            "vendorList": controller.allNearestRestaurant
+                                          });
                                         },
-                                        child: TextFieldWidget(
-                                          hintText:
-                                              'Search the dish, restaurant, food, meals'
-                                                  .tr,
+                                        child: AnimatedSearchHint(
                                           controller: null,
                                           enable: false,
-                                          prefix: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 16),
-                                            child: SvgPicture.asset(
-                                                "assets/icons/ic_search.svg"),
+                                          fillColor: Colors.white,
+                                          fontFamily: 'Outfit-Bold',
+                                          textStyle: TextStyle(
+                                            fontFamily: 'Outfit-Bold',
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 12,
+                                            color: Colors.black,
                                           ),
+                                          hintTextStyle: TextStyle(
+                                            fontFamily: 'Outfit-Bold',
+                                            fontWeight: FontWeight.w200,
+                                            fontSize: 12,
+                                            color: Colors.grey,
+                                          ),
+                                          suffix: Padding(
+                                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                                            child: SvgPicture.asset(
+                                              "assets/icons/ic_search.svg",
+                                              color: Colors.orange,
+                                            ),
+                                          ),
+                                          hints: [
+                                            "Search 'cake'".tr,
+                                            "Search 'biryani'".tr,
+                                            "Search 'ice cream'".tr,
+                                            "Search 'pizza'".tr,
+                                            "Search 'burger'".tr,
+                                            "Search 'sushi'".tr,
+                                            "Search 'Restaurants or dish'".tr,
+                                          ],
+                                          interval: const Duration(seconds: 2),
                                         ),
                                       ),
+
+                                      //Old search bar
+                                      // InkWell(
+                                      //   onTap: () {
+                                      //     Get.to(const SearchScreen(),
+                                      //         arguments: {
+                                      //           "vendorList": controller
+                                      //               .allNearestRestaurant
+                                      //         });
+                                      //   },
+                                      //   child: TextFieldWidget(
+                                      //     hintText:
+                                      //         'Search the dish, restaurant, food, meals'
+                                      //             .tr,
+                                      //     controller: null,
+                                      //     enable: false,
+                                      //     prefix: Padding(
+                                      //       padding: const EdgeInsets.symmetric(
+                                      //           horizontal: 16),
+                                      //       child: SvgPicture.asset(
+                                      //           "assets/icons/ic_search.svg"),
+                                      //     ),
+                                      //   ),
+                                      //  ),
                                       const SizedBox(
-                                        height: 5,
+                                        height: 10,
                                       ),
                                     ],
                                   ),
@@ -685,178 +735,6 @@ class HomeScreenTwo extends StatelessWidget {
                               ],
                             ),
                     ),
-          floatingActionButtonLocation:
-              FloatingActionButtonLocation.centerFloat,
-          floatingActionButton: Container(
-            decoration: BoxDecoration(
-                color: themeChange.getThem()
-                    ? AppThemeData.grey800
-                    : AppThemeData.grey100,
-                borderRadius: const BorderRadius.all(Radius.circular(30))),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      color: themeChange.getThem()
-                          ? AppThemeData.grey900
-                          : AppThemeData.grey50,
-                      borderRadius: const BorderRadius.all(
-                        Radius.circular(30),
-                      ),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 5),
-                      child: Row(
-                        children: [
-                          InkWell(
-                            onTap: () {
-                              controller.isListView.value = true;
-                            },
-                            child: ClipOval(
-                              child: Container(
-                                  decoration: BoxDecoration(
-                                      color: controller.isListView.value
-                                          ? AppThemeData.primary300
-                                          : null),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: SvgPicture.asset(
-                                      "assets/icons/ic_view_grid_list.svg",
-                                      colorFilter: ColorFilter.mode(
-                                          controller.isListView.value
-                                              ? AppThemeData.grey50
-                                              : AppThemeData.grey500,
-                                          BlendMode.srcIn),
-                                    ),
-                                  )),
-                            ),
-                          ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          InkWell(
-                            onTap: () {
-                              controller.isListView.value = false;
-                            },
-                            child: ClipOval(
-                              child: Container(
-                                  decoration: BoxDecoration(
-                                      color:
-                                          controller.isListView.value == false
-                                              ? AppThemeData.primary300
-                                              : null),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: SvgPicture.asset(
-                                      "assets/icons/ic_map_draw.svg",
-                                      colorFilter: ColorFilter.mode(
-                                          controller.isListView.value == false
-                                              ? AppThemeData.grey50
-                                              : AppThemeData.grey500,
-                                          BlendMode.srcIn),
-                                    ),
-                                  )),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  InkWell(
-                    onTap: () {
-                      Get.to(const ScanQrCodeScreen());
-                    },
-                    child: ClipOval(
-                      child: Container(
-                          decoration: BoxDecoration(
-                              color: themeChange.getThem()
-                                  ? AppThemeData.grey900
-                                  : AppThemeData.grey50),
-                          child: Padding(
-                            padding: const EdgeInsets.all(10),
-                            child: SvgPicture.asset(
-                              "assets/icons/ic_scan_code.svg",
-                              colorFilter: ColorFilter.mode(
-                                  themeChange.getThem()
-                                      ? AppThemeData.grey400
-                                      : AppThemeData.grey500,
-                                  BlendMode.srcIn),
-                            ),
-                          )),
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 14,
-                  ),
-                  DropdownButton<String>(
-                    isDense: false,
-                    underline: const SizedBox(),
-                    value: controller.selectedOrderTypeValue.value.tr,
-                    icon: const Icon(Icons.keyboard_arrow_down),
-                    items: <String>['Delivery', 'TakeAway'].map((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(
-                          value.tr,
-                          style: TextStyle(
-                            fontFamily: AppThemeData.semiBold,
-                            fontSize: 16,
-                            color: themeChange.getThem()
-                                ? AppThemeData.grey50
-                                : AppThemeData.grey900,
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                    onChanged: (value) async {
-                      if (cartItem.isEmpty) {
-                        await Preferences.setString(
-                            Preferences.foodDeliveryType, value!);
-                        controller.selectedOrderTypeValue.value = value;
-                        controller.getData();
-                      } else {
-                        showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return CustomDialogBox(
-                                title: "Alert".tr,
-                                descriptions:
-                                    "Do you really want to change the delivery option? Your cart will be empty."
-                                        .tr,
-                                positiveString: "Ok".tr,
-                                negativeString: "Cancel".tr,
-                                positiveClick: () async {
-                                  await Preferences.setString(
-                                      Preferences.foodDeliveryType, value!);
-                                  controller.selectedOrderTypeValue.value =
-                                      value;
-                                  controller.getData();
-                                  DatabaseHelper.instance
-                                      .deleteAllCartProducts();
-                                  controller.cartProvider.clearDatabase();
-                                  controller.getCartData();
-                                  Get.back();
-                                },
-                                negativeClick: () {
-                                  Get.back();
-                                },
-                                img: null,
-                              );
-                            });
-                      }
-                    },
-                  )
-                ],
-              ),
-            ),
-          ),
         );
       },
     );
@@ -916,18 +794,27 @@ class CategoryView extends StatelessWidget {
                     ),
                   ],
                 ),
-                GradientText(
-                  'Best Servings Food'.tr,
+                Text(
+                  "Best Serving Food".tr,
                   style: TextStyle(
                     fontSize: 24,
                     fontFamily: 'Inter Tight',
                     fontWeight: FontWeight.w800,
                   ),
-                  gradient: LinearGradient(colors: [
-                    Color(0xFF3961F1),
-                    Color(0xFF11D0EA),
-                  ]),
-                ),
+                )
+
+                // GradientText(
+                //   'Best Servings Food'.tr,
+                //   style: TextStyle(
+                //     fontSize: 24,
+                //     fontFamily: 'Inter Tight',
+                //     fontWeight: FontWeight.w800,
+                //   ),
+                //   gradient: LinearGradient(colors: [
+                //     Color(0xFF3961F1),
+                //     Color(0xFF11D0EA),
+                //   ]),
+                // ),
               ],
             ),
           ),
@@ -1052,18 +939,30 @@ class OfferView extends StatelessWidget {
                       ),
                     ],
                   ),
-                  GradientText(
-                    'Save Upto 50% Off'.tr,
+
+
+                  Text(
+                    "Save Upto 50% Off".tr,
                     style: TextStyle(
                       fontSize: 24,
                       fontFamily: 'Inter Tight',
                       fontWeight: FontWeight.w800,
                     ),
-                    gradient: LinearGradient(colors: [
-                      Color(0xFF39F1C5),
-                      Color(0xFF97EA11),
-                    ]),
-                  ),
+                  )
+
+
+                  // GradientText(
+                  //   'Save Upto 50% Off'.tr,
+                  //   style: TextStyle(
+                  //     fontSize: 24,
+                  //     fontFamily: 'Inter Tight',
+                  //     fontWeight: FontWeight.w800,
+                  //   ),
+                  //   gradient: LinearGradient(colors: [
+                  //     Color(0xFF39F1C5),
+                  //     Color(0xFF97EA11),
+                  //   ]),
+                  // ),
                 ],
               ),
             ),

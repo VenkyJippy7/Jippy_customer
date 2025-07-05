@@ -8,6 +8,7 @@ class CartProductModel {
   String? price;
   String? discountPrice;
   String? vendorID;
+  String? vendorName;
   int? quantity;
   String? extrasPrice;
   List<dynamic>? extras;
@@ -21,6 +22,7 @@ class CartProductModel {
     this.price,
     this.discountPrice,
     this.vendorID,
+    this.vendorName,
     this.quantity,
     this.extrasPrice,
     this.variantInfo,
@@ -35,6 +37,7 @@ class CartProductModel {
     price = json['price'] ?? "0.0";
     discountPrice = json['discountPrice'] ?? "0.0";
     vendorID = json['vendorID'];
+    vendorName = json['vendorName'];
     quantity = json['quantity'];
     extrasPrice = json['extras_price'];
 
@@ -60,6 +63,7 @@ class CartProductModel {
     data['price'] = price;
     data['discountPrice'] = discountPrice;
     data['vendorID'] = vendorID;
+    data['vendorName'] = vendorName;
     data['quantity'] = quantity;
     data['extras_price'] = extrasPrice;
     data['extras'] = extras;

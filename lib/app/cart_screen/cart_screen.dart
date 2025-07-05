@@ -1620,7 +1620,7 @@ class _CartScreenState extends State<CartScreen> {
                                                   child: InkWell(
                                                     onTap: () {
                                                       controller.deliveryTips
-                                                          .value = 20;
+                                                          .value = 05;
                                                       controller
                                                           .calculatePrice();
                                                     },
@@ -1634,7 +1634,7 @@ class _CartScreenState extends State<CartScreen> {
                                                               color: controller
                                                                           .deliveryTips
                                                                           .value ==
-                                                                      20
+                                                                      05
                                                                   ? AppThemeData
                                                                       .primary300
                                                                   : themeChange
@@ -1656,7 +1656,7 @@ class _CartScreenState extends State<CartScreen> {
                                                         child: Center(
                                                           child: Text(
                                                             Constant.amountShow(
-                                                                amount: "20"),
+                                                                amount: "05"),
                                                             style: TextStyle(
                                                               color: themeChange
                                                                       .getThem()
@@ -1685,7 +1685,7 @@ class _CartScreenState extends State<CartScreen> {
                                                   child: InkWell(
                                                     onTap: () {
                                                       controller.deliveryTips
-                                                          .value = 30;
+                                                          .value = 10;
                                                       controller
                                                           .calculatePrice();
                                                     },
@@ -1699,7 +1699,7 @@ class _CartScreenState extends State<CartScreen> {
                                                               color: controller
                                                                           .deliveryTips
                                                                           .value ==
-                                                                      30
+                                                                      10
                                                                   ? AppThemeData
                                                                       .primary300
                                                                   : themeChange
@@ -1721,7 +1721,7 @@ class _CartScreenState extends State<CartScreen> {
                                                         child: Center(
                                                           child: Text(
                                                             Constant.amountShow(
-                                                                amount: "30"),
+                                                                amount: "10"),
                                                             style: TextStyle(
                                                               color: themeChange
                                                                       .getThem()
@@ -1750,7 +1750,7 @@ class _CartScreenState extends State<CartScreen> {
                                                   child: InkWell(
                                                     onTap: () {
                                                       controller.deliveryTips
-                                                          .value = 40;
+                                                          .value = 15;
                                                       controller
                                                           .calculatePrice();
                                                     },
@@ -1764,7 +1764,7 @@ class _CartScreenState extends State<CartScreen> {
                                                               color: controller
                                                                           .deliveryTips
                                                                           .value ==
-                                                                      40
+                                                                      15
                                                                   ? AppThemeData
                                                                       .primary300
                                                                   : themeChange
@@ -1786,7 +1786,7 @@ class _CartScreenState extends State<CartScreen> {
                                                         child: Center(
                                                           child: Text(
                                                             Constant.amountShow(
-                                                                amount: "40"),
+                                                                amount: "15"),
                                                             style: TextStyle(
                                                               color: themeChange
                                                                       .getThem()
@@ -2266,9 +2266,10 @@ class _CartScreenState extends State<CartScreen> {
                             ? AppThemeData.grey50
                             : AppThemeData.grey900,
                         fontFamily: AppThemeData.semiBold,
-                        fontSize: 18),
+                        fontSize: 12),
                   ),
                 ),
+
                 hintText: 'Enter Tips Amount'.tr,
               ),
               Row(

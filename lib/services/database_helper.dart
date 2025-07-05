@@ -24,8 +24,13 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 1,
+      version: 2,
       onCreate: _createDB,
+      onUpgrade: (db, oldVersion, newVersion) async {
+        if (oldVersion < 2) {
+          await db.execute('ALTER TABLE cart_products ADD COLUMN vendorName TEXT');
+        }
+      },
     );
   }
 
@@ -43,6 +48,7 @@ class DatabaseHelper {
       price $textType,
       discountPrice $textType,
       vendorID $textType,
+      vendorName $textType,
       quantity $intType,
       extras_price $textType,
       extras $textType,

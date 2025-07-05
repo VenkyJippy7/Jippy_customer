@@ -177,41 +177,41 @@ class RestaurantDetailsScreen extends StatelessWidget {
                         const SizedBox(
                           width: 10,
                         ),
-                        Obx(
-                              () => badges.Badge(
-                            showBadge: cartItem.isEmpty ? false : true,
-                            badgeContent: Text(
-                              "${cartItem.length}",
-                              style: TextStyle(
-                                fontSize: 14,
-                                overflow: TextOverflow.ellipsis,
-                                fontFamily: AppThemeData.semiBold,
-                                fontWeight: FontWeight.w600,
-                                color: themeChange.getThem()
-                                    ? AppThemeData.grey50
-                                    : AppThemeData.grey50,
-                              ),
-                            ),
-                            badgeStyle: const badges.BadgeStyle(
-                              shape: badges.BadgeShape.circle,
-                              badgeColor: AppThemeData.secondary300,
-                            ),
-                            child: InkWell(
-                              onTap: () {
-                                Get.to(const CartScreen());
-                              },
-                              child: ClipOval(
-                                child: SvgPicture.asset(
-                                  "assets/icons/ic_shoping_cart.svg",
-                                  width: 24,
-                                  height: 24,
-                                  colorFilter: const ColorFilter.mode(
-                                      AppThemeData.grey50, BlendMode.srcIn),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
+                        // Obx(
+                        //       () => badges.Badge(
+                        //     showBadge: cartItem.isEmpty ? false : true,
+                        //     badgeContent: Text(
+                        //       "${cartItem.length}",
+                        //       style: TextStyle(
+                        //         fontSize: 14,
+                        //         overflow: TextOverflow.ellipsis,
+                        //         fontFamily: AppThemeData.semiBold,
+                        //         fontWeight: FontWeight.w600,
+                        //         color: themeChange.getThem()
+                        //             ? AppThemeData.grey50
+                        //             : AppThemeData.grey50,
+                        //       ),
+                        //     ),
+                        //     badgeStyle: const badges.BadgeStyle(
+                        //       shape: badges.BadgeShape.circle,
+                        //       badgeColor: AppThemeData.secondary300,
+                        //     ),
+                        //     child: InkWell(
+                        //       onTap: () {
+                        //         Get.to(const CartScreen());
+                        //       },
+                        //       child: ClipOval(
+                        //         child: SvgPicture.asset(
+                        //           "assets/icons/ic_shoping_cart.svg",
+                        //           width: 24,
+                        //           height: 24,
+                        //           colorFilter: const ColorFilter.mode(
+                        //               AppThemeData.grey50, BlendMode.srcIn),
+                        //         ),
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ),
                       ],
                     ),
                     flexibleSpace: FlexibleSpaceBar(
@@ -558,7 +558,8 @@ class RestaurantDetailsScreen extends StatelessWidget {
                               CrossAxisAlignment.start,
                               children: [
                                 const SizedBox(
-                                  height: 20,
+                                  height: 10,
+
                                 ),
                                 Text(
                                   "Additional Offers".tr,
@@ -584,7 +585,7 @@ class RestaurantDetailsScreen extends StatelessWidget {
                               ],
                             ),
                             const SizedBox(
-                              height: 20,
+                              height: 10,
                             ),
                             Text(
                               "Menu".tr,
@@ -1017,7 +1018,7 @@ class CouponListView extends StatelessWidget {
           return Padding(
             padding: const EdgeInsets.only(right: 10),
             child: Container(
-              width: 250, // fixed width for coupon card
+              width: 300, // fixed width for coupon card
               clipBehavior: Clip.antiAlias,
               decoration: ShapeDecoration(
                 color: themeChange.getThem()

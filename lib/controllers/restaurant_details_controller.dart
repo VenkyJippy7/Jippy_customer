@@ -283,6 +283,7 @@ class RestaurantDetailsController extends GetxController {
       cartProductModel.price = price;
       cartProductModel.discountPrice = discountPrice;
       cartProductModel.vendorID = vendorModel.value.id;
+      cartProductModel.vendorName = vendorModel.value.title;
       cartProductModel.quantity = quantity;
       cartProductModel.variantInfo = variantInfo;
       cartProductModel.extrasPrice = adOnsPrice;
@@ -295,6 +296,7 @@ class RestaurantDetailsController extends GetxController {
       cartProductModel.price = price;
       cartProductModel.discountPrice = discountPrice;
       cartProductModel.vendorID = vendorModel.value.id;
+      cartProductModel.vendorName = vendorModel.value.title;
       cartProductModel.quantity = quantity;
       cartProductModel.variantInfo = VariantInfo();
       cartProductModel.extrasPrice = adOnsPrice;

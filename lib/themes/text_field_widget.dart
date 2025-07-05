@@ -18,6 +18,10 @@ class TextFieldWidget extends StatelessWidget {
   final List<TextInputFormatter>? inputFormatters;
   final ValueChanged<String>? onchange;
   final TextInputAction? textInputAction;
+  final String? fontFamily;
+  final Color? fillColor;
+  final TextStyle? textStyle;
+  final TextStyle? hintTextStyle;
 
   const TextFieldWidget({
     super.key,
@@ -33,6 +37,10 @@ class TextFieldWidget extends StatelessWidget {
     this.inputFormatters,
     this.onchange,
     this.textInputAction,
+    this.fontFamily,
+    this.fillColor,
+    this.textStyle,
+    this.hintTextStyle,
   });
 
   @override
@@ -68,9 +76,9 @@ class TextFieldWidget extends StatelessWidget {
               obscureText: obscureText ?? false,
               obscuringCharacter: '●',
               onChanged: onchange,
-              style: TextStyle(
+              style: textStyle ?? TextStyle(
                 color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900,
-                fontFamily: AppThemeData.medium,
+                fontFamily: fontFamily ?? AppThemeData.medium,
                 fontSize: 14,
               ),
               decoration: InputDecoration(
@@ -79,7 +87,7 @@ class TextFieldWidget extends StatelessWidget {
                 enabled: enable ?? true,
                 isDense: true,
                 contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-                fillColor: themeChange.getThem() ? AppThemeData.grey900 : AppThemeData.grey50,
+                fillColor: fillColor ?? (themeChange.getThem() ? AppThemeData.grey900 : AppThemeData.grey50),
                 prefixIcon: prefix,
                 suffixIcon: suffix,
                 disabledBorder: OutlineInputBorder(
@@ -118,10 +126,10 @@ class TextFieldWidget extends StatelessWidget {
                   ),
                 ),
                 hintText: hintText.tr,
-                hintStyle: TextStyle(
+                hintStyle: hintTextStyle ?? TextStyle(
                   fontSize: 14,
                   color: themeChange.getThem() ? AppThemeData.grey600 : AppThemeData.grey400,
-                  fontFamily: AppThemeData.regular,
+                  fontFamily: fontFamily ?? AppThemeData.regular,
                 ),
               ),
             ),

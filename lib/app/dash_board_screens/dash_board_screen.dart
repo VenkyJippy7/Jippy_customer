@@ -83,13 +83,13 @@ class DashBoardScreen extends StatelessWidget {
                           label: 'Orders'.tr,
                           controller: controller,
                         ),
-                        navigationBarItem(
-                          themeChange,
-                          index: 3,
-                          assetIcon: "assets/icons/ic_profile.svg",
-                          label: 'Profile'.tr,
-                          controller: controller,
-                        ),
+                        // navigationBarItem(
+                        //   themeChange,
+                        //   index: 3,
+                        //   assetIcon: "assets/icons/ic_profile.svg",
+                        //   label: 'Profile'.tr,
+                        //   controller: controller,
+                        // ),
                       ]
                     : [
                         navigationBarItem(
@@ -120,13 +120,13 @@ class DashBoardScreen extends StatelessWidget {
                           label: 'Orders'.tr,
                           controller: controller,
                         ),
-                        navigationBarItem(
-                          themeChange,
-                          index: 4,
-                          assetIcon: "assets/icons/ic_profile.svg",
-                          label: 'Profile'.tr,
-                          controller: controller,
-                        ),
+                        // navigationBarItem(
+                        //   themeChange,
+                        //   index: 4,
+                        //   assetIcon: "assets/icons/ic_profile.svg",
+                        //   label: 'Profile'.tr,
+                        //   controller: controller,
+                        // ),
                       ],
               ),
             ),

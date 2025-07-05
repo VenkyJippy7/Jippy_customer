@@ -39,7 +39,7 @@ class _VideoSplashScreenState extends State<VideoSplashScreen> {
     try {
       developer.log('VideoSplashScreen: Initializing video player...');
       
-      _videoPlayerController = VideoPlayerController.asset('assets/videos/logo_animation.mp4');
+      _videoPlayerController = VideoPlayerController.asset('assets/videos/logo_low_q_compatible.mp4');
       
       developer.log('VideoSplashScreen: Video controller created, initializing...');
       
