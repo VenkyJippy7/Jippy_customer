@@ -1272,11 +1272,7 @@ class _CartScreenState extends State<CartScreen> {
                                           ),
                                         ],
                                       ),
-                                      controller.vendorModel.value
-                                                      .specialDiscountEnable ==
-                                                  true &&
-                                              Constant.specialDiscountOffer ==
-                                                  true
+                                      controller.specialDiscountAmount.value > 0
                                           ? Column(
                                               children: [
                                                 const SizedBox(

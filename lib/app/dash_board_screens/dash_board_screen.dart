@@ -43,24 +43,8 @@ class DashBoardScreen extends StatelessWidget {
             // },
             child: Scaffold(
               body: controller.pageList[controller.selectedIndex.value],
-              bottomNavigationBar: BottomNavigationBar(
-                type: BottomNavigationBarType.fixed,
-                showUnselectedLabels: true,
-                showSelectedLabels: true,
-                selectedFontSize: 12,
-                selectedLabelStyle: const TextStyle(fontFamily: AppThemeData.bold),
-                unselectedLabelStyle: const TextStyle(fontFamily: AppThemeData.bold),
-                currentIndex: controller.selectedIndex.value,
-                backgroundColor: themeChange.getThem() ? AppThemeData.grey900 : AppThemeData.grey50,
-                selectedItemColor: themeChange.getThem() ? AppThemeData.primary300 : AppThemeData.primary300,
-                unselectedItemColor: themeChange.getThem() ? AppThemeData.grey300 : AppThemeData.grey600,
-                onTap: (int index) {
-                  if (index == 0) {
-                    Get.put(DashBoardController());
-                  }
-                  controller.selectedIndex.value = index;
-                },
-                items: Constant.walletSetting == false
+                bottomNavigationBar: Obx(() {
+                final items = Constant.walletSetting == false
                     ? [
                         navigationBarItem(
                           themeChange,
@@ -127,8 +111,26 @@ class DashBoardScreen extends StatelessWidget {
                         //   label: 'Profile'.tr,
                         //   controller: controller,
                         // ),
-                      ],
-              ),
+                      ];
+                final safeIndex = controller.selectedIndex.value.clamp(0, items.length - 1);
+                return BottomNavigationBar(
+                  type: BottomNavigationBarType.fixed,
+                  showUnselectedLabels: true,
+                  showSelectedLabels: true,
+                  selectedFontSize: 12,
+                  selectedLabelStyle: const TextStyle(fontFamily: AppThemeData.bold),
+                  unselectedLabelStyle: const TextStyle(fontFamily: AppThemeData.bold),
+                  currentIndex: safeIndex,
+                  backgroundColor: themeChange.getThem() ? AppThemeData.grey900 : AppThemeData.grey50,
+                  selectedItemColor: themeChange.getThem() ? AppThemeData.primary300 : AppThemeData.primary300,
+                  unselectedItemColor: themeChange.getThem() ? AppThemeData.grey300 : AppThemeData.grey600,
+                  onTap: (int index) {
+                    final clampedIndex = index.clamp(0, items.length - 1);
+                    controller.selectedIndex.value = clampedIndex;
+                  },
+                  items: items,
+                );
+              }),
             ),
           );
         });

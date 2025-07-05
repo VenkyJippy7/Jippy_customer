@@ -494,57 +494,43 @@ class OrderDetailsScreen extends StatelessWidget {
                                                                     Get.to(
                                                                         const ChatScreen(),
                                                                         arguments: {
-                                                                          "customerName":
-                                                                              '${customer!.fullName()}',
-                                                                          "restaurantName":
-                                                                              vendorModel!.title,
-                                                                          "orderId": controller
-                                                                              .orderModel
-                                                                              .value
-                                                                              .id,
-                                                                          "restaurantId":
-                                                                              restaurantUser.id,
-                                                                          "customerId":
-                                                                              customer.id,
-                                                                          "customerProfileImage":
-                                                                              customer.profilePictureURL,
-                                                                          "restaurantProfileImage":
-                                                                              vendorModel.photo,
-                                                                          "token":
-                                                                              restaurantUser.fcmToken,
-                                                                          "chatType":
-                                                                              "restaurant",
+                                                                          "customerName": '${customer!.fullName()}',
+                                                                          "restaurantName": restaurantUser!.fullName(),
+                                                                          "orderId": controller.orderModel.value.id,
+                                                                          "restaurantId": restaurantUser.id,
+                                                                          "customerId": customer.id,
+                                                                          "customerProfileImage": customer.profilePictureURL,
+                                                                          "restaurantProfileImage": restaurantUser.profilePictureURL,
+                                                                          "token": restaurantUser.fcmToken,
+                                                                          "chatType": "Driver",
                                                                         });
                                                                   },
                                                                   child:
                                                                       Container(
-                                                                    width: 42,
-                                                                    height: 42,
-                                                                    decoration:
-                                                                        ShapeDecoration(
-                                                                      shape:
-                                                                          RoundedRectangleBorder(
-                                                                        side: BorderSide(
-                                                                            width:
-                                                                                1,
-                                                                            color: themeChange.getThem()
-                                                                                ? AppThemeData.grey700
-                                                                                : AppThemeData.grey200),
-                                                                        borderRadius:
-                                                                            BorderRadius.circular(120),
+                                                                        width:
+                                                                            42,
+                                                                        height:
+                                                                            42,
+                                                                        decoration:
+                                                                            ShapeDecoration(
+                                                                          shape:
+                                                                              RoundedRectangleBorder(
+                                                                            side:
+                                                                                BorderSide(width: 1, color: themeChange.getThem() ? AppThemeData.grey700 : AppThemeData.grey200),
+                                                                            borderRadius:
+                                                                                BorderRadius.circular(120),
+                                                                          ),
+                                                                        ),
+                                                                        child:
+                                                                            Padding(
+                                                                          padding: const EdgeInsets
+                                                                              .all(
+                                                                              8.0),
+                                                                          child:
+                                                                              SvgPicture.asset("assets/icons/ic_wechat.svg"),
+                                                                        ),
                                                                       ),
-                                                                    ),
-                                                                    child:
-                                                                        Padding(
-                                                                      padding: const EdgeInsets
-                                                                          .all(
-                                                                          8.0),
-                                                                      child: SvgPicture
-                                                                          .asset(
-                                                                              "assets/icons/ic_wechat.svg"),
-                                                                    ),
-                                                                  ),
-                                                                )
+                                                                    )
                                                         ],
                                                       )
                                                     : Column(
@@ -1481,6 +1467,8 @@ class OrderDetailsScreen extends StatelessWidget {
                                             ),
                                             (controller.orderModel.value.vendor
                                                         ?.isSelfDelivery ==
+                                                    true &&
+                                                Constant.isSelfDeliveryFeature ==
                                                     true)
                                                 ? Text(
                                                     'Free Delivery',
@@ -1496,28 +1484,29 @@ class OrderDetailsScreen extends StatelessWidget {
                                                 : Text(
                                                     Constant.amountShow(
                                                         amount: controller
-                                                                        .orderModel
-                                                                        .value
-                                                                        .deliveryCharge ==
-                                                                    null ||
-                                                                controller
                                                                     .orderModel
                                                                     .value
-                                                                    .deliveryCharge!
-                                                                    .isEmpty
-                                                            ? "0.0"
-                                                            : controller
+                                                                    .deliveryCharge ==
+                                                                null ||
+                                                            controller
                                                                 .orderModel
                                                                 .value
-                                                                .deliveryCharge
-                                                                .toString()),
+                                                                .deliveryCharge!
+                                                                .isEmpty
+                                                        ? "0.0"
+                                                        : controller
+                                                            .orderModel
+                                                            .value
+                                                            .deliveryCharge
+                                                            .toString()),
                                                     textAlign: TextAlign.start,
                                                     style: TextStyle(
                                                       fontFamily:
                                                           AppThemeData.regular,
                                                       color: themeChange
                                                               .getThem()
-                                                          ? AppThemeData.grey50
+                                                          ? AppThemeData
+                                                              .grey50
                                                           : AppThemeData
                                                               .grey900,
                                                       fontSize: 16,
@@ -1525,6 +1514,39 @@ class OrderDetailsScreen extends StatelessWidget {
                                                   ),
                                           ],
                                         ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  // Platform Fee (match Cart screen)
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          "Platform Fee".tr,
+                                          textAlign: TextAlign.start,
+                                          style: TextStyle(
+                                            fontFamily: AppThemeData.regular,
+                                            color: themeChange.getThem()
+                                                ? AppThemeData.grey300
+                                                : AppThemeData.grey600,
+                                            fontSize: 16,
+                                          ),
+                                        ),
+                                      ),
+                                      Text(
+                                        '15.00',
+                                        textAlign: TextAlign.start,
+                                        style: TextStyle(
+                                          fontFamily: AppThemeData.regular,
+                                          color: AppThemeData.danger300,
+                                          fontSize: 16,
+                                          decoration: TextDecoration.lineThrough,
+                                          decorationColor: AppThemeData.danger300,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                   const SizedBox(
                                     height: 10,
                                   ),
@@ -1695,7 +1717,7 @@ class OrderDetailsScreen extends StatelessWidget {
                                           children: [
                                             Expanded(
                                               child: Text(
-                                                "${taxModel.title.toString()} (${taxModel.type == "fix" ? Constant.amountShow(amount: taxModel.tax) : "${taxModel.tax}%"})",
+                                                "Taxes & Charges",
                                                 textAlign: TextAlign.start,
                                                 style: TextStyle(
                                                   fontFamily:
