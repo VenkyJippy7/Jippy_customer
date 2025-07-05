@@ -33,7 +33,7 @@ class FavouriteScreen extends StatelessWidget {
                 ? AppThemeData.surfaceDark
                 : AppThemeData.surface,
             body: controller.isLoading.value
-                ? Constant.loader()
+                ? SizedBox.shrink()
                 : Padding(
                     padding: EdgeInsets.only(
                         top: MediaQuery.of(context).viewPadding.top),
@@ -93,7 +93,7 @@ class FavouriteScreen extends StatelessWidget {
                                         height: 5,
                                       ),
                                       Text(
-                                        "You’re not logged in. Please sign in to access your account and explore all features."
+                                        "You're not logged in. Please sign in to access your account and explore all features."
                                             .tr,
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
@@ -621,8 +621,7 @@ class FavouriteScreen extends StatelessWidget {
                                                                   .connectionState ==
                                                               ConnectionState
                                                                   .waiting) {
-                                                            return Constant
-                                                                .loader();
+                                                            return SizedBox.shrink();
                                                           } else {
                                                             if (snapshot
                                                                 .hasError) {

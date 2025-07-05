@@ -14,10 +14,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:async';
+import 'package:flutter/widgets.dart';
 
 class HomeController extends GetxController {
   DashBoardController dashBoardController = Get.find<DashBoardController>();
   final CartProvider cartProvider = CartProvider();
+  final ScrollController scrollController = ScrollController();
+  RxBool isNavBarVisible = true.obs;
 
   getCartData() async {
     cartProvider.cartStream.listen(
@@ -48,6 +51,13 @@ class HomeController extends GetxController {
     getVendorCategory();
     getData();
     startBannerTimer();
+    scrollController.addListener(() {
+      if (scrollController.position.userScrollDirection.toString() == 'ScrollDirection.reverse') {
+        if (isNavBarVisible.value) isNavBarVisible.value = false;
+      } else if (scrollController.position.userScrollDirection.toString() == 'ScrollDirection.forward') {
+        if (!isNavBarVisible.value) isNavBarVisible.value = true;
+      }
+    });
     super.onInit();
   }
 
@@ -114,6 +124,28 @@ class HomeController extends GetxController {
       popularRestaurantList.addAll(event);
       Constant.restaurantList = allNearestRestaurant;
       
+      // Sort by distance, then by rating
+      allNearestRestaurant.sort((a, b) {
+        double distanceA = Constant().calculateDistance(
+          Constant.selectedLocation.location!.latitude!,
+          Constant.selectedLocation.location!.longitude!,
+          a.latitude!,
+          a.longitude!,
+        );
+        double distanceB = Constant().calculateDistance(
+          Constant.selectedLocation.location!.latitude!,
+          Constant.selectedLocation.location!.longitude!,
+          b.latitude!,
+          b.longitude!,
+        );
+        int distanceCompare = distanceA.compareTo(distanceB);
+        if (distanceCompare != 0) return distanceCompare;
+        // If distance is the same, compare by rating (higher first)
+        double ratingA = double.tryParse(a.reviewsSum?.toString() ?? '0') ?? 0;
+        double ratingB = double.tryParse(b.reviewsSum?.toString() ?? '0') ?? 0;
+        return ratingB.compareTo(ratingA);
+      });
+
       // Comment out category filtering logic
       // List<String> usedCategoryIds = allNearestRestaurant
       //     .expand((vendor) => vendor.categoryID ?? [])

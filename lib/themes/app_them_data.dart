@@ -66,13 +66,13 @@ class AppThemeData {
   static const Color grey900 = Color(0xFF111827);
   static const Color outrageous300 = Color(0xFFFF6839);
 
-  static const String black = 'Urbanist-Black';
-  static const String bold = 'Urbanist-Bold';
-  static const String extraBold = 'Urbanist-ExtraBold';
-  static const String extraLight = 'Urbanist-ExtraLight';
-  static const String light = 'Urbanist-Light';
-  static const String medium = 'Urbanist-Medium';
-  static const String regular = 'Urbanist-Regular';
-  static const String semiBold = 'Urbanist-SemiBold';
-  static const String thin = 'Urbanist-Thin';
+  static const String black = 'Outfit-Black';
+  static const String bold = 'Outfit-Bold';
+  static const String extraBold = 'Outfit-ExtraBold';
+  static const String extraLight = 'Outfit-ExtraLight';
+  static const String light = 'Outfit-Light';
+  static const String medium = 'Outfit-Medium';
+  static const String regular = 'Outfit-Regular';
+  static const String semiBold = 'Outfit-SemiBold';
+  static const String thin = 'Outfit-Thin';
 }

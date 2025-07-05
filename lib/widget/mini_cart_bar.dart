@@ -82,7 +82,7 @@ class MiniCartBar extends StatelessWidget {
                   child: Text(
                     vendorName,
                     style: const TextStyle(
-                      color: Colors.orange,
+                      color: Color(0xFFff5201),
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
                       overflow: TextOverflow.ellipsis,
@@ -102,7 +102,7 @@ class MiniCartBar extends StatelessWidget {
                       Get.to(const CartScreen());
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.orange,
+                      backgroundColor: Color(0xFFff5201),
                       foregroundColor: Colors.white,
                       elevation: 2,
                       shape: RoundedRectangleBorder(

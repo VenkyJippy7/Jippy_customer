@@ -512,485 +512,500 @@ class HomeScreen extends StatelessWidget {
                                     ),
                                   ),
                                   Expanded(
-                                    child: SingleChildScrollView(
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          controller.storyList.isEmpty ||
-                                                  Constant.storyEnable == false
-                                              ? const SizedBox()
-                                              : Padding(
-                                                  padding: const EdgeInsets
-                                                      .symmetric(
-                                                      horizontal: 16),
-                                                  child: StoryView(
-                                                      controller: controller),
-                                                ),
-                                          SizedBox(
-                                            height: controller.storyList.isEmpty
-                                                ? 0
-                                                : 20,
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 16),
-                                            child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.start,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                titleView(themeChange,
-                                                    "Explore the Categories",
-                                                    () {
-                                                  Get.to(
-                                                      const ViewAllCategoryScreen());
-                                                }),
-                                                const SizedBox(
-                                                  height: 10,
-                                                ),
-                                                CategoryView(
-                                                    controller: controller),
-                                              ],
-                                            ),
-                                          ),
-                                          const SizedBox(
-                                            height: 32,
-                                          ),
-                                          controller.bannerModel.isEmpty
-                                              ? const SizedBox()
-                                              : Padding(
-                                                  padding: const EdgeInsets
-                                                      .symmetric(
-                                                      horizontal: 16),
-                                                  child: BannerView(
-                                                      controller: controller),
-                                                ),
-
-
-
-                                          controller
-                                                  .couponRestaurantList.isEmpty
-                                              ? const SizedBox()
-                                              : Padding(
-                                                  padding: const EdgeInsets
-                                                      .symmetric(
-                                                      horizontal: 16),
-                                                  child: Column(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment.start,
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      titleView(
-                                                          themeChange,
-                                                          "Largest Discounts"
-                                                              .tr, () {
-                                                        Get.to(
-                                                            const DiscountRestaurantListScreen(),
-                                                            arguments: {
-                                                              "vendorList":
-                                                                  controller
-                                                                      .couponRestaurantList,
-                                                              "couponList":
-                                                                  controller
-                                                                      .couponList,
-                                                              "title":
-                                                                  "Discounts Restaurants"
-                                                            });
-                                                      }),
-                                                      const SizedBox(
-                                                        height: 16,
-                                                      ),
-                                                      OfferView(
-                                                          controller:
-                                                              controller),
-                                                    ],
-                                                  ),
-                                                ),
-                                          const SizedBox(
-                                            height: 28,
-                                          ),
-                                          controller.newArrivalRestaurantList
-                                                  .isEmpty
-                                              ? const SizedBox()
-                                              : Container(
-                                                  decoration: BoxDecoration(
-                                                    color: const Color(0xFFE0E0E0),
-                                                    borderRadius: BorderRadius.circular(16),
-                                                  ),
-                                                  child: Padding(
+                                    child: NotificationListener<ScrollNotification>(
+                                      onNotification: (notification) {
+                                        if (notification is ScrollUpdateNotification) {
+                                          if (notification.scrollDelta != null && notification.scrollDelta! > 0) {
+                                            // Scrolling down (content moves up) => hide nav bar
+                                            if (controller.isNavBarVisible.value) controller.isNavBarVisible.value = false;
+                                          } else if (notification.scrollDelta != null && notification.scrollDelta! < 0) {
+                                            // Scrolling up (content moves down) => show nav bar
+                                            if (!controller.isNavBarVisible.value) controller.isNavBarVisible.value = true;
+                                          }
+                                        }
+                                        return false;
+                                      },
+                                      child: SingleChildScrollView(
+                                        controller: controller.scrollController,
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            controller.storyList.isEmpty ||
+                                                    Constant.storyEnable == false
+                                                ? const SizedBox()
+                                                : Padding(
                                                     padding: const EdgeInsets
                                                         .symmetric(
-                                                        horizontal: 16,
-                                                        vertical: 16),
+                                                        horizontal: 16),
+                                                    child: StoryView(
+                                                        controller: controller),
+                                                  ),
+                                            SizedBox(
+                                              height: controller.storyList.isEmpty
+                                                  ? 0
+                                                  : 20,
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.symmetric(
+                                                  horizontal: 16),
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  titleView(themeChange,
+                                                      "Explore the Categories",
+                                                      () {
+                                                    Get.to(
+                                                        const ViewAllCategoryScreen());
+                                                  }),
+                                                  const SizedBox(
+                                                    height: 10,
+                                                  ),
+                                                  CategoryView(
+                                                      controller: controller),
+                                                ],
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              height: 32,
+                                            ),
+                                            controller.bannerModel.isEmpty
+                                                ? const SizedBox()
+                                                : Padding(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        horizontal: 16),
+                                                    child: BannerView(
+                                                        controller: controller),
+                                                  ),
+
+
+
+                                            controller
+                                                    .couponRestaurantList.isEmpty
+                                                ? const SizedBox()
+                                                : Padding(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        horizontal: 16),
                                                     child: Column(
                                                       mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .start,
+                                                          MainAxisAlignment.start,
                                                       crossAxisAlignment:
                                                           CrossAxisAlignment
                                                               .start,
                                                       children: [
-                                                        Row(
-                                                          children: [
-                                                            Expanded(
-                                                              child: Text(
-                                                                "New Arrivals"
-                                                                    .tr,
-                                                                textAlign:
-                                                                    TextAlign
-                                                                        .start,
-                                                                style:
-                                                                    TextStyle(
-                                                                  fontFamily:
-                                                                      AppThemeData
-                                                                          .semiBold,
-                                                                  fontSize: 16,
-                                                                  color: AppThemeData.grey900,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                            InkWell(
-                                                              onTap: () {
-                                                                Get.to(
-                                                                    const RestaurantListScreen(),
-                                                                    arguments: {
-                                                                      "vendorList":
-                                                                          controller
-                                                                              .newArrivalRestaurantList,
-                                                                      "title":
-                                                                          "New Arrival"
-                                                                    })?.then(
-                                                                    (v) {
-                                                                  controller
-                                                                      .getFavouriteRestaurant();
-                                                                });
-                                                              },
-                                                              child: Text(
-                                                                "View all".tr,
-                                                                textAlign:
-                                                                    TextAlign
-                                                                        .center,
-                                                                style:
-                                                                    TextStyle(
-                                                                  fontFamily:
-                                                                      AppThemeData
-                                                                          .regular,
-                                                                  color: AppThemeData.primary300,
-                                                                ),
-                                                              ),
-                                                            )
-                                                          ],
-                                                        ),
+                                                        titleView(
+                                                            themeChange,
+                                                            "Largest Discounts"
+                                                                .tr, () {
+                                                          Get.to(
+                                                              const DiscountRestaurantListScreen(),
+                                                              arguments: {
+                                                                "vendorList":
+                                                                    controller
+                                                                        .couponRestaurantList,
+                                                                "couponList":
+                                                                    controller
+                                                                        .couponList,
+                                                                "title":
+                                                                    "Discounts Restaurants"
+                                                              });
+                                                        }),
                                                         const SizedBox(
                                                           height: 16,
                                                         ),
-                                                        NewArrival(
+                                                        OfferView(
                                                             controller:
                                                                 controller),
                                                       ],
                                                     ),
                                                   ),
-                                                ),
-                                          const SizedBox(
-                                            height: 20,
-                                          ),
-                                          controller.bannerBottomModel.isEmpty
-                                              ? const SizedBox()
-                                              : Padding(
-                                                  padding: const EdgeInsets
-                                                      .symmetric(
-                                                      horizontal: 16),
-                                                  child: BannerBottomView(
-                                                      controller: controller),
-                                                ),
-                                          Visibility(
-                                            visible:
-                                                (Constant.isEnableAdsFeature ==
-                                                        true &&
-                                                    controller.advertisementList
-                                                        .isNotEmpty),
-                                            child: const SizedBox(
-                                              height: 20,
+                                            const SizedBox(
+                                              height: 28,
                                             ),
-                                          ),
-                                          Visibility(
-                                            visible:
-                                                Constant.isEnableAdsFeature ==
-                                                    true,
-                                            child:
-                                                controller.advertisementList
-                                                        .isEmpty
-                                                    ? const SizedBox()
-                                                    : Container(
-                                                        color: AppThemeData
-                                                            .primary300
-                                                            .withAlpha(40),
-                                                        child: Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .symmetric(
-                                                                  horizontal:
-                                                                      16,
-                                                                  vertical: 16),
-                                                          child: Column(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .start,
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment
-                                                                    .start,
+                                            controller.newArrivalRestaurantList
+                                                    .isEmpty
+                                                ? const SizedBox()
+                                                : Container(
+                                                    decoration: BoxDecoration(
+                                                      color: const Color(0xFFE0E0E0),
+                                                      borderRadius: BorderRadius.circular(16),
+                                                    ),
+                                                    child: Padding(
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                          horizontal: 16,
+                                                          vertical: 16),
+                                                      child: Column(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .start,
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Row(
                                                             children: [
-                                                              Row(
-                                                                children: [
-                                                                  Expanded(
-                                                                    child: Text(
-                                                                      "Highlights for you"
-                                                                          .tr,
-                                                                      textAlign:
-                                                                          TextAlign
-                                                                              .start,
-                                                                      style:
-                                                                          TextStyle(
-                                                                        fontFamily:
-                                                                            AppThemeData.semiBold,
-                                                                        fontSize:
-                                                                            16,
-                                                                        color: themeChange.getThem()
-                                                                            ? AppThemeData.grey50
-                                                                            : AppThemeData.grey900,
-                                                                      ),
-                                                                    ),
+                                                              Expanded(
+                                                                child: Text(
+                                                                  "New Arrivals"
+                                                                      .tr,
+                                                                  textAlign:
+                                                                      TextAlign
+                                                                          .start,
+                                                                  style:
+                                                                      TextStyle(
+                                                                    fontFamily:
+                                                                        AppThemeData
+                                                                            .semiBold,
+                                                                    fontSize: 16,
+                                                                    color: AppThemeData.grey900,
                                                                   ),
-                                                                  InkWell(
-                                                                    onTap: () {
-                                                                      Get.to(AllAdvertisementScreen())
-                                                                          ?.then(
-                                                                              (value) {
-                                                                        controller
-                                                                            .getFavouriteRestaurant();
-                                                                      });
-                                                                    },
-                                                                    child: Text(
-                                                                      "View all"
-                                                                          .tr,
-                                                                      textAlign:
-                                                                          TextAlign
-                                                                              .center,
-                                                                      style:
-                                                                          TextStyle(
-                                                                        fontFamily:
-                                                                            AppThemeData.regular,
-                                                                        color: themeChange.getThem()
-                                                                            ? AppThemeData.primary300
-                                                                            : AppThemeData.primary300,
-                                                                      ),
-                                                                    ),
-                                                                  )
-                                                                ],
-                                                              ),
-                                                              const SizedBox(
-                                                                height: 16,
-                                                              ),
-                                                              SizedBox(
-                                                                height: 220,
-                                                                child: ListView
-                                                                    .builder(
-                                                                  physics:
-                                                                      const BouncingScrollPhysics(),
-                                                                  scrollDirection:
-                                                                      Axis.horizontal,
-                                                                  itemCount: controller
-                                                                              .advertisementList
-                                                                              .length >=
-                                                                          10
-                                                                      ? 10
-                                                                      : controller
-                                                                          .advertisementList
-                                                                          .length,
-                                                                  padding:
-                                                                      EdgeInsets
-                                                                          .all(
-                                                                              0),
-                                                                  itemBuilder:
-                                                                      (BuildContext
-                                                                              context,
-                                                                          int index) {
-                                                                    return AdvertisementHomeCard(
-                                                                        controller:
-                                                                            controller,
-                                                                        model: controller
-                                                                            .advertisementList[index]);
-                                                                  },
                                                                 ),
                                                               ),
+                                                              InkWell(
+                                                                onTap: () {
+                                                                  Get.to(
+                                                                      const RestaurantListScreen(),
+                                                                      arguments: {
+                                                                        "vendorList":
+                                                                            controller
+                                                                                .newArrivalRestaurantList,
+                                                                        "title":
+                                                                            "New Arrival"
+                                                                      })?.then(
+                                                                      (v) {
+                                                                    controller
+                                                                        .getFavouriteRestaurant();
+                                                                  });
+                                                                },
+                                                                child: Text(
+                                                                  "View all".tr,
+                                                                  textAlign:
+                                                                      TextAlign
+                                                                          .center,
+                                                                  style:
+                                                                      TextStyle(
+                                                                    fontFamily:
+                                                                        AppThemeData
+                                                                            .regular,
+                                                                    color: AppThemeData.primary300,
+                                                                  ),
+                                                                ),
+                                                              )
                                                             ],
                                                           ),
-                                                        ),
-                                                      ),
-                                          ),
-                                          const SizedBox(
-                                            height: 20,
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 16),
-                                            child: Container(
-                                              decoration: ShapeDecoration(
-                                                color: themeChange.getThem()
-                                                    ? AppThemeData.grey700
-                                                    : AppThemeData.grey200,
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          120),
-                                                ),
-                                              ),
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                child: Row(
-                                                  children: [
-                                                    Expanded(
-                                                      child: InkWell(
-                                                        onTap: () {
-                                                          controller.isPopular
-                                                              .value = true;
-                                                        },
-                                                        child: Container(
-                                                          decoration: controller
-                                                                      .isPopular
-                                                                      .value ==
-                                                                  false
-                                                              ? null
-                                                              : ShapeDecoration(
-                                                                  color: AppThemeData
-                                                                      .grey900,
-                                                                  shape:
-                                                                      RoundedRectangleBorder(
-                                                                    borderRadius:
-                                                                        BorderRadius.circular(
-                                                                            120),
-                                                                  ),
-                                                                ),
-                                                          child: Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .symmetric(
-                                                                    horizontal:
-                                                                        16,
-                                                                    vertical:
-                                                                        10),
-                                                            child: Text(
-                                                              "Popular Restaurants"
-                                                                  .tr,
-                                                              textAlign:
-                                                                  TextAlign
-                                                                      .center,
-                                                              style: TextStyle(
-                                                                fontFamily:
-                                                                    AppThemeData
-                                                                        .semiBold,
-                                                                color: themeChange.getThem()
-                                                                    ? AppThemeData
-                                                                        .primary300
-                                                                    : AppThemeData
-                                                                        .primary300,
-                                                              ),
-                                                            ),
+                                                          const SizedBox(
+                                                            height: 16,
                                                           ),
-                                                        ),
+                                                          NewArrival(
+                                                              controller:
+                                                                  controller),
+                                                        ],
                                                       ),
                                                     ),
-                                                    Expanded(
-                                                      child: InkWell(
-                                                        onTap: () {
-                                                          controller.isPopular
-                                                              .value = false;
-                                                        },
-                                                        child: Container(
-                                                          decoration: controller
-                                                                      .isPopular
-                                                                      .value ==
-                                                                  true
-                                                              ? null
-                                                              : ShapeDecoration(
-                                                                  color: AppThemeData
-                                                                      .grey900,
-                                                                  shape:
-                                                                      RoundedRectangleBorder(
-                                                                    borderRadius:
-                                                                        BorderRadius.circular(
-                                                                            120),
-                                                                  ),
-                                                                ),
+                                                  ),
+                                            const SizedBox(
+                                              height: 20,
+                                            ),
+                                            controller.bannerBottomModel.isEmpty
+                                                ? const SizedBox()
+                                                : Padding(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        horizontal: 16),
+                                                    child: BannerBottomView(
+                                                        controller: controller),
+                                                  ),
+                                            Visibility(
+                                              visible:
+                                                  (Constant.isEnableAdsFeature ==
+                                                          true &&
+                                                      controller.advertisementList
+                                                          .isNotEmpty),
+                                              child: const SizedBox(
+                                                height: 20,
+                                              ),
+                                            ),
+                                            Visibility(
+                                              visible:
+                                                  Constant.isEnableAdsFeature ==
+                                                      true,
+                                              child:
+                                                  controller.advertisementList
+                                                          .isEmpty
+                                                      ? const SizedBox()
+                                                      : Container(
+                                                          color: AppThemeData
+                                                              .primary300
+                                                              .withAlpha(40),
                                                           child: Padding(
                                                             padding:
                                                                 const EdgeInsets
                                                                     .symmetric(
                                                                     horizontal:
                                                                         16,
-                                                                    vertical:
-                                                                        10),
-                                                            child: Text(
-                                                              "All Restaurants"
-                                                                  .tr,
-                                                              textAlign:
-                                                                  TextAlign
-                                                                      .center,
-                                                              style: TextStyle(
-                                                                fontFamily:
-                                                                    AppThemeData
-                                                                        .semiBold,
-                                                                color: controller
-                                                                            .isPopular
-                                                                            .value ==
-                                                                        true
-                                                                    ? themeChange
-                                                                            .getThem()
-                                                                        ? AppThemeData
-                                                                            .grey400
-                                                                        : AppThemeData
-                                                                            .grey500
-                                                                    : themeChange
-                                                                            .getThem()
-                                                                        ? AppThemeData
-                                                                            .primary300
-                                                                        : AppThemeData
-                                                                            .primary300,
+                                                                    vertical: 16),
+                                                            child: Column(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .start,
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment
+                                                                      .start,
+                                                              children: [
+                                                                Row(
+                                                                  children: [
+                                                                    Expanded(
+                                                                      child: Text(
+                                                                        "Highlights for you"
+                                                                            .tr,
+                                                                        textAlign:
+                                                                            TextAlign
+                                                                                .start,
+                                                                        style:
+                                                                            TextStyle(
+                                                                          fontFamily:
+                                                                              AppThemeData.semiBold,
+                                                                          fontSize:
+                                                                              16,
+                                                                          color: themeChange.getThem()
+                                                                              ? AppThemeData.grey50
+                                                                              : AppThemeData.grey900,
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                    InkWell(
+                                                                      onTap: () {
+                                                                        Get.to(AllAdvertisementScreen())
+                                                                            ?.then(
+                                                                                (value) {
+                                                                          controller
+                                                                              .getFavouriteRestaurant();
+                                                                        });
+                                                                      },
+                                                                      child: Text(
+                                                                        "View all"
+                                                                            .tr,
+                                                                        textAlign:
+                                                                            TextAlign
+                                                                                .center,
+                                                                        style:
+                                                                            TextStyle(
+                                                                          fontFamily:
+                                                                              AppThemeData.regular,
+                                                                          color: themeChange.getThem()
+                                                                              ? AppThemeData.primary300
+                                                                              : AppThemeData.primary300,
+                                                                        ),
+                                                                      ),
+                                                                    )
+                                                                  ],
+                                                                ),
+                                                                const SizedBox(
+                                                                  height: 16,
+                                                                ),
+                                                                SizedBox(
+                                                                  height: 220,
+                                                                  child: ListView
+                                                                      .builder(
+                                                                    physics:
+                                                                        const BouncingScrollPhysics(),
+                                                                    scrollDirection:
+                                                                        Axis.horizontal,
+                                                                    itemCount: controller
+                                                                                .advertisementList
+                                                                                .length >=
+                                                                            10
+                                                                        ? 10
+                                                                        : controller
+                                                                            .advertisementList
+                                                                            .length,
+                                                                    padding:
+                                                                        EdgeInsets
+                                                                            .all(
+                                                                                0),
+                                                                    itemBuilder:
+                                                                        (BuildContext
+                                                                                context,
+                                                                            int index) {
+                                                                      return AdvertisementHomeCard(
+                                                                          controller:
+                                                                              controller,
+                                                                          model: controller
+                                                                              .advertisementList[index]);
+                                                                    },
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                        ),
+                                            ),
+                                            const SizedBox(
+                                              height: 20,
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.symmetric(
+                                                  horizontal: 16),
+                                              child: Container(
+                                                decoration: ShapeDecoration(
+                                                  color: themeChange.getThem()
+                                                      ? AppThemeData.grey700
+                                                      : AppThemeData.grey200,
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            120),
+                                                  ),
+                                                ),
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(8.0),
+                                                  child: Row(
+                                                    children: [
+                                                      Expanded(
+                                                        child: InkWell(
+                                                          onTap: () {
+                                                            controller.isPopular
+                                                                .value = true;
+                                                          },
+                                                          child: Container(
+                                                            decoration: controller
+                                                                        .isPopular
+                                                                        .value ==
+                                                                    false
+                                                                ? null
+                                                                : ShapeDecoration(
+                                                                    color: AppThemeData
+                                                                            .grey900,
+                                                                    shape:
+                                                                        RoundedRectangleBorder(
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              120),
+                                                                    ),
+                                                                  ),
+                                                            child: Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .symmetric(
+                                                                      horizontal:
+                                                                          16,
+                                                                      vertical:
+                                                                          10),
+                                                              child: Text(
+                                                                "Popular Restaurants"
+                                                                    .tr,
+                                                                textAlign:
+                                                                    TextAlign
+                                                                        .center,
+                                                                style: TextStyle(
+                                                                  fontFamily:
+                                                                      AppThemeData
+                                                                          .semiBold,
+                                                                  color: themeChange.getThem()
+                                                                      ? AppThemeData
+                                                                          .primary300
+                                                                      : AppThemeData
+                                                                          .primary300,
+                                                                ),
                                                               ),
                                                             ),
                                                           ),
                                                         ),
                                                       ),
-                                                    )
-                                                  ],
+                                                      Expanded(
+                                                        child: InkWell(
+                                                          onTap: () {
+                                                            controller.isPopular
+                                                                .value = false;
+                                                          },
+                                                          child: Container(
+                                                            decoration: controller
+                                                                        .isPopular
+                                                                        .value ==
+                                                                    true
+                                                                ? null
+                                                                : ShapeDecoration(
+                                                                    color: AppThemeData
+                                                                            .grey900,
+                                                                    shape:
+                                                                        RoundedRectangleBorder(
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              120),
+                                                                    ),
+                                                                  ),
+                                                            child: Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .symmetric(
+                                                                      horizontal:
+                                                                          16,
+                                                                      vertical:
+                                                                          10),
+                                                              child: Text(
+                                                                "All Restaurants"
+                                                                    .tr,
+                                                                textAlign:
+                                                                    TextAlign
+                                                                        .center,
+                                                                style: TextStyle(
+                                                                  fontFamily:
+                                                                      AppThemeData
+                                                                          .semiBold,
+                                                                  color: controller
+                                                                              .isPopular
+                                                                              .value ==
+                                                                          true
+                                                                      ? themeChange
+                                                                              .getThem()
+                                                                          ? AppThemeData
+                                                                              .grey400
+                                                                          : AppThemeData
+                                                                              .grey500
+                                                                      : themeChange
+                                                                              .getThem()
+                                                                          ? AppThemeData
+                                                                              .primary300
+                                                                          : AppThemeData
+                                                                              .primary300,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      )
+                                                    ],
+                                                  ),
                                                 ),
                                               ),
                                             ),
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 16, vertical: 20),
-                                            child: controller.isPopular.value
-                                                ? PopularRestaurant(
-                                                    controller: controller)
-                                                : AllRestaurant(
-                                                    controller: controller),
-                                          ),
-                                          // controller.isPopular.value
-                                          //     ? PopularRestaurant(
-                                          //   controller: controller,
-                                          // )
-                                          //     : PopularRestaurant(
-                                          //   controller: controller,
-                                          // ),
-                                        ],
+                                            Padding(
+                                              padding: const EdgeInsets.symmetric(
+                                                  horizontal: 16, vertical: 20),
+                                              child: controller.isPopular.value
+                                                  ? PopularRestaurant(
+                                                      controller: controller)
+                                                  : AllRestaurant(
+                                                      controller: controller),
+                                            ),
+                                            // controller.isPopular.value
+                                            //     ? PopularRestaurant(
+                                            //   controller: controller,
+                                            // )
+                                            //     : PopularRestaurant(
+                                            //   controller: controller,
+                                            // ),
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   )
@@ -1174,45 +1189,46 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
           ),
-          bottomNavigationBar: Container(
-            color: themeChange.getThem()
-                ? AppThemeData.surfaceDark
-                : AppThemeData.surface,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                InkWell(
-                  onTap: () {
-                    Get.to(const SearchScreen(),
-                        arguments: {"vendorList": controller.allNearestRestaurant});
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 50.0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: AppThemeData.primary200,
-                          width: 2,
+          bottomNavigationBar: Obx(() => controller.isNavBarVisible.value
+            ? Container(
+                color: themeChange.getThem()
+                    ? AppThemeData.surfaceDark
+                    : AppThemeData.surface,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        Get.to(const SearchScreen(),
+                            arguments: {"vendorList": controller.allNearestRestaurant});
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 50.0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: AppThemeData.primary200,
+                              width: 2,
+                            ),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: TextFieldWidget(
+                            hintText: 'Search the dish, restaurant, food, meals'.tr,
+                            controller: null,
+                            enable: false,
+                            prefix: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 16),
+                              child: SvgPicture.asset("assets/icons/ic_search.svg"),
+                            ),
+                          ),
                         ),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: TextFieldWidget(
-                        hintText: 'Search the dish, restaurant, food, meals'.tr,
-                        controller: null,
-                        enable: false,
-                        prefix: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: SvgPicture.asset("assets/icons/ic_search.svg"),
-                        ),
-
                       ),
                     ),
-                  ),
+                    const SizedBox(height: 10),
+                  ],
                 ),
-                const SizedBox(height: 10),
-              ],
-            ),
-          ),
+              )
+            : SizedBox.shrink()),
         );
       },
     );

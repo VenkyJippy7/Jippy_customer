@@ -1134,45 +1134,96 @@ class _CartScreenState extends State<CartScreen> {
                                                     ),
                                                   ),
                                                 ),
-                                                (controller.vendorModel.value
-                                                                .isSelfDelivery ==
-                                                            true &&
-                                                        Constant.isSelfDeliveryFeature ==
-                                                            true)
+                                                (controller.vendorModel.value.isSelfDelivery == true &&
+                                                        Constant.isSelfDeliveryFeature == true)
                                                     ? Text(
                                                         'Free Delivery',
-                                                        textAlign:
-                                                            TextAlign.start,
+                                                        textAlign: TextAlign.start,
                                                         style: TextStyle(
-                                                          fontFamily:
-                                                              AppThemeData
-                                                                  .regular,
-                                                          color: AppThemeData
-                                                              .success400,
+                                                          fontFamily: AppThemeData.regular,
+                                                          color: AppThemeData.success400,
                                                           fontSize: 16,
                                                         ),
                                                       )
-                                                    : Text(
-                                                        Constant.amountShow(
-                                                            amount: controller
-                                                                .deliveryCharges
-                                                                .value
-                                                                .toString()),
-                                                        textAlign:
-                                                            TextAlign.start,
-                                                        style: TextStyle(
-                                                          fontFamily:
-                                                              AppThemeData
-                                                                  .regular,
-                                                          color: themeChange
-                                                                  .getThem()
-                                                              ? AppThemeData
-                                                                  .grey50
-                                                              : AppThemeData
-                                                                  .grey900,
-                                                          fontSize: 16,
-                                                        ),
-                                                      ),
+                                                    : (controller.subTotal.value >= (controller.deliveryChargeModel.value.itemTotalThreshold ?? 299) &&
+                                                        controller.totalDistance.value > (controller.deliveryChargeModel.value.freeDeliveryDistanceKm ?? 7))
+                                                        ? Row(
+                                                            children: [
+                                                              Text(
+                                                                'Free Delivery',
+                                                                textAlign: TextAlign.start,
+                                                                style: TextStyle(
+                                                                  fontFamily: AppThemeData.regular,
+                                                                  color: AppThemeData.success400,
+                                                                  fontSize: 16,
+                                                                ),
+                                                              ),
+                                                              const SizedBox(width: 8),
+                                                              Text(
+                                                                Constant.amountShow(amount: controller.originalDeliveryFee.value.toString()),
+                                                                style: TextStyle(
+                                                                  fontFamily: AppThemeData.regular,
+                                                                  color: AppThemeData.danger300,
+                                                                  fontSize: 16,
+                                                                  decoration: TextDecoration.lineThrough,
+                                                                  decorationColor: AppThemeData.danger300,
+                                                                ),
+                                                              ),
+                                                              const SizedBox(width: 8),
+                                                              Text(
+                                                                Constant.amountShow(amount: controller.deliveryCharges.value.toString()),
+                                                                style: TextStyle(
+                                                                  fontFamily: AppThemeData.regular,
+                                                                  color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900,
+                                                                  fontSize: 16,
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          )
+                                                        : (controller.subTotal.value >= (controller.deliveryChargeModel.value.itemTotalThreshold ?? 299) &&
+                                                            controller.totalDistance.value <= (controller.deliveryChargeModel.value.freeDeliveryDistanceKm ?? 7))
+                                                            ? Row(
+                                                                children: [
+                                                                  Text(
+                                                                    'Free Delivery',
+                                                                    textAlign: TextAlign.start,
+                                                                    style: TextStyle(
+                                                                      fontFamily: AppThemeData.regular,
+                                                                      color: AppThemeData.success400,
+                                                                      fontSize: 16,
+                                                                    ),
+                                                                  ),
+                                                                  const SizedBox(width: 8),
+                                                                  Text(
+                                                                    Constant.amountShow(amount: (controller.deliveryChargeModel.value.baseDeliveryCharge ?? 23).toString()),
+                                                                    style: TextStyle(
+                                                                      fontFamily: AppThemeData.regular,
+                                                                      color: AppThemeData.danger300,
+                                                                      fontSize: 16,
+                                                                      decoration: TextDecoration.lineThrough,
+                                                                      decorationColor: AppThemeData.danger300,
+                                                                    ),
+                                                                  ),
+                                                                  const SizedBox(width: 8),
+                                                                  Text(
+                                                                    Constant.amountShow(amount: '0.00'),
+                                                                    style: TextStyle(
+                                                                      fontFamily: AppThemeData.regular,
+                                                                      color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900,
+                                                                      fontSize: 16,
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              )
+                                                            : Text(
+                                                                Constant.amountShow(amount: controller.deliveryCharges.value.toString()),
+                                                                textAlign: TextAlign.start,
+                                                                style: TextStyle(
+                                                                  fontFamily: AppThemeData.regular,
+                                                                  color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900,
+                                                                  fontSize: 16,
+                                                                ),
+                                                              ),
                                               ],
                                             ),
                                       const SizedBox(
@@ -1421,76 +1472,45 @@ class _CartScreenState extends State<CartScreen> {
                                       const SizedBox(
                                         height: 10,
                                       ),
-                                      ListView.builder(
-                                        itemCount: Constant.taxList!.length,
-                                        shrinkWrap: true,
-                                        padding: EdgeInsets.zero,
-                                        physics:
-                                            const NeverScrollableScrollPhysics(),
-                                        itemBuilder: (context, index) {
-                                          TaxModel taxModel =
-                                              Constant.taxList![index];
-                                          return Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 5),
-                                            child: Row(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Expanded(
-                                                  child: Text(
-                                                    "Taxes & Charges",
-                                                    textAlign: TextAlign.start,
-                                                    style: TextStyle(
-                                                      fontFamily:
-                                                          AppThemeData.regular,
-                                                      color: themeChange
-                                                              .getThem()
-                                                          ? AppThemeData.grey300
-                                                          : AppThemeData
-                                                              .grey600,
-                                                      fontSize: 16,
-                                                    ),
-                                                  ),
-                                                ),
-                                                Text(
-                                                  Constant.amountShow(
-                                                      amount: Constant.calculateTax(
-                                                              amount: (double.parse(controller
-                                                                          .subTotal
-                                                                          .value
-                                                                          .toString()) -
-                                                                      controller
-                                                                          .couponAmount
-                                                                          .value -
-                                                                      controller
-                                                                          .specialDiscountAmount
-                                                                          .value)
-                                                                  .toString(),
-                                                              taxModel:
-                                                                  taxModel)
-                                                          .toString()),
-                                                  textAlign: TextAlign.start,
-                                                  style: TextStyle(
-                                                    fontFamily:
-                                                        AppThemeData.regular,
-                                                    color: themeChange.getThem()
-                                                        ? AppThemeData.grey50
-                                                        : AppThemeData.grey900,
-                                                    fontSize: 16,
-                                                  ),
-                                                ),
-                                              ],
+                                      Row(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              "Taxes & Charges",
+                                              textAlign: TextAlign.start,
+                                              style: TextStyle(
+                                                fontFamily:
+                                                    AppThemeData.regular,
+                                                color: themeChange.getThem()
+                                                    ? AppThemeData.grey300
+                                                    : AppThemeData.grey600,
+                                                fontSize: 16,
+                                              ),
                                             ),
-                                          );
-                                        },
+                                          ),
+                                          Text(
+                                            Constant.amountShow(
+                                                amount: controller
+                                                    .taxAmount.value
+                                                    .toString()),
+                                            textAlign: TextAlign.start,
+                                            style: TextStyle(
+                                              fontFamily:
+                                                  AppThemeData.regular,
+                                              color: themeChange.getThem()
+                                                  ? AppThemeData.grey50
+                                                  : AppThemeData.grey900,
+                                              fontSize: 16,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                       const SizedBox(
                                         height: 10,
                                       ),
                                       Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           Expanded(
                                             child: Text(

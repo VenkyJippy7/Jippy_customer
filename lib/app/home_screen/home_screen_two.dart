@@ -486,7 +486,7 @@ class HomeScreenTwo extends StatelessWidget {
                                             padding: const EdgeInsets.symmetric(horizontal: 16),
                                             child: SvgPicture.asset(
                                               "assets/icons/ic_search.svg",
-                                              color: Colors.orange,
+                                              color: Color(0xFFff5201),
                                             ),
                                           ),
                                           hints: [
@@ -1459,85 +1459,15 @@ class RestaurantView extends StatelessWidget {
                               borderRadius: BorderRadius.circular(16)),
                         ),
                         child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             ClipRRect(
-                              borderRadius:
-                                  const BorderRadius.all(Radius.circular(16)),
-                              child: Stack(
-                                children: [
-                                  NetworkImageWidget(
-                                    height: Responsive.height(14, context),
-                                    width: Responsive.width(30, context),
-                                    imageUrl: vendorModel.photo.toString(),
-                                    fit: BoxFit.cover,
-                                  ),
-                                  Container(
-                                    height: Responsive.height(14, context),
-                                    width: Responsive.width(30, context),
-                                    decoration: BoxDecoration(
-                                      gradient: LinearGradient(
-                                        begin: const Alignment(-0.00, -1.00),
-                                        end: const Alignment(0, 1),
-                                        colors: [
-                                          Colors.black.withOpacity(0),
-                                          const Color(0xFF111827)
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  discountAmountTempList.isEmpty
-                                      ? const SizedBox()
-                                      : Positioned(
-                                          bottom: 0,
-                                          left: 0,
-                                          right: 0,
-                                          child: Padding(
-                                            padding: const EdgeInsets.only(
-                                                bottom: 10),
-                                            child: Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
-                                              children: [
-                                                Text(
-                                                  "Upto".tr,
-                                                  textAlign: TextAlign.center,
-                                                  maxLines: 1,
-                                                  style: TextStyle(
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                    fontFamily:
-                                                        AppThemeData.regular,
-                                                    fontWeight: FontWeight.w900,
-                                                    color: themeChange.getThem()
-                                                        ? AppThemeData.grey50
-                                                        : AppThemeData.grey50,
-                                                  ),
-                                                ),
-                                                Text(
-                                                  discountAmountTempList
-                                                          .reduce(min)
-                                                          .toString() +
-                                                      "% OFF".tr,
-                                                  textAlign: TextAlign.center,
-                                                  maxLines: 1,
-                                                  style: TextStyle(
-                                                    fontSize: 18,
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                    fontFamily:
-                                                        AppThemeData.semiBold,
-                                                    color: themeChange.getThem()
-                                                        ? AppThemeData.grey50
-                                                        : AppThemeData.grey50,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        )
-                                ],
+                              borderRadius: BorderRadius.circular(8),
+                              child: NetworkImageWidget(
+                                height: 106,
+                                width: 106,
+                                imageUrl: vendorModel.photo.toString(),
+                                fit: BoxFit.cover,
                               ),
                             ),
                             const SizedBox(
@@ -1545,16 +1475,16 @@ class RestaurantView extends StatelessWidget {
                             ),
                             Expanded(
                               child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
                                     vendorModel.title.toString(),
                                     textAlign: TextAlign.start,
                                     maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
                                       fontSize: 18,
-                                      overflow: TextOverflow.ellipsis,
                                       fontFamily: AppThemeData.semiBold,
                                       color: themeChange.getThem()
                                           ? AppThemeData.grey50
@@ -1565,8 +1495,8 @@ class RestaurantView extends StatelessWidget {
                                     vendorModel.location.toString(),
                                     textAlign: TextAlign.start,
                                     maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
-                                      overflow: TextOverflow.ellipsis,
                                       fontFamily: AppThemeData.medium,
                                       fontWeight: FontWeight.w500,
                                       color: themeChange.getThem()
@@ -1595,8 +1525,8 @@ class RestaurantView extends StatelessWidget {
                                             ),
                                             Text(
                                               "Free Delivery".tr,
+                                              overflow: TextOverflow.ellipsis,
                                               style: TextStyle(
-                                                overflow: TextOverflow.ellipsis,
                                                 fontFamily: AppThemeData.medium,
                                                 fontWeight: FontWeight.w500,
                                                 color: themeChange.getThem()
@@ -1624,8 +1554,8 @@ class RestaurantView extends StatelessWidget {
                                             "${Constant.calculateReview(reviewCount: vendorModel.reviewsCount.toString(), reviewSum: vendorModel.reviewsSum.toString())} (${vendorModel.reviewsCount!.toStringAsFixed(0)})",
                                             textAlign: TextAlign.start,
                                             maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
                                             style: TextStyle(
-                                              overflow: TextOverflow.ellipsis,
                                               fontFamily: AppThemeData.medium,
                                               fontWeight: FontWeight.w500,
                                               color: themeChange.getThem()
@@ -1663,8 +1593,8 @@ class RestaurantView extends StatelessWidget {
                                             )} ${Constant.distanceType}",
                                             textAlign: TextAlign.start,
                                             maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
                                             style: TextStyle(
-                                              overflow: TextOverflow.ellipsis,
                                               fontFamily: AppThemeData.medium,
                                               fontWeight: FontWeight.w500,
                                               color: themeChange.getThem()

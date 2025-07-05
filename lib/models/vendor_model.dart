@@ -315,14 +315,31 @@ class DeliveryCharge {
   num? minimumDeliveryCharges;
   num? deliveryChargesPerKm;
   bool? vendorCanModify;
+  num? itemTotalThreshold;
+  num? baseDeliveryCharge;
+  num? freeDeliveryDistanceKm;
+  num? perKmChargeAboveFreeDistance;
 
-  DeliveryCharge({this.minimumDeliveryChargesWithinKm, this.minimumDeliveryCharges, this.deliveryChargesPerKm, this.vendorCanModify});
+  DeliveryCharge({
+    this.minimumDeliveryChargesWithinKm,
+    this.minimumDeliveryCharges,
+    this.deliveryChargesPerKm,
+    this.vendorCanModify,
+    this.itemTotalThreshold,
+    this.baseDeliveryCharge,
+    this.freeDeliveryDistanceKm,
+    this.perKmChargeAboveFreeDistance,
+  });
 
   DeliveryCharge.fromJson(Map<String, dynamic> json) {
     minimumDeliveryChargesWithinKm = json['minimum_delivery_charges_within_km'];
     minimumDeliveryCharges = json['minimum_delivery_charges'];
     deliveryChargesPerKm = json['delivery_charges_per_km'];
     vendorCanModify = json['vendor_can_modify'];
+    itemTotalThreshold = json['item_total_threshold'];
+    baseDeliveryCharge = json['base_delivery_charge'];
+    freeDeliveryDistanceKm = json['free_delivery_distance_km'];
+    perKmChargeAboveFreeDistance = json['per_km_charge_above_free_distance'];
   }
 
   Map<String, dynamic> toJson() {
@@ -331,6 +348,10 @@ class DeliveryCharge {
     data['minimum_delivery_charges'] = minimumDeliveryCharges;
     data['delivery_charges_per_km'] = deliveryChargesPerKm;
     data['vendor_can_modify'] = vendorCanModify;
+    data['item_total_threshold'] = itemTotalThreshold;
+    data['base_delivery_charge'] = baseDeliveryCharge;
+    data['free_delivery_distance_km'] = freeDeliveryDistanceKm;
+    data['per_km_charge_above_free_distance'] = perKmChargeAboveFreeDistance;
     return data;
   }
 }

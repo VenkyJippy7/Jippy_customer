@@ -85,6 +85,8 @@ class CartController extends GetxController {
   RxDouble totalAmount = 0.0.obs;
   Rx<CouponModel> selectedCouponModel = CouponModel().obs;
 
+  RxDouble originalDeliveryFee = 0.0.obs;
+
   @override
   void onInit() {
     // TODO: implement onInit
@@ -191,41 +193,32 @@ class CartController extends GetxController {
             lng1: selectedAddress.value.location!.longitude.toString(),
             lat2: vendorModel.value.latitude.toString(),
             lng2: vendorModel.value.longitude.toString()));
-        if (vendorModel.value.isSelfDelivery == true &&
-            Constant.isSelfDeliveryFeature == true) {
+        final dc = deliveryChargeModel.value;
+        final subtotal = subTotal.value;
+        final threshold = dc.itemTotalThreshold ?? 299;
+        final baseCharge = dc.baseDeliveryCharge ?? 23;
+        final freeKm = dc.freeDeliveryDistanceKm ?? 7;
+        final perKm = dc.perKmChargeAboveFreeDistance ?? 8;
+        if (vendorModel.value.isSelfDelivery == true && Constant.isSelfDeliveryFeature == true) {
           deliveryCharges.value = 0.0;
-        } else if (deliveryChargeModel.value.vendorCanModify == false) {
-          if (totalDistance.value >
-              deliveryChargeModel.value.minimumDeliveryChargesWithinKm!) {
-            deliveryCharges.value = totalDistance.value *
-                deliveryChargeModel.value.deliveryChargesPerKm!;
+          originalDeliveryFee.value = 0.0;
+        } else if (subtotal < threshold) {
+          if (totalDistance.value <= freeKm) {
+            deliveryCharges.value = baseCharge.toDouble();
+            originalDeliveryFee.value = baseCharge.toDouble();
           } else {
-            deliveryCharges.value =
-                (deliveryChargeModel.value.minimumDeliveryCharges)!.toDouble();
+            double extraKm = (totalDistance.value - freeKm).ceilToDouble();
+            deliveryCharges.value = (baseCharge + (extraKm * perKm)).toDouble();
+            originalDeliveryFee.value = deliveryCharges.value;
           }
         } else {
-          if (vendorModel.value.deliveryCharge != null) {
-            if (totalDistance.value >
-                vendorModel
-                    .value.deliveryCharge!.minimumDeliveryChargesWithinKm!) {
-              deliveryCharges.value = (totalDistance.value *
-                      vendorModel.value.deliveryCharge!.deliveryChargesPerKm!)
-                  .toDouble();
-            } else {
-              deliveryCharges.value = vendorModel
-                  .value.deliveryCharge!.minimumDeliveryCharges!
-                  .toDouble();
-            }
+          if (totalDistance.value <= freeKm) {
+            deliveryCharges.value = 0.0;
+            originalDeliveryFee.value = baseCharge.toDouble();
           } else {
-            if (totalDistance.value >
-                deliveryChargeModel.value.minimumDeliveryChargesWithinKm!) {
-              deliveryCharges.value = (totalDistance.value *
-                      deliveryChargeModel.value.deliveryChargesPerKm!)
-                  .toDouble();
-            } else {
-              deliveryCharges.value =
-                  deliveryChargeModel.value.minimumDeliveryCharges!.toDouble();
-            }
+            double extraKm = (totalDistance.value - freeKm).ceilToDouble();
+            deliveryCharges.value = (extraKm * perKm).toDouble();
+            originalDeliveryFee.value = (baseCharge + (extraKm * perKm)).toDouble();
           }
         }
       }
@@ -288,22 +281,40 @@ class CartController extends GetxController {
       specialType.value = "amount";
     }
 
+    print('DEBUG: subTotal.value = ' + subTotal.value.toString());
+    print('DEBUG: deliveryCharges.value = ' + deliveryCharges.value.toString());
+    // Calculate SGST (5%) on item total, GST (18%) on delivery fee
+    double sgst = 0.0;
+    double gst = 0.0;
     if (Constant.taxList != null) {
       for (var element in Constant.taxList!) {
-        taxAmount.value = taxAmount.value +
-            Constant.calculateTax(
-                amount: (subTotal.value -
-                        couponAmount.value -
-                        specialDiscountAmount.value)
-                    .toString(),
-                taxModel: element);
+        if ((element.title?.toLowerCase() ?? '').contains('sgst')) {
+          sgst = Constant.calculateTax(amount: subTotal.value.toString(), taxModel: element);
+          print('DEBUG: SGST (5%) on item total: ' + sgst.toString());
+        } else if ((element.title?.toLowerCase() ?? '').contains('gst')) {
+          gst = Constant.calculateTax(amount: deliveryCharges.value.toString(), taxModel: element);
+          print('DEBUG: GST (18%) on delivery fee: ' + gst.toString());
+        }
+      }
+    }
+    taxAmount.value = sgst + gst;
+    print('DEBUG: Total Taxes & Charges = ' + taxAmount.value.toString());
+
+    bool isFreeDelivery = false;
+    if (cartItem.isNotEmpty && selectedFoodType.value == "Delivery") {
+      final dc = deliveryChargeModel.value;
+      final subtotal = subTotal.value;
+      final threshold = dc.itemTotalThreshold ?? 299;
+      final freeKm = dc.freeDeliveryDistanceKm ?? 7;
+      if (subtotal >= threshold && totalDistance.value <= freeKm) {
+        isFreeDelivery = true;
       }
     }
 
     totalAmount.value =
         (subTotal.value - couponAmount.value - specialDiscountAmount.value) +
             taxAmount.value +
-            deliveryCharges.value +
+            (isFreeDelivery ? 0.0 : deliveryCharges.value) +
             deliveryTips.value;
   }
 
