@@ -42,11 +42,24 @@ class RestaurantDetailsScreen extends StatelessWidget {
                 Get.to(const CartScreen());
               },
               child: Container(
-                height: 60,
+                height: 70,
                 decoration: BoxDecoration(
-                  color: AppThemeData.primary300,
+                  gradient: LinearGradient(
+                    colors: [
+                      Color(0xFFF48000),
+                      Color(0xFFff0404)
+                      // AppThemeData.danger200,
+                      // AppThemeData.danger300,
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
+                  ),
                 ),
-                padding: const EdgeInsets.symmetric(horizontal: 24),
+                padding: const EdgeInsets.symmetric(horizontal: 25),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -55,7 +68,7 @@ class RestaurantDetailsScreen extends StatelessWidget {
                       style: TextStyle(
                         fontFamily: AppThemeData.medium,
                         color: AppThemeData.grey50,
-                        fontSize: 16,
+                        fontSize: 20,
                       ),
                     ),
                     Text(
@@ -63,7 +76,7 @@ class RestaurantDetailsScreen extends StatelessWidget {
                       style: TextStyle(
                         fontFamily: AppThemeData.semiBold,
                         color: AppThemeData.grey50,
-                        fontSize: 16,
+                        fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -94,124 +107,20 @@ class RestaurantDetailsScreen extends StatelessWidget {
                                 : AppThemeData.grey50,
                           ),
                         ),
-                        const Expanded(child: SizedBox()),
-                        Visibility(
-                          visible:
-                          (controller.vendorModel.value.isSelfDelivery ==
-                              true &&
-                              Constant.isSelfDeliveryFeature == true),
-                          child: Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 10, vertical: 7),
-                                decoration: BoxDecoration(
-                                  color: AppThemeData.lightGreen,
-                                  borderRadius:
-                                  BorderRadius.circular(120), // Optional
-                                ),
-                                child: Row(
-                                  children: [
-                                    SvgPicture.asset(
-                                      "assets/icons/ic_free_delivery.svg",
-                                    ),
-                                    const SizedBox(
-                                      width: 5,
-                                    ),
-                                    Text(
-                                      "Free Delivery".tr,
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: AppThemeData.darkGreen,
-                                        fontFamily: AppThemeData.semiBold,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                            ],
-                          ),
-                        ),
-                        InkWell(
-                          onTap: () async {
-                            if (controller.favouriteList
-                                .where((p0) =>
-                            p0.restaurantId ==
-                                controller.vendorModel.value.id)
-                                .isNotEmpty) {
-                              FavouriteModel favouriteModel = FavouriteModel(
-                                  restaurantId: controller.vendorModel.value.id,
-                                  userId: FireStoreUtils.getCurrentUid());
-                              controller.favouriteList.removeWhere((item) =>
-                              item.restaurantId ==
-                                  controller.vendorModel.value.id);
-                              await FireStoreUtils.removeFavouriteRestaurant(
-                                  favouriteModel);
-                            } else {
-                              FavouriteModel favouriteModel = FavouriteModel(
-                                  restaurantId: controller.vendorModel.value.id,
-                                  userId: FireStoreUtils.getCurrentUid());
-                              controller.favouriteList.add(favouriteModel);
-                              await FireStoreUtils.setFavouriteRestaurant(
-                                  favouriteModel);
-                            }
-                          },
-                          child: Obx(
-                                () => controller.favouriteList
-                                .where((p0) =>
-                            p0.restaurantId ==
-                                controller.vendorModel.value.id)
-                                .isNotEmpty
-                                ? SvgPicture.asset(
-                              "assets/icons/ic_like_fill.svg",
-                              colorFilter: const ColorFilter.mode(
-                                  AppThemeData.grey50, BlendMode.srcIn),
-                            )
-                                : SvgPicture.asset(
-                              "assets/icons/ic_like.svg",
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            controller.vendorModel.value.title ?? "",
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey50,
+                              fontFamily: AppThemeData.semiBold,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 18,
                             ),
                           ),
                         ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        // Obx(
-                        //       () => badges.Badge(
-                        //     showBadge: cartItem.isEmpty ? false : true,
-                        //     badgeContent: Text(
-                        //       "${cartItem.length}",
-                        //       style: TextStyle(
-                        //         fontSize: 14,
-                        //         overflow: TextOverflow.ellipsis,
-                        //         fontFamily: AppThemeData.semiBold,
-                        //         fontWeight: FontWeight.w600,
-                        //         color: themeChange.getThem()
-                        //             ? AppThemeData.grey50
-                        //             : AppThemeData.grey50,
-                        //       ),
-                        //     ),
-                        //     badgeStyle: const badges.BadgeStyle(
-                        //       shape: badges.BadgeShape.circle,
-                        //       badgeColor: AppThemeData.secondary300,
-                        //     ),
-                        //     child: InkWell(
-                        //       onTap: () {
-                        //         Get.to(const CartScreen());
-                        //       },
-                        //       child: ClipOval(
-                        //         child: SvgPicture.asset(
-                        //           "assets/icons/ic_shoping_cart.svg",
-                        //           width: 24,
-                        //           height: 24,
-                        //           colorFilter: const ColorFilter.mode(
-                        //               AppThemeData.grey50, BlendMode.srcIn),
-                        //         ),
-                        //       ),
-                        //     ),
-                        //   ),
-                        // ),
                       ],
                     ),
                     flexibleSpace: FlexibleSpaceBar(

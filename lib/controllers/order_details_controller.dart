@@ -52,12 +52,25 @@ class OrderDetailsController extends GetxController {
       specialDiscountAmount.value = double.parse(orderModel.value.specialDiscount!['special_discount'].toString());
     }
 
+    // Debug: Print subTotal and deliveryCharge
+    print('DEBUG: subTotal.value = ' + subTotal.value.toString());
+    print('DEBUG: deliveryCharge = ' + orderModel.value.deliveryCharge.toString());
+
+    double sgst = 0.0;
+    double gst = 0.0;
     if (orderModel.value.taxSetting != null) {
       for (var element in orderModel.value.taxSetting!) {
-        taxAmount.value = taxAmount.value +
-            Constant.calculateTax(amount: (subTotal.value - double.parse(orderModel.value.discount.toString()) - specialDiscountAmount.value).toString(), taxModel: element);
+        if ((element.title?.toLowerCase() ?? '').contains('sgst')) {
+          sgst = Constant.calculateTax(amount: subTotal.value.toString(), taxModel: element);
+          print('DEBUG: SGST (5%) on item total: ' + sgst.toString());
+        } else if ((element.title?.toLowerCase() ?? '').contains('gst')) {
+          gst = Constant.calculateTax(amount: double.parse(orderModel.value.deliveryCharge.toString()).toString(), taxModel: element);
+          print('DEBUG: GST (18%) on delivery fee: ' + gst.toString());
+        }
       }
     }
+    taxAmount.value = sgst + gst;
+    print('DEBUG: Total Taxes & Charges = ' + taxAmount.value.toString());
 
     totalAmount.value = (subTotal.value - double.parse(orderModel.value.discount.toString()) - specialDiscountAmount.value) +
         taxAmount.value +

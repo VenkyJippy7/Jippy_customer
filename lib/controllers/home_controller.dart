@@ -124,15 +124,29 @@ class HomeController extends GetxController {
       popularRestaurantList.addAll(event);
       Constant.restaurantList = allNearestRestaurant;
       
+      // Set distance for each vendor
+      for (var vendor in allNearestRestaurant) {
+        if (vendor.latitude != null && vendor.longitude != null) {
+          vendor.distance = Constant.calculateDistance(
+            Constant.selectedLocation.location!.latitude!,
+            Constant.selectedLocation.location!.longitude!,
+            vendor.latitude!,
+            vendor.longitude!,
+          );
+        } else {
+          vendor.distance = null;
+        }
+      }
+
       // Sort by distance, then by rating
       allNearestRestaurant.sort((a, b) {
-        double distanceA = Constant().calculateDistance(
+        double distanceA = Constant.calculateDistance(
           Constant.selectedLocation.location!.latitude!,
           Constant.selectedLocation.location!.longitude!,
           a.latitude!,
           a.longitude!,
         );
-        double distanceB = Constant().calculateDistance(
+        double distanceB = Constant.calculateDistance(
           Constant.selectedLocation.location!.latitude!,
           Constant.selectedLocation.location!.longitude!,
           b.latitude!,

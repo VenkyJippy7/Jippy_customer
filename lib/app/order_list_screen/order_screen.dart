@@ -453,7 +453,9 @@ class OrderScreen extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    Constant.amountShow(amount: calculateOrderTotal(orderModel).toString()),
+                    Constant.amountShow(
+                      amount: calculateOrderTotal(orderModel).toString(),
+                    ),
                     style: TextStyle(
                       color: themeChange.getThem()
                           ? AppThemeData.primary300
@@ -625,12 +627,18 @@ class OrderScreen extends StatelessWidget {
       specialDiscountAmount = double.parse(order.specialDiscount!['special_discount'].toString());
     }
 
+    double sgst = 0.0;
+    double gst = 0.0;
     if (order.taxSetting != null) {
       for (var element in order.taxSetting!) {
-        taxAmount = taxAmount +
-            Constant.calculateTax(amount: (subTotal - double.parse(order.discount.toString()) - specialDiscountAmount).toString(), taxModel: element);
+        if ((element.title?.toLowerCase() ?? '').contains('sgst')) {
+          sgst = Constant.calculateTax(amount: subTotal.toString(), taxModel: element);
+        } else if ((element.title?.toLowerCase() ?? '').contains('gst')) {
+          gst = Constant.calculateTax(amount: double.parse(order.deliveryCharge.toString()).toString(), taxModel: element);
+        }
       }
     }
+    taxAmount = sgst + gst;
 
     totalAmount = (subTotal - double.parse(order.discount.toString()) - specialDiscountAmount) +
         taxAmount +

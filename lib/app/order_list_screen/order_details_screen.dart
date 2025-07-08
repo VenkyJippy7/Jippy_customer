@@ -1357,31 +1357,6 @@ class OrderDetailsScreen extends StatelessWidget {
                           const SizedBox(
                             height: 14,
                           ),
-                          // if (controller.orderModel.value.takeAway != true &&
-                          //     controller.orderModel.value.status ==
-                          //         Constant.orderCompleted)
-                          //   Column(
-                          //     crossAxisAlignment: CrossAxisAlignment.start,
-                          //     children: [
-                          //       Text(
-                          //         "Delivery Man".tr,
-                          //         textAlign: TextAlign.start,
-                          //         style: TextStyle(
-                          //           fontFamily: AppThemeData.semiBold,
-                          //           fontSize: 16,
-                          //           color: themeChange.getThem()
-                          //               ? AppThemeData.grey50
-                          //               : AppThemeData.grey900,
-                          //         ),
-                          //       ),
-                          //       const SizedBox(
-                          //         height: 10,
-                          //       ),
-                          //       const SizedBox(
-                          //         height: 14,
-                          //       ),
-                          //     ],
-                          //   ),
                           Text(
                             "Bill Details".tr,
                             textAlign: TextAlign.start,
@@ -1517,7 +1492,6 @@ class OrderDetailsScreen extends StatelessWidget {
                                   const SizedBox(
                                     height: 10,
                                   ),
-                                  // Platform Fee (match Cart screen)
                                   Row(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
@@ -1698,68 +1672,37 @@ class OrderDetailsScreen extends StatelessWidget {
                                   const SizedBox(
                                     height: 10,
                                   ),
-                                  ListView.builder(
-                                    itemCount: controller
-                                        .orderModel.value.taxSetting!.length,
-                                    shrinkWrap: true,
-                                    padding: EdgeInsets.zero,
-                                    physics:
-                                        const NeverScrollableScrollPhysics(),
-                                    itemBuilder: (context, index) {
-                                      TaxModel taxModel = controller
-                                          .orderModel.value.taxSetting![index];
-                                      return Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 5),
-                                        child: Row(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Expanded(
-                                              child: Text(
-                                                "Taxes & Charges",
-                                                textAlign: TextAlign.start,
-                                                style: TextStyle(
-                                                  fontFamily:
-                                                      AppThemeData.regular,
-                                                  color: themeChange.getThem()
-                                                      ? AppThemeData.grey300
-                                                      : AppThemeData.grey600,
-                                                  fontSize: 16,
-                                                ),
-                                              ),
-                                            ),
-                                            Text(
-                                              Constant.amountShow(
-                                                  amount: Constant.calculateTax(
-                                                          amount: (controller
-                                                                      .subTotal
-                                                                      .value -
-                                                                  double.parse(controller
-                                                                      .orderModel
-                                                                      .value
-                                                                      .discount
-                                                                      .toString()) -
-                                                                  controller
-                                                                      .specialDiscountAmount
-                                                                      .value)
-                                                              .toString(),
-                                                          taxModel: taxModel)
-                                                      .toString()),
-                                              textAlign: TextAlign.start,
-                                              style: TextStyle(
-                                                fontFamily:
-                                                    AppThemeData.regular,
-                                                color: themeChange.getThem()
-                                                    ? AppThemeData.grey50
-                                                    : AppThemeData.grey900,
-                                                fontSize: 16,
-                                              ),
-                                            ),
-                                          ],
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          "Taxes & Charges",
+                                          textAlign: TextAlign.start,
+                                          style: TextStyle(
+                                            fontFamily: AppThemeData.regular,
+                                            color: themeChange.getThem()
+                                                ? AppThemeData.grey300
+                                                : AppThemeData.grey600,
+                                            fontSize: 16,
+                                          ),
                                         ),
-                                      );
-                                    },
+                                      ),
+                                      Text(
+                                        Constant.amountShow(
+                                            amount: controller.taxAmount.value
+                                                .toString()),
+                                        textAlign: TextAlign.start,
+                                        style: TextStyle(
+                                          fontFamily: AppThemeData.regular,
+                                          color: themeChange.getThem()
+                                              ? AppThemeData.grey50
+                                              : AppThemeData.grey900,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                   const SizedBox(
                                     height: 10,

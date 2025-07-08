@@ -45,6 +45,7 @@ class VendorModel {
   SubscriptionPlanModel? subscriptionPlan;
   String? subscriptionTotalOrders;
   bool? isSelfDelivery;
+  double? distance; // Used for sorting/filtering, not from backend
 
   VendorModel(
       {this.author,

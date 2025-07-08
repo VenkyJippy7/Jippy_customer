@@ -51,6 +51,9 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../themes/text_field_widget.dart';
+import 'package:customer/widget/initials_avatar.dart';
+import 'package:customer/app/profile_screen/profile_screen.dart';
+import 'package:customer/widget/filter_bar.dart';
 // import 'package:carousel_slider/carousel_slider.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -62,6 +65,44 @@ class HomeScreen extends StatelessWidget {
     return GetX(
       init: HomeController(),
       builder: (controller) {
+        // Add a local state for the selected filter
+        Set<FilterType> selectedFilters = {};
+        List<VendorModel> filteredList = List.from(controller.popularRestaurantList);
+
+        void onFilterToggled(FilterType filter) {
+          if (selectedFilters.contains(filter)) {
+            selectedFilters.remove(filter);
+          } else {
+            selectedFilters.add(filter);
+          }
+
+          // Start with the full list
+          filteredList = List.from(controller.popularRestaurantList);
+
+          // Apply each selected filter in order
+          for (var selected in selectedFilters) {
+            switch (selected) {
+              case FilterType.distance:
+                filteredList.sort((a, b) => (a.distance ?? 0).compareTo(b.distance ?? 0));
+                break;
+              case FilterType.priceLowToHigh:
+                filteredList.sort((a, b) => (a.restaurantCost != null && b.restaurantCost != null)
+                    ? double.parse(a.restaurantCost!).compareTo(double.parse(b.restaurantCost!))
+                    : 0);
+                break;
+              case FilterType.priceHighToLow:
+                filteredList.sort((a, b) => (a.restaurantCost != null && b.restaurantCost != null)
+                    ? double.parse(b.restaurantCost!).compareTo(double.parse(a.restaurantCost!))
+                    : 0);
+                break;
+              case FilterType.rating:
+                filteredList.sort((a, b) => (b.reviewsSum ?? 0).compareTo(a.reviewsSum ?? 0));
+                break;
+            }
+          }
+          controller.update();
+        }
+
         return Scaffold(
           backgroundColor: themeChange.getThem()
               ? AppThemeData.grey900
@@ -158,38 +199,9 @@ class HomeScreen extends StatelessWidget {
                                           children: [
                                             InkWell(
                                               onTap: () {
-                                                DashBoardController
-                                                    dashBoardController =
-                                                    Get.put(
-                                                        DashBoardController());
-                                                if (Constant.walletSetting ==
-                                                    false) {
-                                                  dashBoardController
-                                                      .selectedIndex.value = 3;
-                                                } else {
-                                                  dashBoardController
-                                                      .selectedIndex.value = 4;
-                                                }
+                                                Get.to(const ProfileScreen());
                                               },
-                                              child: ClipOval(
-                                                child: NetworkImageWidget(
-                                                  imageUrl:
-                                                      Constant.userModel == null
-                                                          ? ""
-                                                          : Constant.userModel!
-                                                              .profilePictureURL
-                                                              .toString(),
-                                                  height: 40,
-                                                  width: 40,
-                                                  fit: BoxFit.cover,
-                                                  errorWidget: Image.asset(
-                                                    Constant.userPlaceHolder,
-                                                    fit: BoxFit.cover,
-                                                    height: 40,
-                                                    width: 40,
-                                                  ),
-                                                ),
-                                              ),
+                                              child: buildProfileAvatar(),
                                             ),
                                             const SizedBox(
                                               width: 10,
@@ -990,20 +1002,26 @@ class HomeScreen extends StatelessWidget {
                                             ),
                                             Padding(
                                               padding: const EdgeInsets.symmetric(
-                                                  horizontal: 16, vertical: 20),
-                                              child: controller.isPopular.value
-                                                  ? PopularRestaurant(
-                                                      controller: controller)
-                                                  : AllRestaurant(
-                                                      controller: controller),
+                                                  horizontal: 16.0, vertical: 8.0),
+                                              child: FilterBar(
+                                                selectedFilters: selectedFilters,
+                                                onFilterToggled: onFilterToggled,
+                                              ),
                                             ),
-                                            // controller.isPopular.value
-                                            //     ? PopularRestaurant(
-                                            //   controller: controller,
-                                            // )
-                                            //     : PopularRestaurant(
-                                            //   controller: controller,
-                                            // ),
+                                            Padding(
+                                              padding: const EdgeInsets.symmetric(
+                                                  horizontal: 16, vertical: 20),
+                                              child: RefreshIndicator(
+                                                onRefresh: () async {
+                                                  await controller.getData();
+                                                },
+                                                child: controller.isPopular.value
+                                                    ? PopularRestaurant(
+                                                        controller: controller)
+                                                    : AllRestaurant(
+                                                        controller: controller),
+                                              ),
+                                            ),
                                           ],
                                         ),
                                       ),
@@ -1266,6 +1284,30 @@ class HomeScreen extends StatelessWidget {
         )
       ],
     );
+  }
+
+  Widget buildProfileAvatar() {
+    final user = Constant.userModel;
+    final hasProfileImage = user != null &&
+        user.profilePictureURL != null &&
+        user.profilePictureURL!.isNotEmpty &&
+        user.profilePictureURL!.toLowerCase() != "null";
+
+    if (hasProfileImage) {
+      return CircleAvatar(
+        radius: 20,
+        backgroundColor: AppThemeData.primary300,
+        backgroundImage: NetworkImage(user!.profilePictureURL!),
+      );
+    } else {
+      return InitialsAvatar(
+        firstName: user?.firstName,
+        lastName: user?.lastName,
+        radius: 20,
+        backgroundColor: AppThemeData.primary300,
+        textColor: Colors.white,
+      );
+    }
   }
 }
 

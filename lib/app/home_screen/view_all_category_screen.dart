@@ -70,13 +70,18 @@ class ViewAllCategoryScreen extends StatelessWidget {
                                     ),
                                     Padding(
                                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                                      child: Text(
-                                        '${vendorCategoryModel.title}',
-                                        textAlign: TextAlign.center,
-                                        maxLines: 2,
-                                        style: TextStyle(
-                                          color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900,
-                                          fontFamily: AppThemeData.medium,
+                                      child: FittedBox(
+                                        fit: BoxFit.scaleDown,
+                                        child: Text(
+                                          '${vendorCategoryModel.title}',
+                                          textAlign: TextAlign.center,
+                                          maxLines: 1,
+                                          softWrap: true,
+                                          style: TextStyle(
+                                            color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900,
+                                            fontFamily: AppThemeData.medium,
+                                            fontSize: 11,
+                                          ),
                                         ),
                                       ),
                                     )

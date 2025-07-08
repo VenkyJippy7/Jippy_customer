@@ -51,6 +51,9 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'discount_restaurant_list_screen.dart';
+import 'package:customer/widget/initials_avatar.dart';
+import 'package:customer/app/profile_screen/profile_screen.dart';
+import 'package:customer/widget/filter_bar.dart';
 
 class HomeScreenTwo extends StatelessWidget {
   const HomeScreenTwo({super.key});
@@ -140,36 +143,9 @@ class HomeScreenTwo extends StatelessWidget {
                                         children: [
                                           InkWell(
                                             onTap: () {
-                                              DashBoardController
-                                                  dashBoardController = Get.put(
-                                                      DashBoardController());
-                                              if (Constant.walletSetting ==
-                                                  false) {
-                                                dashBoardController
-                                                    .selectedIndex.value = 3;
-                                              } else {
-                                                dashBoardController
-                                                    .selectedIndex.value = 4;
-                                              }
+                                              Get.to(const ProfileScreen());
                                             },
-                                            child: ClipOval(
-                                              child: NetworkImageWidget(
-                                                imageUrl:
-                                                    Constant.userModel == null
-                                                        ? ""
-                                                        : Constant.userModel!
-                                                            .profilePictureURL
-                                                            .toString(),
-                                                height: 40,
-                                                width: 40,
-                                                errorWidget: Image.asset(
-                                                  Constant.userPlaceHolder,
-                                                  fit: BoxFit.cover,
-                                                  height: 40,
-                                                  width: 40,
-                                                ),
-                                              ),
-                                            ),
+                                            child: buildProfileAvatar(),
                                           ),
                                           const SizedBox(
                                             width: 10,
@@ -716,18 +692,7 @@ class HomeScreenTwo extends StatelessWidget {
                                                   ],
                                                 ),
                                         ),
-                                        controller.allNearestRestaurant.isEmpty
-                                            ? const SizedBox()
-                                            : Column(
-                                                children: [
-                                                  const SizedBox(
-                                                    height: 20,
-                                                  ),
-                                                  RestaurantView(
-                                                    controller: controller,
-                                                  ),
-                                                ],
-                                              ),
+                                        BestRestaurantsSection(restaurantList: controller.allNearestRestaurant),
                                       ],
                                     ),
                                   ),
@@ -738,6 +703,30 @@ class HomeScreenTwo extends StatelessWidget {
         );
       },
     );
+  }
+
+  Widget buildProfileAvatar() {
+    final user = Constant.userModel;
+    final hasProfileImage = user != null &&
+        user.profilePictureURL != null &&
+        user.profilePictureURL!.isNotEmpty &&
+        user.profilePictureURL!.toLowerCase() != "null";
+
+    if (hasProfileImage) {
+      return CircleAvatar(
+        radius: 20,
+        backgroundColor: AppThemeData.primary300,
+        backgroundImage: NetworkImage(user!.profilePictureURL!),
+      );
+    } else {
+      return InitialsAvatar(
+        firstName: user?.firstName,
+        lastName: user?.lastName,
+        radius: 20,
+        backgroundColor: AppThemeData.primary300,
+        textColor: Colors.white,
+      );
+    }
   }
 }
 
@@ -1363,266 +1352,258 @@ class StoryView extends StatelessWidget {
   }
 }
 
-class RestaurantView extends StatelessWidget {
-  final HomeController controller;
+class BestRestaurantsSection extends StatefulWidget {
+  final List<VendorModel> restaurantList;
+  const BestRestaurantsSection({Key? key, required this.restaurantList}) : super(key: key);
 
-  const RestaurantView({super.key, required this.controller});
+  @override
+  State<BestRestaurantsSection> createState() => _BestRestaurantsSectionState();
+}
+
+class _BestRestaurantsSectionState extends State<BestRestaurantsSection> {
+  Set<FilterType> selectedFilters = {};
+  late List<VendorModel> filteredList;
+
+  double _parseRestaurantCost(String? cost) {
+    if (cost == null || cost.isEmpty) return double.infinity;
+    final parsed = double.tryParse(cost);
+    return parsed ?? double.infinity;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    filteredList = List.from(widget.restaurantList);
+  }
+
+  void onFilterToggled(FilterType filter) {
+    setState(() {
+      if (selectedFilters.contains(filter)) {
+        selectedFilters.remove(filter);
+      } else {
+        selectedFilters.add(filter);
+      }
+
+      // Start with the full list
+      filteredList = List.from(widget.restaurantList);
+
+      // Apply each selected filter in order
+      for (var selected in selectedFilters) {
+        switch (selected) {
+          case FilterType.distance:
+            filteredList.sort((a, b) => (a.distance ?? double.infinity).compareTo(b.distance ?? double.infinity));
+            break;
+          case FilterType.priceLowToHigh:
+            filteredList.sort((a, b) => _parseRestaurantCost(a.restaurantCost).compareTo(_parseRestaurantCost(b.restaurantCost)));
+            break;
+          case FilterType.priceHighToLow:
+            filteredList.sort((a, b) => _parseRestaurantCost(b.restaurantCost).compareTo(_parseRestaurantCost(a.restaurantCost)));
+            break;
+          case FilterType.rating:
+            filteredList.sort((a, b) => (b.reviewsSum ?? 0).compareTo(a.reviewsSum ?? 0));
+            break;
+        }
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final themeChange = Provider.of<DarkThemeProvider>(context);
-    return Container(
-      color: themeChange.getThem() ? AppThemeData.grey900 : AppThemeData.grey50,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(
-              height: 10,
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      "Best Restaurants".tr,
-                      style: TextStyle(
-                        fontFamily: AppThemeData.semiBold,
-                        color: themeChange.getThem()
-                            ? AppThemeData.grey50
-                            : AppThemeData.grey900,
-                        fontSize: 18,
-                      ),
-                    ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  "Best Restaurants".tr,
+                  style: TextStyle(
+                    fontFamily: AppThemeData.semiBold,
+                    color: themeChange.getThem()
+                        ? AppThemeData.grey50
+                        : AppThemeData.grey900,
+                    fontSize: 18,
                   ),
-                  InkWell(
-                    onTap: () {
-                      Get.to(const RestaurantListScreen(), arguments: {
-                        "vendorList": controller.allNearestRestaurant,
-                        "title": "Best Restaurants"
-                      });
-                    },
-                    child: Text(
-                      "See all".tr,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontFamily: AppThemeData.medium,
-                        color: themeChange.getThem()
-                            ? AppThemeData.primary300
-                            : AppThemeData.primary300,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: ListView.builder(
-                shrinkWrap: true,
-                padding: EdgeInsets.zero,
-                physics: const NeverScrollableScrollPhysics(),
-                scrollDirection: Axis.vertical,
-                itemCount: controller.allNearestRestaurant.length,
-                itemBuilder: (BuildContext context, int index) {
-                  VendorModel vendorModel =
-                      controller.allNearestRestaurant[index];
-                  List<CouponModel> tempList = [];
-                  List<double> discountAmountTempList = [];
-                  for (var element in controller.couponList) {
-                    if (vendorModel.id == element.resturantId &&
-                        element.expiresAt!.toDate().isAfter(DateTime.now())) {
-                      tempList.add(element);
-                      discountAmountTempList
-                          .add(double.parse(element.discount.toString()));
-                    }
-                  }
-                  return InkWell(
-                    onTap: () {
-                      Get.to(const RestaurantDetailsScreen(),
-                          arguments: {"vendorModel": vendorModel});
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 20),
-                      child: Container(
-                        decoration: ShapeDecoration(
-                          color: themeChange.getThem()
-                              ? AppThemeData.grey900
-                              : AppThemeData.grey50,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16)),
+              InkWell(
+                onTap: () {
+                  Get.to(const RestaurantListScreen(), arguments: {
+                    "vendorList": widget.restaurantList,
+                    "title": "Best Restaurants"
+                  });
+                },
+                child: Text(
+                  "See all".tr,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontFamily: AppThemeData.medium,
+                    color: themeChange.getThem()
+                        ? AppThemeData.primary300
+                        : AppThemeData.primary300,
+                    fontSize: 14,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          child: FilterBar(
+            selectedFilters: selectedFilters,
+            onFilterToggled: onFilterToggled,
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: ListView.builder(
+            shrinkWrap: true,
+            padding: EdgeInsets.zero,
+            physics: const NeverScrollableScrollPhysics(),
+            scrollDirection: Axis.vertical,
+            itemCount: filteredList.length,
+            itemBuilder: (BuildContext context, int index) {
+              VendorModel vendorModel = filteredList[index];
+              return InkWell(
+                onTap: () {
+                  Get.to(const RestaurantDetailsScreen(), arguments: {"vendorModel": vendorModel});
+                },
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 20),
+                  child: Container(
+                    decoration: ShapeDecoration(
+                      color: themeChange.getThem() ? AppThemeData.grey900 : AppThemeData.grey50,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: NetworkImageWidget(
+                            imageUrl: vendorModel.photo?.toString() ?? '',
+                            height: 106,
+                            width: 106,
+                            fit: BoxFit.cover,
+                          ),
                         ),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: NetworkImageWidget(
-                                height: 106,
-                                width: 106,
-                                imageUrl: vendorModel.photo.toString(),
-                                fit: BoxFit.cover,
+                        const SizedBox(width: 15),
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                vendorModel.title ?? '',
+                                textAlign: TextAlign.start,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontFamily: AppThemeData.semiBold,
+                                  color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900,
+                                ),
                               ),
-                            ),
-                            const SizedBox(
-                              width: 15,
-                            ),
-                            Expanded(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                              Text(
+                                vendorModel.location ?? '',
+                                textAlign: TextAlign.start,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontFamily: AppThemeData.medium,
+                                  fontWeight: FontWeight.w500,
+                                  color: themeChange.getThem() ? AppThemeData.grey400 : AppThemeData.grey400,
+                                ),
+                              ),
+                              const SizedBox(height: 5),
+                              Row(
                                 children: [
-                                  Text(
-                                    vendorModel.title.toString(),
-                                    textAlign: TextAlign.start,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontFamily: AppThemeData.semiBold,
-                                      color: themeChange.getThem()
-                                          ? AppThemeData.grey50
-                                          : AppThemeData.grey900,
+                                  Visibility(
+                                    visible: (vendorModel.isSelfDelivery == true && Constant.isSelfDeliveryFeature == true),
+                                    child: Row(
+                                      children: [
+                                        SvgPicture.asset(
+                                          "assets/icons/ic_free_delivery.svg",
+                                          width: 18,
+                                        ),
+                                        const SizedBox(width: 5),
+                                        Text(
+                                          "Free Delivery".tr,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                            fontFamily: AppThemeData.medium,
+                                            fontWeight: FontWeight.w500,
+                                            color: themeChange.getThem() ? AppThemeData.grey400 : AppThemeData.grey400,
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  ),
-                                  Text(
-                                    vendorModel.location.toString(),
-                                    textAlign: TextAlign.start,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                      fontFamily: AppThemeData.medium,
-                                      fontWeight: FontWeight.w500,
-                                      color: themeChange.getThem()
-                                          ? AppThemeData.grey400
-                                          : AppThemeData.grey400,
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    height: 5,
                                   ),
                                   Row(
                                     children: [
-                                      Visibility(
-                                        visible: (vendorModel.isSelfDelivery ==
-                                                true &&
-                                            Constant.isSelfDeliveryFeature ==
-                                                true),
-                                        child: Row(
-                                          children: [
-                                            SvgPicture.asset(
-                                              "assets/icons/ic_free_delivery.svg",
-                                              width: 18,
-                                            ),
-                                            const SizedBox(
-                                              width: 5,
-                                            ),
-                                            Text(
-                                              "Free Delivery".tr,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: TextStyle(
-                                                fontFamily: AppThemeData.medium,
-                                                fontWeight: FontWeight.w500,
-                                                color: themeChange.getThem()
-                                                    ? AppThemeData.grey400
-                                                    : AppThemeData.grey400,
-                                              ),
-                                            ),
-                                          ],
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                                        child: SvgPicture.asset(
+                                          "assets/icons/ic_star.svg",
+                                          width: 18,
+                                          colorFilter: ColorFilter.mode(AppThemeData.primary300, BlendMode.srcIn),
                                         ),
                                       ),
-                                      Row(
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 10),
-                                            child: SvgPicture.asset(
-                                              "assets/icons/ic_star.svg",
-                                              width: 18,
-                                              colorFilter: ColorFilter.mode(
-                                                  AppThemeData.primary300,
-                                                  BlendMode.srcIn),
-                                            ),
-                                          ),
-                                          Text(
-                                            "${Constant.calculateReview(reviewCount: vendorModel.reviewsCount.toString(), reviewSum: vendorModel.reviewsSum.toString())} (${vendorModel.reviewsCount!.toStringAsFixed(0)})",
-                                            textAlign: TextAlign.start,
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: TextStyle(
-                                              fontFamily: AppThemeData.medium,
-                                              fontWeight: FontWeight.w500,
-                                              color: themeChange.getThem()
-                                                  ? AppThemeData.grey400
-                                                  : AppThemeData.grey400,
-                                            ),
-                                          ),
-                                        ],
+                                      Text(
+                                        "${Constant.calculateReview(reviewCount: vendorModel.reviewsCount.toString(), reviewSum: vendorModel.reviewsSum.toString())} (${vendorModel.reviewsCount?.toStringAsFixed(0) ?? '0'})",
+                                        textAlign: TextAlign.start,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          fontFamily: AppThemeData.medium,
+                                          fontWeight: FontWeight.w500,
+                                          color: themeChange.getThem() ? AppThemeData.grey400 : AppThemeData.grey400,
+                                        ),
                                       ),
-                                      Row(
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 10),
-                                            child: Icon(
-                                              Icons.circle,
-                                              size: 5,
-                                              color: themeChange.getThem()
-                                                  ? AppThemeData.grey400
-                                                  : AppThemeData.grey500,
-                                            ),
-                                          ),
-                                          Text(
-                                            "${Constant.getDistance(
-                                              lat1: vendorModel.latitude
-                                                  .toString(),
-                                              lng1: vendorModel.longitude
-                                                  .toString(),
-                                              lat2: Constant.selectedLocation
-                                                  .location!.latitude
-                                                  .toString(),
-                                              lng2: Constant.selectedLocation
-                                                  .location!.longitude
-                                                  .toString(),
-                                            )} ${Constant.distanceType}",
-                                            textAlign: TextAlign.start,
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: TextStyle(
-                                              fontFamily: AppThemeData.medium,
-                                              fontWeight: FontWeight.w500,
-                                              color: themeChange.getThem()
-                                                  ? AppThemeData.grey400
-                                                  : AppThemeData.grey400,
-                                            ),
-                                          ),
-                                        ],
+                                    ],
+                                  ),
+                                  Row(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                                        child: Icon(
+                                          Icons.circle,
+                                          size: 5,
+                                          color: themeChange.getThem() ? AppThemeData.grey400 : AppThemeData.grey500,
+                                        ),
+                                      ),
+                                      Text(
+                                        "${(vendorModel.distance ?? 0).toStringAsFixed(2)} km",
+                                        textAlign: TextAlign.start,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          fontFamily: AppThemeData.medium,
+                                          fontWeight: FontWeight.w500,
+                                          color: themeChange.getThem() ? AppThemeData.grey400 : AppThemeData.grey400,
+                                        ),
                                       ),
                                     ],
                                   ),
                                 ],
                               ),
-                            ),
-                            const SizedBox(
-                              width: 10,
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
+                        const SizedBox(width: 10),
+                      ],
                     ),
-                  );
-                },
-              ),
-            )
-          ],
+                  ),
+                ),
+              );
+            },
+          ),
         ),
-      ),
+      ],
     );
   }
 }
