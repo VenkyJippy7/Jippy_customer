@@ -1606,99 +1606,57 @@ class ProductListView extends StatelessWidget {
                                             200),
                                       ),
                                     ),
+                                    child: SingleChildScrollView(
+                                      scrollDirection: Axis.horizontal,
                                     child: Row(
-                                      mainAxisAlignment:
-                                      MainAxisAlignment
-                                          .center,
-                                      crossAxisAlignment:
-                                      CrossAxisAlignment
-                                          .center,
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        crossAxisAlignment: CrossAxisAlignment.center,
                                       children: [
                                         InkWell(
-                                            onTap:
-                                                () {
+                                            onTap: () {
                                               controller.addToCart(
-                                                  productModel:
-                                                  productModel,
-                                                  price:
-                                                  price,
-                                                  discountPrice:
-                                                  disPrice,
-                                                  isIncrement:
-                                                  false,
-                                                  quantity:
-                                                  cartItem.where((p0) => p0.id == productModel.id).first.quantity! -
-                                                      1);
+                                                productModel: productModel,
+                                                price: price,
+                                                discountPrice: disPrice,
+                                                isIncrement: false,
+                                                quantity: cartItem.where((p0) => p0.id == productModel.id).first.quantity! - 1,
+                                              );
                                             },
-                                            child: const Icon(
-                                                Icons
-                                                    .remove)),
+                                            child: const Icon(Icons.remove),
+                                          ),
                                         Padding(
-                                          padding: const EdgeInsets
-                                              .symmetric(
-                                              horizontal:
-                                              14),
-                                          child:
-                                          Text(
-                                            cartItem
-                                                .where((p0) =>
-                                            p0.id ==
-                                                productModel
-                                                    .id)
-                                                .first
-                                                .quantity
-                                                .toString(),
-                                            textAlign:
-                                            TextAlign
-                                                .start,
-                                            maxLines:
-                                            1,
-                                            style:
-                                            TextStyle(
-                                              fontSize:
-                                              16,
-                                              overflow:
-                                              TextOverflow
-                                                  .ellipsis,
-                                              fontFamily:
-                                              AppThemeData
-                                                  .medium,
-                                              fontWeight:
-                                              FontWeight
-                                                  .w500,
-                                              color: themeChange.getThem()
-                                                  ? AppThemeData
-                                                  .grey100
-                                                  : AppThemeData
-                                                  .grey800,
+                                            padding: const EdgeInsets.symmetric(horizontal: 14),
+                                            child: Text(
+                                              cartItem.where((p0) => p0.id == productModel.id).first.quantity.toString(),
+                                              textAlign: TextAlign.start,
+                                              maxLines: 1,
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                overflow: TextOverflow.ellipsis,
+                                                fontFamily: AppThemeData.medium,
+                                                fontWeight: FontWeight.w500,
+                                                color: themeChange.getThem() ? AppThemeData.grey100 : AppThemeData.grey800,
                                             ),
                                           ),
                                         ),
                                         InkWell(
-                                            onTap:
-                                                () {
-                                              if ((cartItem.where((p0) => p0.id == productModel.id).first.quantity ?? 0) < (productModel.quantity ?? 0) ||
-                                                  (productModel.quantity ?? 0) == -1) {
+                                            onTap: () {
+                                              if ((cartItem.where((p0) => p0.id == productModel.id).first.quantity ?? 0) < (productModel.quantity ?? 0) || (productModel.quantity ?? 0) == -1) {
                                                 controller.addToCart(
-                                                    productModel:
-                                                    productModel,
-                                                    price:
-                                                    price,
-                                                    discountPrice:
-                                                    disPrice,
-                                                    isIncrement:
-                                                    true,
-                                                    quantity:
-                                                    cartItem.where((p0) => p0.id == productModel.id).first.quantity! +
-                                                        1);
+                                                  productModel: productModel,
+                                                  price: price,
+                                                  discountPrice: disPrice,
+                                                  isIncrement: true,
+                                                  quantity: cartItem.where((p0) => p0.id == productModel.id).first.quantity! + 1,
+                                                );
                                               } else {
                                                 ShowToastDialog.showToast("Out of stock".tr);
                                               }
                                             },
-                                            child: const Icon(
-                                                Icons
-                                                    .add)),
+                                            child: const Icon(Icons.add),
+                                          ),
                                       ],
+                                      ),
                                     ),
                                   )
                                       : RoundedButtonFill(

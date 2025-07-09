@@ -216,126 +216,82 @@ class _CartScreenState extends State<CartScreen> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          Row(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
+                                          LayoutBuilder(
+                                            builder: (context, constraints) {
+                                              return IntrinsicHeight(
+                                                child: Row(
+                                                  crossAxisAlignment: CrossAxisAlignment.center,
                                             children: [
-                                              ClipRRect(
-                                                borderRadius:
-                                                    const BorderRadius.all(
-                                                        Radius.circular(16)),
+                                                    Flexible(
+                                                      flex: 2,
+                                                      child: ClipRRect(
+                                                        borderRadius: const BorderRadius.all(Radius.circular(16)),
                                                 child: NetworkImageWidget(
-                                                  imageUrl: cartProductModel
-                                                      .photo
-                                                      .toString(),
-                                                  height: Responsive.height(
-                                                      10, context),
-                                                  width: Responsive.width(
-                                                      20, context),
+                                                          imageUrl: cartProductModel.photo.toString(),
+                                                          height: Responsive.height(10, context),
+                                                          width: Responsive.width(16, context),
                                                   fit: BoxFit.cover,
                                                 ),
                                               ),
-                                              const SizedBox(
-                                                width: 10,
                                               ),
-                                              Expanded(
+                                                    const SizedBox(width: 8),
+                                                    Flexible(
+                                                      flex: 5,
                                                 child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
                                                   children: [
                                                     Text(
                                                       "${cartProductModel.name}",
-                                                      textAlign:
-                                                          TextAlign.start,
+                                                            textAlign: TextAlign.start,
+                                                            maxLines: 1,
+                                                            overflow: TextOverflow.ellipsis,
                                                       style: TextStyle(
-                                                        fontFamily: AppThemeData
-                                                            .regular,
-                                                        color: themeChange
-                                                                .getThem()
-                                                            ? AppThemeData
-                                                                .grey50
-                                                            : AppThemeData
-                                                                .grey900,
+                                                              fontFamily: AppThemeData.regular,
+                                                              color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900,
                                                         fontSize: 16,
                                                       ),
                                                     ),
-                                                    double.parse(cartProductModel
-                                                                .discountPrice
-                                                                .toString()) <=
-                                                            0
+                                                          double.parse(cartProductModel.discountPrice.toString()) <= 0
                                                         ? Text(
-                                                            Constant.amountShow(
-                                                                amount:
-                                                                    cartProductModel
-                                                                        .price),
+                                                                  Constant.amountShow(amount: cartProductModel.price),
+                                                                  maxLines: 1,
+                                                                  overflow: TextOverflow.ellipsis,
                                                             style: TextStyle(
                                                               fontSize: 16,
-                                                              color: themeChange
-                                                                      .getThem()
-                                                                  ? AppThemeData
-                                                                      .grey50
-                                                                  : AppThemeData
-                                                                      .grey900,
-                                                              fontFamily:
-                                                                  AppThemeData
-                                                                      .semiBold,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w600,
+                                                                    color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900,
+                                                                    fontFamily: AppThemeData.semiBold,
+                                                                    fontWeight: FontWeight.w600,
                                                             ),
                                                           )
                                                         : Row(
                                                             children: [
-                                                              Text(
-                                                                Constant.amountShow(
-                                                                    amount: cartProductModel
-                                                                        .discountPrice
-                                                                        .toString()),
-                                                                style:
-                                                                    TextStyle(
+                                                                    Flexible(
+                                                                      child: Text(
+                                                                        Constant.amountShow(amount: cartProductModel.discountPrice.toString()),
+                                                                        maxLines: 1,
+                                                                        overflow: TextOverflow.ellipsis,
+                                                                        style: TextStyle(
                                                                   fontSize: 16,
-                                                                  color: themeChange.getThem()
-                                                                      ? AppThemeData
-                                                                          .grey500
-                                                                      : AppThemeData
-                                                                          .grey400,
-                                                                  fontFamily:
-                                                                      AppThemeData
-                                                                          .semiBold,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w600,
+                                                                          color: themeChange.getThem() ? AppThemeData.grey500 : AppThemeData.grey400,
+                                                                          fontFamily: AppThemeData.semiBold,
+                                                                          fontWeight: FontWeight.w600,
+                                                                        ),
                                                                 ),
                                                               ),
-                                                              const SizedBox(
-                                                                width: 5,
-                                                              ),
-                                                              Text(
-                                                                Constant.amountShow(
-                                                                    amount: cartProductModel
-                                                                        .price),
-                                                                style:
-                                                                    TextStyle(
+                                                                    const SizedBox(width: 5),
+                                                                    Flexible(
+                                                                      child: Text(
+                                                                        Constant.amountShow(amount: cartProductModel.price),
+                                                                        maxLines: 1,
+                                                                        overflow: TextOverflow.ellipsis,
+                                                                        style: TextStyle(
                                                                   fontSize: 14,
-                                                                  decoration:
-                                                                      TextDecoration
-                                                                          .lineThrough,
-                                                                  decorationColor: themeChange.getThem()
-                                                                      ? AppThemeData
-                                                                          .grey500
-                                                                      : AppThemeData
-                                                                          .grey400,
-                                                                  color: themeChange.getThem()
-                                                                      ? AppThemeData
-                                                                          .grey500
-                                                                      : AppThemeData
-                                                                          .grey400,
-                                                                  fontFamily:
-                                                                      AppThemeData
-                                                                          .semiBold,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w600,
+                                                                          decoration: TextDecoration.lineThrough,
+                                                                          decorationColor: themeChange.getThem() ? AppThemeData.grey500 : AppThemeData.grey400,
+                                                                          color: themeChange.getThem() ? AppThemeData.grey500 : AppThemeData.grey400,
+                                                                          fontFamily: AppThemeData.semiBold,
+                                                                          fontWeight: FontWeight.w600,
+                                                                        ),
                                                                 ),
                                                               ),
                                                             ],
@@ -343,76 +299,49 @@ class _CartScreenState extends State<CartScreen> {
                                                   ],
                                                 ),
                                               ),
-                                              Container(
+                                                    const SizedBox(width: 4),
+                                                    Flexible(
+                                                      flex: 3,
+                                                      child: ConstrainedBox(
+                                                        constraints: BoxConstraints(maxWidth: 70),
+                                                        child: Container(
                                                 decoration: ShapeDecoration(
-                                                  color: themeChange.getThem()
-                                                      ? AppThemeData.grey900
-                                                      : AppThemeData.grey50,
+                                                            color: themeChange.getThem() ? AppThemeData.grey900 : AppThemeData.grey50,
                                                   shape: RoundedRectangleBorder(
-                                                    side: const BorderSide(
-                                                        width: 1,
-                                                        color:
-                                                            Color(0xFFD1D5DB)),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            200),
+                                                              side: const BorderSide(width: 1, color: Color(0xFFD1D5DB)),
+                                                              borderRadius: BorderRadius.circular(200),
                                                   ),
                                                 ),
                                                 child: Padding(
-                                                  padding: const EdgeInsets
-                                                      .symmetric(
-                                                      vertical: 5,
-                                                      horizontal: 5),
+                                                            padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                                                            child: SingleChildScrollView(
+                                                              scrollDirection: Axis.horizontal,
                                                   child: Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .center,
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .center,
+                                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                                crossAxisAlignment: CrossAxisAlignment.center,
                                                     children: [
                                                       InkWell(
                                                           onTap: () {
                                                             controller.addToCart(
-                                                                cartProductModel:
-                                                                    cartProductModel,
-                                                                isIncrement:
-                                                                    false,
-                                                                quantity:
-                                                                    cartProductModel
-                                                                            .quantity! -
-                                                                        1);
+                                                                        cartProductModel: cartProductModel,
+                                                                        isIncrement: false,
+                                                                        quantity: cartProductModel.quantity! - 1,
+                                                                      );
                                                           },
-                                                          child: const Icon(
-                                                              Icons.remove)),
+                                                                    child: const Icon(Icons.remove),
+                                                                  ),
                                                       Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .symmetric(
-                                                                horizontal: 10),
+                                                                    padding: const EdgeInsets.symmetric(horizontal: 4),
                                                         child: Text(
-                                                          cartProductModel
-                                                              .quantity
-                                                              .toString(),
-                                                          textAlign:
-                                                              TextAlign.start,
+                                                                      cartProductModel.quantity.toString(),
+                                                                      textAlign: TextAlign.start,
                                                           maxLines: 1,
+                                                                      overflow: TextOverflow.ellipsis,
                                                           style: TextStyle(
                                                             fontSize: 16,
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis,
-                                                            fontFamily:
-                                                                AppThemeData
-                                                                    .medium,
-                                                            fontWeight:
-                                                                FontWeight.w500,
-                                                            color: themeChange
-                                                                    .getThem()
-                                                                ? AppThemeData
-                                                                    .grey100
-                                                                : AppThemeData
-                                                                    .grey800,
+                                                                        fontFamily: AppThemeData.medium,
+                                                                        fontWeight: FontWeight.w500,
+                                                                        color: themeChange.getThem() ? AppThemeData.grey100 : AppThemeData.grey800,
                                                           ),
                                                         ),
                                                       ),
@@ -516,13 +445,19 @@ class _CartScreenState extends State<CartScreen> {
                                                               }
                                                             }
                                                           },
-                                                          child: const Icon(
-                                                              Icons.add)),
+                                                                    child: const Icon(Icons.add),
+                                                                  ),
                                                     ],
                                                   ),
                                                 ),
-                                              )
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
                                             ],
+                                                ),
+                                              );
+                                            },
                                           ),
                                           cartProductModel.variantInfo ==
                                                       null ||
@@ -758,38 +693,129 @@ class _CartScreenState extends State<CartScreen> {
                         const SizedBox(
                           height: 20,
                         ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "${'Delivery Type'.tr} (${controller.selectedFoodType.value})"
-                                    .tr,
-                                textAlign: TextAlign.start,
-                                style: TextStyle(
-                                  fontFamily: AppThemeData.semiBold,
-                                  color: themeChange.getThem()
-                                      ? AppThemeData.grey50
-                                      : AppThemeData.grey900,
-                                  fontSize: 16,
+                        Visibility(
+                          visible: false,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "${'Delivery Type'.tr} (${controller.selectedFoodType.value})"
+                                      .tr,
+                                  textAlign: TextAlign.start,
+                                  style: TextStyle(
+                                    fontFamily: AppThemeData.semiBold,
+                                    color: themeChange.getThem()
+                                        ? AppThemeData.grey50
+                                        : AppThemeData.grey900,
+                                    fontSize: 16,
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              controller.selectedFoodType.value == 'TakeAway'
-                                  ? const SizedBox()
-                                  : Container(
-                                      width: Responsive.width(100, context),
-                                      decoration: ShapeDecoration(
-                                        color: themeChange.getThem()
-                                            ? AppThemeData.grey900
-                                            : AppThemeData.grey50,
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(8)),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                controller.selectedFoodType.value == 'TakeAway'
+                                    ? const SizedBox()
+                                    : Container(
+                                        width: Responsive.width(100, context),
+                                        decoration: ShapeDecoration(
+                                          color: themeChange.getThem()
+                                              ? AppThemeData.grey900
+                                              : AppThemeData.grey50,
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8)),
+                                        ),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(10),
+                                          child: Row(
+                                            children: [
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      "Instant Delivery".tr,
+                                                      textAlign: TextAlign.start,
+                                                      style: TextStyle(
+                                                        fontFamily:
+                                                            AppThemeData.medium,
+                                                        color:
+                                                            themeChange.getThem()
+                                                                ? AppThemeData
+                                                                    .primary300
+                                                                : AppThemeData
+                                                                    .primary300,
+                                                        fontSize: 16,
+                                                      ),
+                                                    ),
+                                                    const SizedBox(
+                                                      height: 5,
+                                                    ),
+                                                    Text(
+                                                      "Standard".tr,
+                                                      textAlign: TextAlign.start,
+                                                      style: TextStyle(
+                                                        fontFamily:
+                                                            AppThemeData.medium,
+                                                        fontSize: 12,
+                                                        color: themeChange
+                                                                .getThem()
+                                                            ? AppThemeData.grey400
+                                                            : AppThemeData
+                                                                .grey500,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              Radio(
+                                                value:
+                                                    controller.deliveryType.value,
+                                                groupValue: "instant".tr,
+                                                activeColor:
+                                                    AppThemeData.primary300,
+                                                onChanged: (value) {
+                                                  controller.deliveryType.value =
+                                                      "instant".tr;
+                                                },
+                                              )
+                                            ],
+                                          ),
+                                        ),
                                       ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Container(
+                                  width: Responsive.width(100, context),
+                                  decoration: ShapeDecoration(
+                                    color: themeChange.getThem()
+                                        ? AppThemeData.grey900
+                                        : AppThemeData.grey50,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8)),
+                                  ),
+                                  child: Offstage(
+                                    offstage: true,
+                                    child: InkWell(
+                                      onTap: () {
+                                        controller.deliveryType.value =
+                                            "schedule".tr;
+                                        BottomPicker.dateTime(
+                                          onSubmit: (index) {
+                                            controller.scheduleDateTime.value =
+                                                index;
+                                          },
+                                          minDateTime: DateTime.now(),
+                                          displaySubmitButton: true,
+                                          pickerTitle: Text('Schedule Time'.tr),
+                                          buttonSingleColor:
+                                              AppThemeData.primary300,
+                                        ).show(context);
+                                      },
                                       child: Padding(
                                         padding: const EdgeInsets.all(10),
                                         child: Row(
@@ -800,17 +826,14 @@ class _CartScreenState extends State<CartScreen> {
                                                     CrossAxisAlignment.start,
                                                 children: [
                                                   Text(
-                                                    "Instant Delivery".tr,
+                                                    "Schedule Time".tr,
                                                     textAlign: TextAlign.start,
                                                     style: TextStyle(
                                                       fontFamily:
                                                           AppThemeData.medium,
-                                                      color:
-                                                          themeChange.getThem()
-                                                              ? AppThemeData
-                                                                  .primary300
-                                                              : AppThemeData
-                                                                  .primary300,
+                                                      color: themeChange.getThem()
+                                                          ? AppThemeData.primary300
+                                                          : AppThemeData.primary300,
                                                       fontSize: 16,
                                                     ),
                                                   ),
@@ -818,137 +841,52 @@ class _CartScreenState extends State<CartScreen> {
                                                     height: 5,
                                                   ),
                                                   Text(
-                                                    "Standard".tr,
+                                                    "${'Your preferred time'.tr} ${controller.deliveryType.value == "schedule" ? Constant.timestampToDateTime(Timestamp.fromDate(controller.scheduleDateTime.value)) : ""}",
                                                     textAlign: TextAlign.start,
                                                     style: TextStyle(
                                                       fontFamily:
                                                           AppThemeData.medium,
                                                       fontSize: 12,
-                                                      color: themeChange
-                                                              .getThem()
+                                                      color: themeChange.getThem()
                                                           ? AppThemeData.grey400
-                                                          : AppThemeData
-                                                              .grey500,
+                                                          : AppThemeData.grey500,
                                                     ),
                                                   ),
                                                 ],
                                               ),
                                             ),
                                             Radio(
-                                              value:
-                                                  controller.deliveryType.value,
-                                              groupValue: "instant".tr,
-                                              activeColor:
-                                                  AppThemeData.primary300,
+                                              value: controller.deliveryType.value,
+                                              groupValue: "schedule".tr,
+                                              activeColor: AppThemeData.primary300,
                                               onChanged: (value) {
                                                 controller.deliveryType.value =
-                                                    "instant".tr;
+                                                    "schedule".tr;
+                                                BottomPicker.dateTime(
+                                                  initialDateTime: controller
+                                                      .scheduleDateTime.value,
+                                                  onSubmit: (index) {
+                                                    controller.scheduleDateTime
+                                                        .value = index;
+                                                  },
+                                                  minDateTime: controller
+                                                      .scheduleDateTime.value,
+                                                  displaySubmitButton: true,
+                                                  pickerTitle:
+                                                      Text('Schedule Time'.tr),
+                                                  buttonSingleColor:
+                                                      AppThemeData.primary300,
+                                                ).show(context);
                                               },
                                             )
                                           ],
                                         ),
                                       ),
                                     ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Container(
-                                width: Responsive.width(100, context),
-                                decoration: ShapeDecoration(
-                                  color: themeChange.getThem()
-                                      ? AppThemeData.grey900
-                                      : AppThemeData.grey50,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8)),
-                                ),
-                                child: Offstage(
-                                  offstage: true,
-                                  child: InkWell(
-                                    onTap: () {
-                                      controller.deliveryType.value =
-                                          "schedule".tr;
-                                      BottomPicker.dateTime(
-                                        onSubmit: (index) {
-                                          controller.scheduleDateTime.value =
-                                              index;
-                                        },
-                                        minDateTime: DateTime.now(),
-                                        displaySubmitButton: true,
-                                        pickerTitle: Text('Schedule Time'.tr),
-                                        buttonSingleColor:
-                                            AppThemeData.primary300,
-                                      ).show(context);
-                                    },
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(10),
-                                      child: Row(
-                                        children: [
-                                          Expanded(
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  "Schedule Time".tr,
-                                                  textAlign: TextAlign.start,
-                                                  style: TextStyle(
-                                                    fontFamily:
-                                                        AppThemeData.medium,
-                                                    color: themeChange.getThem()
-                                                        ? AppThemeData.primary300
-                                                        : AppThemeData.primary300,
-                                                    fontSize: 16,
-                                                  ),
-                                                ),
-                                                const SizedBox(
-                                                  height: 5,
-                                                ),
-                                                Text(
-                                                  "${'Your preferred time'.tr} ${controller.deliveryType.value == "schedule" ? Constant.timestampToDateTime(Timestamp.fromDate(controller.scheduleDateTime.value)) : ""}",
-                                                  textAlign: TextAlign.start,
-                                                  style: TextStyle(
-                                                    fontFamily:
-                                                        AppThemeData.medium,
-                                                    fontSize: 12,
-                                                    color: themeChange.getThem()
-                                                        ? AppThemeData.grey400
-                                                        : AppThemeData.grey500,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          Radio(
-                                            value: controller.deliveryType.value,
-                                            groupValue: "schedule".tr,
-                                            activeColor: AppThemeData.primary300,
-                                            onChanged: (value) {
-                                              controller.deliveryType.value =
-                                                  "schedule".tr;
-                                              BottomPicker.dateTime(
-                                                initialDateTime: controller
-                                                    .scheduleDateTime.value,
-                                                onSubmit: (index) {
-                                                  controller.scheduleDateTime
-                                                      .value = index;
-                                                },
-                                                minDateTime: controller
-                                                    .scheduleDateTime.value,
-                                                displaySubmitButton: true,
-                                                pickerTitle:
-                                                    Text('Schedule Time'.tr),
-                                                buttonSingleColor:
-                                                    AppThemeData.primary300,
-                                              ).show(context);
-                                            },
-                                          )
-                                        ],
-                                      ),
-                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                         const SizedBox(

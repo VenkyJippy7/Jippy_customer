@@ -78,7 +78,7 @@ class SelectGiftPaymentScreen extends StatelessWidget {
                             child: Column(
                               children: [
                                 Visibility(
-                                  visible: controller.walletSettingModel.value.isEnabled == true,
+                                  visible: false, // Hide wallet option
                                   child: cardDecoration(controller, PaymentGateway.wallet, themeChange, "assets/images/ic_wallet.png"),
                                 ),
                               ],

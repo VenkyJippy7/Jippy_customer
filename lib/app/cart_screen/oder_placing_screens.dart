@@ -293,9 +293,9 @@ class OrderPlacingScreen extends StatelessWidget {
                         textColor: AppThemeData.grey50,
                         fontSizes: 16,
                         onPress: () async {
-                          Get.offAll(const DashBoardScreen());
-                          DashBoardController controller = Get.put(DashBoardController());
+                          DashBoardController controller = Get.put(DashBoardController(), permanent: true);
                           controller.selectedIndex.value = Constant.walletSetting == false ? 2 : 3;
+                          Get.offAll(const DashBoardScreen());
                         },
                       )
                     : RoundedButtonFill(

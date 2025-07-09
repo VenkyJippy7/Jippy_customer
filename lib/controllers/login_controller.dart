@@ -15,6 +15,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:customer/app/dash_board_screens/dash_board_controller.dart';
 
 class LoginController extends GetxController {
   Rx<TextEditingController> emailEditingController = TextEditingController().obs;
@@ -47,6 +48,7 @@ class LoginController extends GetxController {
             } else {
               Constant.selectedLocation = userModel.shippingAddress!.first;
             }
+            Get.put(DashBoardController(), permanent: true); // Ensure controller is registered
             Get.offAll(const DashBoardScreen());
           } else {
             Get.offAll(const LocationPermissionScreen());

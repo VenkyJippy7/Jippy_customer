@@ -179,6 +179,11 @@ class CartController extends GetxController {
   }
 
   calculatePrice() async {
+    // Ensure tax list is loaded before calculation
+    if (Constant.taxList == null || Constant.taxList!.isEmpty) {
+      Constant.taxList = await FireStoreUtils.getTaxList();
+    }
+    print('DEBUG: Constant.taxList at calculatePrice = ' + Constant.taxList.toString());
     deliveryCharges.value = 0.0;
     subTotal.value = 0.0;
     couponAmount.value = 0.0;
@@ -388,7 +393,29 @@ class CartController extends GetxController {
     };
 
     OrderModel orderModel = OrderModel();
-    orderModel.id = Constant.getUuid();
+    // Generate a sequential order ID like Jippy3000006, Jippy3000007, etc.
+    // Query for the highest document ID starting with 'Jippy3'
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('restaurant_orders')
+        .where(FieldPath.documentId, isGreaterThanOrEqualTo: 'Jippy3000000')
+        .where(FieldPath.documentId, isLessThan: 'Jippy4') // upper bound for prefix
+        .orderBy(FieldPath.documentId, descending: true)
+        .limit(1)
+        .get();
+    int maxNumber = 5; // Default starting number (so first is 6)
+    if (querySnapshot.docs.isNotEmpty) {
+      final id = querySnapshot.docs.first.id;
+      final match = RegExp(r'Jippy3(\d{7})').firstMatch(id);
+      if (match != null) {
+        final num = int.tryParse(match.group(1)!);
+        if (num != null && num > maxNumber) {
+          maxNumber = num;
+        }
+      }
+    }
+    final nextNumber = maxNumber + 1;
+    orderModel.id = 'Jippy3' + nextNumber.toString().padLeft(7, '0');
+    print('DEBUG: Next Order ID = ' + (orderModel.id ?? 'null'));
     orderModel.address = selectedAddress.value;
     orderModel.authorID = FireStoreUtils.getCurrentUid();
     orderModel.author = userModel.value;
@@ -404,6 +431,7 @@ class CartController extends GetxController {
     orderModel.discount = couponAmount.value;
     orderModel.couponId = selectedCouponModel.value.id;
     orderModel.taxSetting = Constant.taxList;
+    print('DEBUG: Tax List at order = ' + Constant.taxList.toString());
     orderModel.paymentMethod = selectedPaymentMethod.value;
     orderModel.products = cartItem;
     orderModel.specialDiscount = specialDiscountMap;
@@ -481,33 +509,36 @@ class CartController extends GetxController {
       });
     }
 
-    await FireStoreUtils.setOrder(orderModel).then(
-      (value) async {
-        ShowToastDialog.closeLoader();
-        // Record used coupon for this user if a coupon was used
-        if (orderModel.couponId != null && orderModel.couponId!.isNotEmpty) {
-          await markCouponAsUsed(orderModel.couponId!);
-        }
-        await FireStoreUtils.getUserProfile(
-                orderModel.vendor!.author.toString())
-            .then(
-          (value) {
-            if (value != null) {
-              if (orderModel.scheduleTime != null) {
-                SendNotification.sendFcmMessage(
-                    Constant.scheduleOrder, value.fcmToken ?? '', {});
-              } else {
-                SendNotification.sendFcmMessage(
-                    Constant.newOrderPlaced, value.fcmToken ?? '', {});
-              }
+    // Store the order using Firestore .set() with orderModel.id as the document ID
+    await FirebaseFirestore.instance
+        .collection('restaurant_orders')
+        .doc(orderModel.id)
+        .set(orderModel.toJson())
+        .then((value) async {
+      ShowToastDialog.closeLoader();
+      // Record used coupon for this user if a coupon was used
+      if (orderModel.couponId != null && orderModel.couponId!.isNotEmpty) {
+        await markCouponAsUsed(orderModel.couponId!);
+      }
+      await FireStoreUtils.getUserProfile(
+              orderModel.vendor!.author.toString())
+          .then(
+        (value) {
+          if (value != null) {
+            if (orderModel.scheduleTime != null) {
+              SendNotification.sendFcmMessage(
+                  Constant.scheduleOrder, value.fcmToken ?? '', {});
+            } else {
+              SendNotification.sendFcmMessage(
+                  Constant.newOrderPlaced, value.fcmToken ?? '', {});
             }
-          },
-        );
-        await Constant.sendOrderEmail(orderModel: orderModel);
-        Get.off(const OrderPlacingScreen(),
-            arguments: {"orderModel": orderModel});
-      },
-    );
+          }
+        },
+      );
+      await Constant.sendOrderEmail(orderModel: orderModel);
+      Get.off(const OrderPlacingScreen(),
+          arguments: {"orderModel": orderModel});
+    });
   }
 
   Rx<WalletSettingModel> walletSettingModel = WalletSettingModel().obs;

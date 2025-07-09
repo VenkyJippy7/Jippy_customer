@@ -12,6 +12,7 @@ import 'package:customer/utils/notification_service.dart';
 import 'package:customer/utils/preferences.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
+import 'package:customer/app/dash_board_screens/dash_board_controller.dart';
 
 class SplashController extends GetxController {
   @override
@@ -41,6 +42,7 @@ class SplashController extends GetxController {
                   } else {
                     Constant.selectedLocation = userModel.shippingAddress!.first;
                   }
+                  Get.put(DashBoardController(), permanent: true); // Ensure controller is registered
                   Get.offAll(const DashBoardScreen());
                 } else {
                   Get.offAll(const LocationPermissionScreen());

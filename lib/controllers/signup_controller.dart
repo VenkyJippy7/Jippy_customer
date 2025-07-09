@@ -12,6 +12,7 @@ import 'package:customer/utils/notification_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:customer/app/dash_board_screens/dash_board_controller.dart';
 
 class SignupController extends GetxController {
   Rx<TextEditingController> firstNameEditingController = TextEditingController().obs;
@@ -99,6 +100,7 @@ class SignupController extends GetxController {
             } else {
               Constant.selectedLocation = userModel.value.shippingAddress!.first;
             }
+            Get.put(DashBoardController(), permanent: true); // Ensure controller is registered
             Get.offAll(const DashBoardScreen());
           } else {
             Get.offAll(const LocationPermissionScreen());

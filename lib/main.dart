@@ -20,6 +20,7 @@ import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
+import 'package:customer/controllers/dash_board_controller.dart';
 
 
 void main() async {
@@ -53,6 +54,8 @@ void main() async {
 
   // Register OtpController as a permanent dependency
   Get.put(OtpController(), permanent: true);
+  // Register DashBoardController as a permanent dependency
+  Get.put(DashBoardController(), permanent: true);
 
   runApp(
     const MyApp(),

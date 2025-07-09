@@ -44,74 +44,36 @@ class DashBoardScreen extends StatelessWidget {
             child: Scaffold(
               body: controller.pageList[controller.selectedIndex.value],
                 bottomNavigationBar: Obx(() {
-                final items = Constant.walletSetting == false
-                    ? [
-                        navigationBarItem(
-                          themeChange,
-                          index: 0,
-                          assetIcon: "assets/images/ic_home_icon.png",
-                          label: 'Home'.tr,
-                          controller: controller,
-                        ),
-                        navigationBarItem(
-                          themeChange,
-                          index: 1,
-                          assetIcon: "assets/icons/ic_fav.svg",
-                          label: 'Favourites'.tr,
-                          controller: controller,
-                        ),
-                        navigationBarItem(
-                          themeChange,
-                          index: 2,
-                          assetIcon: "assets/icons/ic_orders.svg",
-                          label: 'Orders'.tr,
-                          controller: controller,
-                        ),
-                        // navigationBarItem(
-                        //   themeChange,
-                        //   index: 3,
-                        //   assetIcon: "assets/icons/ic_profile.svg",
-                        //   label: 'Profile'.tr,
-                        //   controller: controller,
-                        // ),
-                      ]
-                    : [
-                        navigationBarItem(
-                          themeChange,
-                          index: 0,
-                          assetIcon: "assets/images/ic_home_icon.png",
-                          label: 'Home'.tr,
-                          controller: controller,
-                        ),
-                        navigationBarItem(
-                          themeChange,
-                          index: 1,
-                          assetIcon: "assets/icons/ic_fav.svg",
-                          label: 'Favourites'.tr,
-                          controller: controller,
-                        ),
-                        navigationBarItem(
-                          themeChange,
-                          index: 2,
-                          assetIcon: "assets/icons/ic_wallet.svg",
-                          label: 'Wallet'.tr,
-                          controller: controller,
-                        ),
-                        navigationBarItem(
-                          themeChange,
-                          index: 3,
-                          assetIcon: "assets/icons/ic_orders.svg",
-                          label: 'Orders'.tr,
-                          controller: controller,
-                        ),
-                        // navigationBarItem(
-                        //   themeChange,
-                        //   index: 4,
-                        //   assetIcon: "assets/icons/ic_profile.svg",
-                        //   label: 'Profile'.tr,
-                        //   controller: controller,
-                        // ),
-                      ];
+                final items = [
+                  navigationBarItem(
+                    themeChange,
+                    index: 0,
+                    assetIcon: "assets/images/ic_home_icon.png",
+                    label: 'Home'.tr,
+                    controller: controller,
+                  ),
+                  navigationBarItem(
+                    themeChange,
+                    index: 1,
+                    assetIcon: "assets/icons/ic_fav.svg",
+                    label: 'Favourites'.tr,
+                    controller: controller,
+                  ),
+                  navigationBarItem(
+                    themeChange,
+                    index: 2,
+                    assetIcon: "assets/icons/ic_orders.svg",
+                    label: 'Orders'.tr,
+                    controller: controller,
+                  ),
+                  // navigationBarItem(
+                  //   themeChange,
+                  //   index: 3,
+                  //   assetIcon: "assets/icons/ic_profile.svg",
+                  //   label: 'Profile'.tr,
+                  //   controller: controller,
+                  // ),
+                ];
                 final safeIndex = controller.selectedIndex.value.clamp(0, items.length - 1);
                 return BottomNavigationBar(
                   type: BottomNavigationBarType.fixed,

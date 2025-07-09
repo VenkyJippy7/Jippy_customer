@@ -71,7 +71,7 @@ class Constant {
   static String minimumAmountToDeposit = "0.0";
   static String minimumAmountToWithdrawal = "0.0";
   static String? referralAmount = "0.0";
-  static bool? walletSetting = true;
+  static bool? walletSetting = false;
   static bool? storyEnable = true;
   static bool? specialDiscountOffer = true;
 
