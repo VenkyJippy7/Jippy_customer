@@ -214,13 +214,13 @@ class ProfileScreen extends StatelessWidget {
                                   children: [
                                     Constant.userModel == null
                                         ? const SizedBox()
-                                        : cardDecoration(themeChange, controller, "assets/icons/ic_refer.svg", "Refer a Friend", () {
-                                            Get.to(const ReferFriendScreen());
-                                          }),
-                                    cardDecoration(themeChange, controller, "assets/icons/ic_share.svg", "Share app", () {
+                                        // : cardDecoration(themeChange, controller, "assets/icons/ic_refer.svg", "Refer a Friend", () {
+                                        //     Get.to(const ReferFriendScreen());
+                                        //   }),
+                                    : cardDecoration(themeChange, controller, "assets/icons/ic_share.svg", "Share app", () {
                                       Share.share(
-                                          '${'Check out JippyMart, your ultimate shopping application!'.tr} \n\n${'Google Play:'.tr} ${Constant.googlePlayLink} \n\n${'App Store:'.tr} ${Constant.appStoreLink}',
-                                          subject: 'Look what I made!'.tr);
+                                        '${'Hey! Just downloaded JippyMart and loving it!'.tr}\nYou should try it too — get ₹100 off on your first order! 🎁\nDon’t miss out on this deal! 💯\n\n${'Google Play:'.tr} ${Constant.googlePlayLink}\n${'App Store:'.tr} ${Constant.appStoreLink}',
+                                        subject: 'Look what I made!'.tr);
                                     }),
                                     cardDecoration(themeChange, controller, "assets/icons/ic_rate.svg", "Rate the app", () {
                                       final InAppReview inAppReview = InAppReview.instance;
