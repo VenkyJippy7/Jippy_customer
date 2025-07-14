@@ -99,7 +99,14 @@ class CouponListScreen extends StatelessWidget {
                 ),
               ),
             ),
-            body: ListView.builder(
+            body: controller.couponList.isEmpty
+                ? Center(
+                    child: Text(
+                      'No coupons available',
+                      style: TextStyle(fontSize: 18, color: Colors.grey),
+                    ),
+                  )
+                : ListView.builder(
               shrinkWrap: true,
               itemCount: controller.couponList.length,
               itemBuilder: (context, index) {

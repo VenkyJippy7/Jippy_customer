@@ -26,34 +26,37 @@ class PhoneNumberController extends GetxController {
     try {
       ShowToastDialog.showLoader("Please wait".tr);
       
-      await FirebaseAuth.instance.verifyPhoneNumber(
-        phoneNumber: e164Number,
-        verificationCompleted: (PhoneAuthCredential credential) async {
-          ShowToastDialog.closeLoader();
-          await signInWithPhoneAuthCredential(credential);
-        },
-        verificationFailed: (FirebaseAuthException e) {
-          ShowToastDialog.closeLoader();
-          if (e.code == 'invalid-phone-number') {
-            ShowToastDialog.showToast("Invalid phone number".tr);
-          } else {
-            ShowToastDialog.showToast(e.message ?? "Verification failed".tr);
-          }
-        },
-        codeSent: (String verificationId, int? resendToken) {
-          ShowToastDialog.closeLoader();
-          this.verificationId.value = verificationId;
-          print('Navigating to OtpScreen with verificationId: ' + verificationId);
-          Get.to(() => const OtpScreen(), arguments: {
-            "countryCode": countryCode,
-            "phoneNumber": rawNumber,
-            "verificationId": verificationId,
-          });
-        },
-        codeAutoRetrievalTimeout: (String verificationId) {
-          this.verificationId.value = verificationId;
-        },
-      );
+      // --- Deprecated: Firebase Phone Auth (replaced by custom backend OTP API) ---
+      // The following code is commented out as we now use our own backend for OTP verification.
+      //
+      // await FirebaseAuth.instance.verifyPhoneNumber(
+      //   phoneNumber: e164Number,
+      //   verificationCompleted: (PhoneAuthCredential credential) async {
+      //     ShowToastDialog.closeLoader();
+      //     await signInWithPhoneAuthCredential(credential);
+      //   },
+      //   verificationFailed: (FirebaseAuthException e) {
+      //     ShowToastDialog.closeLoader();
+      //     if (e.code == 'invalid-phone-number') {
+      //       ShowToastDialog.showToast("Invalid phone number".tr);
+      //     } else {
+      //       ShowToastDialog.showToast(e.message ?? "Verification failed".tr);
+      //     }
+      //   },
+      //   codeSent: (String verificationId, int? resendToken) {
+      //     ShowToastDialog.closeLoader();
+      //     this.verificationId.value = verificationId;
+      //     print('Navigating to OtpScreen with verificationId: ' + verificationId);
+      //     Get.to(() => const OtpScreen(), arguments: {
+      //       "countryCode": countryCode,
+      //       "phoneNumber": rawNumber,
+      //       "verificationId": verificationId,
+      //     });
+      //   },
+      //   codeAutoRetrievalTimeout: (String verificationId) {
+      //     this.verificationId.value = verificationId;
+      //   },
+      // );
     } catch (e) {
       ShowToastDialog.closeLoader();
       ShowToastDialog.showToast("An error occurred. Please try again.".tr);
@@ -61,21 +64,24 @@ class PhoneNumberController extends GetxController {
     }
   }
 
-  Future<void> signInWithPhoneAuthCredential(PhoneAuthCredential credential) async {
-    try {
-      final UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
-      if (userCredential.user != null) {
-        // Handle successful sign in
-        print('Auto sign-in: Navigating to OtpScreen with verificationId: ' + (this.verificationId.value ?? 'null'));
-        Get.offAll(() => const OtpScreen(), arguments: {
-          "countryCode": countryCodeEditingController.value.text.trim(),
-          "phoneNumber": phoneNUmberEditingController.value.text.trim(),
-          "verificationId": this.verificationId.value ?? '',
-        });
-      }
-    } catch (e) {
-      ShowToastDialog.showToast("Failed to sign in with phone number".tr);
-      debugPrint("Error in signInWithPhoneAuthCredential: $e");
-    }
-  }
+  // --- Deprecated: Firebase Phone Auth (replaced by custom backend OTP API) ---
+  // The following code is commented out as we now use our own backend for OTP verification.
+  //
+  // Future<void> signInWithPhoneAuthCredential(PhoneAuthCredential credential) async {
+  //   try {
+  //     final UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+  //     if (userCredential.user != null) {
+  //       // Handle successful sign in
+  //       print('Auto sign-in: Navigating to OtpScreen with verificationId: ' + (this.verificationId.value ?? 'null'));
+  //       Get.offAll(() => const OtpScreen(), arguments: {
+  //         "countryCode": countryCodeEditingController.value.text.trim(),
+  //         "phoneNumber": phoneNUmberEditingController.value.text.trim(),
+  //         "verificationId": this.verificationId.value ?? '',
+  //       });
+  //     }
+  //   } catch (e) {
+  //     ShowToastDialog.showToast("Failed to sign in with phone number".tr);
+  //     debugPrint("Error in signInWithPhoneAuthCredential: $e");
+  //   }
+  // }
 }

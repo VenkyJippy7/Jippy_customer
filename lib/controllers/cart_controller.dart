@@ -93,6 +93,11 @@ class CartController extends GetxController {
     selectedAddress.value = Constant.selectedLocation;
     getCartData();
     getPaymentSettings();
+    ever(subTotal, (_) {
+      if (subTotal.value > 599 && selectedPaymentMethod.value == PaymentGateway.cod.name) {
+        selectedPaymentMethod.value = PaymentGateway.razorpay.name;
+      }
+    });
     super.onInit();
   }
 
@@ -338,6 +343,10 @@ class CartController extends GetxController {
   List<CartProductModel> tempProduc = [];
 
   placeOrder() async {
+    if (selectedPaymentMethod.value == PaymentGateway.cod.name && subTotal.value > 599) {
+      ShowToastDialog.showToast("Cash on Delivery is not available for orders above ₹599. Please select another payment method.".tr);
+      return;
+    }
     if (selectedPaymentMethod.value == PaymentGateway.wallet.name) {
       if (double.parse(userModel.value.walletAmount.toString()) >=
           totalAmount.value) {

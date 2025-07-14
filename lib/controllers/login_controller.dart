@@ -16,6 +16,10 @@ import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:customer/app/dash_board_screens/dash_board_controller.dart';
+import 'package:dio/dio.dart';
+import 'package:customer/app/auth_screen/otp_screen.dart';
+import 'package:http/http.dart' as http;
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class LoginController extends GetxController {
   Rx<TextEditingController> emailEditingController = TextEditingController().obs;
@@ -23,8 +27,18 @@ class LoginController extends GetxController {
 
   RxBool passwordVisible = true.obs;
 
+  // --- OTP Login Logic (Custom Backend) ---
+  Rx<TextEditingController> phoneEditingController = TextEditingController().obs;
+  Rx<TextEditingController> otpEditingController = TextEditingController().obs;
+  RxBool isOtpSent = false.obs;
+  RxBool isVerifying = false.obs;
+  RxString authToken = ''.obs;
+  RxString countryCode = '+91'.obs;
+  RxString phoneNumber = ''.obs;
+
   @override
   void onInit() {
+    FireStoreUtils.backendUserId = null;
     // TODO: implement onInit
     super.onInit();
   }
@@ -269,5 +283,219 @@ class LoginController extends GetxController {
       debugPrint(e.toString());
     }
     return null;
+  }
+
+  // --- Deprecated: Firebase Phone Auth (replaced by custom backend OTP API) ---
+  // The following code is commented out as we now use our own backend for OTP verification.
+  //
+  // Example:
+  // await FirebaseAuth.instance.verifyPhoneNumber(
+  //   phoneNumber: phoneNumber,
+  //   verificationCompleted: (PhoneAuthCredential credential) async {
+  //     await FirebaseAuth.instance.signInWithCredential(credential);
+  //   },
+  //   verificationFailed: (FirebaseAuthException e) {
+  //     // Handle error
+  //   },
+  //   codeSent: (String verificationId, int? resendToken) {
+  //     // Save verificationId for later use
+  //   },
+  //   codeAutoRetrievalTimeout: (String verificationId) {},
+  // );
+  //
+  // To verify OTP:
+  // PhoneAuthCredential credential = PhoneAuthProvider.credential(
+  //   verificationId: verificationId,
+  //   smsCode: otp,
+  // );
+  // await FirebaseAuth.instance.signInWithCredential(credential);
+
+  Future<void> sendOtp() async {
+    print('[DEBUG] sendOtp() called with phone: ${phoneEditingController.value.text.trim()}');
+    ShowToastDialog.showLoader("Please wait".tr);
+    try {
+      // Set phone number and country code for use in OTP screen
+      phoneNumber.value = phoneEditingController.value.text.trim();
+      // If you have a country code picker, set countryCode.value accordingly
+      final response = await Dio().post(
+        'https://jippymart.in/api/send-otp',
+        data: {'phone': phoneEditingController.value.text.trim()},
+      );
+      print('[DEBUG] sendOtp() response: ${response.statusCode} ${response.data}');
+      if (response.statusCode == 200) {
+        isOtpSent.value = true;
+        ShowToastDialog.closeLoader();
+        ShowToastDialog.showToast("OTP sent successfully".tr);
+        Get.to(() => OtpScreen());
+      } else {
+        ShowToastDialog.closeLoader();
+        ShowToastDialog.showToast("Failed to send OTP".tr);
+      }
+    } catch (e) {
+      print('[DEBUG] sendOtp() error: ${e.toString()}');
+      ShowToastDialog.closeLoader();
+      ShowToastDialog.showToast("Error sending OTP".tr);
+    }
+  }
+
+  /// Call this after OTP is verified by your backend
+  Future<void> handleOtpLogin({
+    required String phoneNumber,
+    required String countryCode,
+    required String otp,
+  }) async {
+    print('[DEBUG] handleOtpLogin: phone=$countryCode$phoneNumber, otp=$otp');
+    await loginWithCustomToken(
+      phoneNumber: phoneNumber,
+      countryCode: countryCode,
+      otp: otp,
+    );
+  }
+
+  Future<void> verifyOtp() async {
+    print('[DEBUG] verifyOtp() called with phone: ${phoneEditingController.value.text.trim()}, otp: ${otpEditingController.value.text.trim()}');
+    ShowToastDialog.showLoader("Verifying OTP...".tr);
+    isVerifying.value = true;
+    try {
+      final response = await Dio().post(
+        'https://jippymart.in/api/verify-otp',
+        data: {
+          'phone': phoneEditingController.value.text.trim(),
+          'otp': otpEditingController.value.text.trim(),
+        },
+      );
+      print('[DEBUG] verifyOtp() response: ${response.statusCode} ${response.data}');
+      if (response.statusCode == 200 && response.data['success'] == true) {
+        authToken.value = response.data['token'] ?? '';
+        // Set backend user ID for FireStoreUtils
+        if (response.data['user'] != null && response.data['user']['id'] != null) {
+          FireStoreUtils.backendUserId = response.data['user']['id'].toString();
+        }
+        ShowToastDialog.closeLoader();
+        ShowToastDialog.showToast("OTP verified successfully".tr);
+        // New logic: check if user exists by phone number
+        final phone = phoneEditingController.value.text.trim();
+        UserModel? userModel = await FireStoreUtils.getUserByPhoneNumber(phone);
+        if (userModel != null && (userModel.active == true || userModel.isActive == true)) {
+          print('[DEBUG] User exists and is active, navigating to dashboard');
+          Get.offAll(() => DashBoardScreen());
+        } else {
+          print('[DEBUG] User does not exist or is not active, navigating to signup');
+          UserModel newUser = UserModel();
+          newUser.phoneNumber = phone;
+          newUser.countryCode = countryCode.value;
+          newUser.email = response.data['user']?['email']?.toString();
+          Get.offAll(() => SignupScreen(), arguments: {
+            "userModel": newUser,
+            "type": "mobileNumber"
+          });
+        }
+      } else {
+        ShowToastDialog.closeLoader();
+        ShowToastDialog.showToast(response.data['message'] ?? 'OTP verification failed');
+      }
+    } catch (e) {
+      print('[DEBUG] verifyOtp() error: ${e.toString()}');
+      ShowToastDialog.closeLoader();
+      ShowToastDialog.showToast("Error verifying OTP".tr);
+    } finally {
+      isVerifying.value = false;
+    }
+  }
+
+  Future<void> resendOtp() async {
+    print('[DEBUG] resendOtp() called with phone: ${phoneEditingController.value.text.trim()}');
+    ShowToastDialog.showLoader("Resending OTP...".tr);
+    try {
+      final response = await Dio().post(
+        'https://jippymart.in/api/resend-otp',
+        data: {'phone': phoneEditingController.value.text.trim()},
+      );
+      print('[DEBUG] resendOtp() response: ${response.statusCode} ${response.data}');
+      if (response.statusCode == 200) {
+        ShowToastDialog.closeLoader();
+        ShowToastDialog.showToast("OTP resent successfully".tr);
+      } else {
+        ShowToastDialog.closeLoader();
+        ShowToastDialog.showToast("Failed to resend OTP".tr);
+      }
+    } catch (e) {
+      print('[DEBUG] resendOtp() error: ${e.toString()}');
+      ShowToastDialog.closeLoader();
+      ShowToastDialog.showToast("Error resending OTP".tr);
+    }
+  }
+
+  /// Custom Token Login Flow (for custom SMS/OTP backend)
+  Future<void> loginWithCustomToken({
+    required String phoneNumber,
+    required String countryCode,
+    required String otp,
+  }) async {
+    ShowToastDialog.showLoader("Please wait");
+    try {
+      // 1. Call your backend to verify OTP and get custom token
+      final response = await http.post(
+        Uri.parse('https://your-backend.com/generateCustomToken'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'phoneNumber': phoneNumber,
+          'countryCode': countryCode,
+          'otp': otp,
+        }),
+      );
+      if (response.statusCode != 200) {
+        ShowToastDialog.closeLoader();
+        ShowToastDialog.showToast('Failed to get custom token: \n${response.body}');
+        return;
+      }
+      final data = jsonDecode(response.body);
+      final customToken = data['customToken'];
+      final uid = data['uid'];
+
+      // 2. Sign in with custom token
+      UserCredential userCredential = await FirebaseAuth.instance.signInWithCustomToken(customToken);
+
+      // 3. Check if user exists in Firestore
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .get();
+
+      UserModel? userModel;
+      if (userDoc.exists) {
+        // Existing user: load from Firestore using your model
+        userModel = UserModel.fromJson(userDoc.data()!);
+        // Proceed to dashboard or wherever needed
+        Get.offAll(() => DashBoardScreen());
+      } else {
+        // New user: create Firestore user document using your model
+        userModel = UserModel(
+          id: uid,
+          phoneNumber: phoneNumber,
+          countryCode: countryCode,
+          createdAt: Timestamp.now(),
+          active: true,
+          isActive: true,
+          role: 'customer',
+          walletAmount: 0,
+          isDocumentVerify: false,
+          appIdentifier: 'android', // or 'ios'
+        );
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(uid)
+            .set(userModel.toJson());
+        // Proceed to registration flow or dashboard
+        Get.offAll(() => SignupScreen(), arguments: {
+          "userModel": userModel,
+          "type": "mobileNumber",
+        });
+      }
+    } catch (e) {
+      ShowToastDialog.closeLoader();
+      ShowToastDialog.showToast('Login failed: \n$e');
+    }
+    ShowToastDialog.closeLoader();
   }
 }

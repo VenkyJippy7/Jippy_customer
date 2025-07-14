@@ -1,0 +1,501 @@
+# OTP Authentication API Documentation
+
+## Base URL
+```
+https://yourdomain.com/api
+```
+
+## Authentication
+All OTP endpoints use Basic Authentication with the SMS API credentials.
+
+## API Endpoints
+
+### 1. Send OTP
+**Endpoint:** `POST /send-otp`
+
+**Description:** Sends a 6-digit OTP to the specified phone number.
+
+#### Request Body
+```json
+{
+    "phone": "919885394334"
+}
+```
+
+#### Response
+```json
+{
+    "success": true,
+    "message": "OTP sent successfully",
+    "expires_in": 600
+}
+```
+
+### 2. Verify OTP
+**Endpoint:** `POST /verify-otp`
+
+**Description:** Verifies the OTP and returns authentication token.
+
+#### Request Body
+```json
+{
+    "phone": "919885394334",
+    "otp": "123456"
+}
+```
+
+#### Response
+```json
+{
+    "success": true,
+    "message": "OTP verified successfully",
+    "user": {
+        "id": 1,
+        "name": "User_4334",
+        "phone": "919885394334",
+        "email": "919885394334@jippymart.in"
+    },
+    "token": "1|abc123def456...",
+    "token_type": "Bearer"
+}
+```
+
+### 3. Resend OTP
+**Endpoint:** `POST /resend-otp`
+
+**Description:** Resends OTP to the same phone number.
+
+#### Request Body
+```json
+{
+    "phone": "919885394334"
+}
+```
+
+## HTTP Client Examples
+
+### 1. Postman Collection
+
+#### Send OTP Request
+```
+Method: POST
+URL: https://yourdomain.com/api/send-otp
+Headers:
+  Content-Type: application/json
+Body (raw JSON):
+{
+    "phone": "919885394334"
+}
+```
+
+#### Verify OTP Request
+```
+Method: POST
+URL: https://yourdomain.com/api/verify-otp
+Headers:
+  Content-Type: application/json
+Body (raw JSON):
+{
+    "phone": "919885394334",
+    "otp": "123456"
+}
+```
+
+### 2. cURL Examples
+
+#### Send OTP
+```bash
+curl -X POST https://yourdomain.com/api/send-otp \
+  -H "Content-Type: application/json" \
+  -d '{
+    "phone": "919885394334"
+  }'
+```
+
+#### Verify OTP
+```bash
+curl -X POST https://yourdomain.com/api/verify-otp \
+  -H "Content-Type: application/json" \
+  -d '{
+    "phone": "919885394334",
+    "otp": "123456"
+  }'
+```
+
+### 3. PHP cURL
+
+#### Send OTP
+```php
+<?php
+$curl = curl_init();
+
+curl_setopt_array($curl, array(
+  CURLOPT_URL => 'https://yourdomain.com/api/send-otp',
+  CURLOPT_RETURNTRANSFER => true,
+  CURLOPT_ENCODING => '',
+  CURLOPT_MAXREDIRS => 10,
+  CURLOPT_TIMEOUT => 0,
+  CURLOPT_FOLLOWLOCATION => true,
+  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+  CURLOPT_CUSTOMREQUEST => 'POST',
+  CURLOPT_POSTFIELDS => json_encode([
+    'phone' => '919885394334'
+  ]),
+  CURLOPT_HTTPHEADER => array(
+    'Content-Type: application/json'
+  ),
+));
+
+$response = curl_exec($curl);
+$httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+curl_close($curl);
+
+$result = json_decode($response, true);
+echo "Response: " . $response . "\n";
+echo "HTTP Code: " . $httpCode . "\n";
+?>
+```
+
+#### Verify OTP
+```php
+<?php
+$url = 'https://yourdomain.com/api/verify-otp';
+$data = [
+    'phone' => '919885394334',
+    'otp' => '123456'
+];
+
+$ch = curl_init();
+curl_setopt_array($ch, [
+    CURLOPT_URL => $url,
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_POST => true,
+    CURLOPT_POSTFIELDS => json_encode($data),
+    CURLOPT_HTTPHEADER => [
+        'Content-Type: application/json'
+    ],
+    CURLOPT_TIMEOUT => 30
+]);
+
+$response = curl_exec($ch);
+$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+curl_close($ch);
+
+$result = json_decode($response, true);
+if ($result['success']) {
+    $token = $result['token'];
+    echo "Authentication successful! Token: " . $token . "\n";
+} else {
+    echo "Authentication failed: " . $result['message'] . "\n";
+}
+?>
+```
+
+### 4. PHP Guzzle HTTP Client
+
+#### Send OTP
+```php
+<?php
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
+
+$client = new Client();
+$url = 'https://yourdomain.com/api/send-otp';
+$data = [
+    'phone' => '919885394334'
+];
+
+try {
+    $response = $client->post($url, [
+        'json' => $data,
+        'headers' => [
+            'Content-Type' => 'application/json'
+        ]
+    ]);
+    
+    $result = json_decode($response->getBody(), true);
+    echo "Response: " . json_encode($result, JSON_PRETTY_PRINT) . "\n";
+} catch (RequestException $e) {
+    echo "Error: " . $e->getMessage() . "\n";
+}
+?>
+```
+
+#### Verify OTP
+```php
+<?php
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
+
+$client = new Client();
+$url = 'https://yourdomain.com/api/verify-otp';
+$data = [
+    'phone' => '919885394334',
+    'otp' => '123456'
+];
+
+try {
+    $response = $client->post($url, [
+        'json' => $data,
+        'headers' => [
+            'Content-Type' => 'application/json'
+        ]
+    ]);
+    
+    $result = json_decode($response->getBody(), true);
+    if ($result['success']) {
+        $token = $result['token'];
+        echo "Authentication successful! Token: " . $token . "\n";
+    } else {
+        echo "Authentication failed: " . $result['message'] . "\n";
+    }
+} catch (RequestException $e) {
+    echo "Error: " . $e->getMessage() . "\n";
+}
+?>
+```
+
+### 5. PHP HTTP_Request2
+
+#### Send OTP
+```php
+<?php
+require_once 'HTTP/Request2.php';
+
+$request = new HTTP_Request2();
+$request->setUrl('https://yourdomain.com/api/send-otp');
+$request->setMethod(HTTP_Request2::METHOD_POST);
+$request->setConfig(array(
+  'follow_redirects' => TRUE
+));
+$request->setHeader(array(
+  'Content-Type: application/json'
+));
+$request->setBody(json_encode([
+  'phone' => '919885394334'
+]));
+
+try {
+  $response = $request->send();
+  if ($response->getStatus() == 200) {
+    $result = json_decode($response->getBody(), true);
+    echo "Response: " . json_encode($result, JSON_PRETTY_PRINT) . "\n";
+  }
+  else {
+    echo 'Unexpected HTTP status: ' . $response->getStatus() . ' ' .
+    $response->getReasonPhrase();
+  }
+}
+catch(HTTP_Request2_Exception $e) {
+  echo 'Error: ' . $e->getMessage();
+}
+?>
+```
+
+### 6. PHP PECL HTTP
+
+#### Send OTP
+```php
+<?php
+$request = new http\Client\Request('POST', 'https://yourdomain.com/api/send-otp');
+$request->setHeaders([
+    'Content-Type' => 'application/json'
+]);
+$request->getBody()->append(json_encode([
+    'phone' => '919885394334'
+]));
+
+$client = new http\Client();
+$client->enqueue($request)->send();
+$response = $client->getResponse($request);
+
+$result = json_decode($response->getBody(), true);
+echo "Response: " . json_encode($result, JSON_PRETTY_PRINT) . "\n";
+?>
+```
+
+### 7. JavaScript/Fetch API
+
+#### Send OTP
+```javascript
+const sendOtp = async (phone) => {
+    try {
+        const response = await fetch('https://yourdomain.com/api/send-otp', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                phone: phone
+            })
+        });
+        
+        const result = await response.json();
+        console.log('Response:', result);
+        return result;
+    } catch (error) {
+        console.error('Error:', error);
+    }
+};
+
+// Usage
+sendOtp('919885394334');
+```
+
+#### Verify OTP
+```javascript
+const verifyOtp = async (phone, otp) => {
+    try {
+        const response = await fetch('https://yourdomain.com/api/verify-otp', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                phone: phone,
+                otp: otp
+            })
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+            localStorage.setItem('auth_token', result.token);
+            console.log('Authentication successful!');
+        } else {
+            console.log('Authentication failed:', result.message);
+        }
+        return result;
+    } catch (error) {
+        console.error('Error:', error);
+    }
+};
+
+// Usage
+verifyOtp('919885394334', '123456');
+```
+
+### 8. Flutter/Dart Example
+
+#### Send OTP
+```dart
+import 'package:dio/dio.dart';
+
+Future<void> sendOtp(String phone) async {
+  final dio = Dio();
+  
+  try {
+    final response = await dio.post(
+      'https://yourdomain.com/api/send-otp',
+      data: {
+        'phone': phone,
+      },
+      options: Options(
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      ),
+    );
+    
+    print('Response: ${response.data}');
+  } catch (e) {
+    print('Error: $e');
+  }
+}
+```
+
+#### Verify OTP
+```dart
+import 'package:dio/dio.dart';
+
+Future<Map<String, dynamic>?> verifyOtp(String phone, String otp) async {
+  final dio = Dio();
+  
+  try {
+    final response = await dio.post(
+      'https://yourdomain.com/api/verify-otp',
+      data: {
+        'phone': phone,
+        'otp': otp,
+      },
+      options: Options(
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      ),
+    );
+    
+    final result = response.data;
+    if (result['success']) {
+      // Save token to secure storage
+      // await SecureStorage.write(key: 'auth_token', value: result['token']);
+      print('Authentication successful!');
+    } else {
+      print('Authentication failed: ${result['message']}');
+    }
+    
+    return result;
+  } catch (e) {
+    print('Error: $e');
+    return null;
+  }
+}
+```
+
+## Error Responses
+
+### Validation Error (422)
+```json
+{
+    "success": false,
+    "message": "Validation failed",
+    "errors": {
+        "phone": ["The phone field is required."]
+    }
+}
+```
+
+### Invalid OTP (401)
+```json
+{
+    "success": false,
+    "message": "Invalid or expired OTP"
+}
+```
+
+### Rate Limit Error (429)
+```json
+{
+    "success": false,
+    "message": "Please wait 1 minute before requesting another OTP"
+}
+```
+
+### Server Error (500)
+```json
+{
+    "success": false,
+    "message": "Failed to send OTP. Please try again."
+}
+```
+
+## Security Features
+
+1. **Rate Limiting**: 1 minute cooldown between OTP requests
+2. **OTP Expiration**: OTPs expire after 10 minutes
+3. **Attempt Limiting**: Maximum 5 failed attempts per OTP
+4. **Secure Token**: Laravel Sanctum tokens for authentication
+5. **Multiple HTTP Methods**: Fallback mechanisms for SMS delivery
+
+## SMS API Configuration
+
+The system uses SMSCountry API with the following configuration:
+- **API URL**: `https://restapi.smscountry.com/v0.1/Accounts/g3NwQZX8qbjHARPZktFZ/SMSes/`
+- **Auth Key**: `Basic ZzNOd1FaWDhxYmpIQVJQWmt0Rlo6Y2lXdzBZRHUzbTFRY3hkMEFBSmZXaHNmczQ4TXRXdEs4Sk91TnR0Zg==`
+- **Sender ID**: `JIPPYM`
+
+## Testing
+
+1. Run migrations: `php artisan migrate`
+2. Test with Postman or any HTTP client
+3. Check logs for SMS delivery status
+4. Verify OTP expiration and rate limiting

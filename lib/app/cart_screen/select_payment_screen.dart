@@ -76,8 +76,14 @@ class SelectPaymentScreen extends StatelessWidget {
                               child: cardDecoration(controller, PaymentGateway.wallet, themeChange, "assets/images/ic_wallet.png"),
                             ),
                             Visibility(
-                              visible: controller.cashOnDeliverySettingModel.value.isEnabled == true,
-                              child: cardDecoration(controller, PaymentGateway.cod, themeChange, "assets/images/ic_cash.png"),
+                              visible: controller.cashOnDeliverySettingModel.value.isEnabled == true && controller.subTotal.value <= 599,
+                              child: Obx(() => Opacity(
+                                opacity: controller.subTotal.value > 599 ? 0.4 : 1.0,
+                                child: IgnorePointer(
+                                  ignoring: controller.subTotal.value > 599,
+                                  child: cardDecoration(controller, PaymentGateway.cod, themeChange, "assets/images/ic_cash.png"),
+                                ),
+                              )),
                             ),
                           ],
                         ),

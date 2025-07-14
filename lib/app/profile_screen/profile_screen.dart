@@ -25,6 +25,7 @@ import 'package:get/get.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:customer/controllers/login_controller.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -220,7 +221,7 @@ class ProfileScreen extends StatelessWidget {
                                     : cardDecoration(themeChange, controller, "assets/icons/ic_share.svg", "Share app", () {
                                       Share.share(
                                         '${'Hey! Just downloaded JippyMart and loving it!'.tr}\nYou should try it too — get ₹100 off on your first order! 🎁\nDon’t miss out on this deal! 💯\n\n${'Google Play:'.tr} ${Constant.googlePlayLink}\n${'App Store:'.tr} ${Constant.appStoreLink}',
-                                        subject: 'Look what I made!'.tr);
+                                          subject: 'Look what I made!'.tr);
                                     }),
                                     cardDecoration(themeChange, controller, "assets/icons/ic_rate.svg", "Rate the app", () {
                                       final InAppReview inAppReview = InAppReview.instance;
@@ -347,6 +348,17 @@ class ProfileScreen extends StatelessWidget {
                                                       Constant.userModel!.fcmToken = "";
                                                       await FireStoreUtils.updateUser(Constant.userModel!);
                                                       Constant.userModel = null;
+                                                      FireStoreUtils.backendUserId = null;
+                                                      // Clear auth token if used
+                                                      try {
+                                                        if (Get.isRegistered<LoginController>()) {
+                                                          Get.find<LoginController>().authToken.value = '';
+                                                        }
+                                                      } catch (_) {}
+                                                      // Clear preferences (or use your Preferences.clear() if available)
+                                                      await Preferences.clearSharPreference();
+                                                      // Delete all controllers except splash/login
+                                                      Get.deleteAll(force: true);
                                                       await FirebaseAuth.instance.signOut();
                                                       Get.offAll(const LoginScreen());
                                                     },

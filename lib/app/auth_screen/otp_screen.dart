@@ -4,7 +4,7 @@ import 'package:customer/app/dash_board_screens/dash_board_screen.dart';
 import 'package:customer/app/location_permission_screen/location_permission_screen.dart';
 import 'package:customer/constant/constant.dart';
 import 'package:customer/constant/show_toast_dialog.dart';
-import 'package:customer/controllers/otp_controller.dart';
+import 'package:customer/controllers/login_controller.dart';
 import 'package:customer/models/user_model.dart';
 import 'package:customer/themes/app_them_data.dart';
 import 'package:customer/themes/round_button_fill.dart';
@@ -18,260 +18,129 @@ import 'package:get/get.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:provider/provider.dart';
 
-class OtpScreen extends StatefulWidget {
-  const OtpScreen({Key? key}) : super(key: key);
-
-  @override
-  State<OtpScreen> createState() => _OtpScreenState();
-}
-
-class _OtpScreenState extends State<OtpScreen> {
-  late TextEditingController? otpController;
-  late OtpController controller;
-
-  @override
-  void initState() {
-    super.initState();
-    otpController = TextEditingController();
-    controller = Get.put(OtpController());
-  }
-
-  @override
-  void dispose() {
-    // Debug: Confirm controller disposal
-    print('OtpScreen disposed, disposing otpController');
-    otpController?.dispose();
-    otpController = null;
-    super.dispose();
-  }
-
-  void _unfocus() {
-    if (mounted) {
-      FocusScope.of(context).unfocus();
-    }
-  }
+class OtpScreen extends StatelessWidget {
+  const OtpScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     final themeChange = Provider.of<DarkThemeProvider>(context);
-    return Obx(() {
-      return Scaffold(
-        appBar: AppBar(
-          backgroundColor: themeChange.getThem() ? AppThemeData.surfaceDark : AppThemeData.surface,
-        ),
-        body: controller.isLoading.value
-            ? Constant.loader()
-            : SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Verify Your Number 📱".tr,
-                        style: TextStyle(color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900, fontSize: 22, fontFamily: AppThemeData.semiBold),
+    final LoginController controller = Get.find<LoginController>();
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: themeChange.getThem() ? AppThemeData.surfaceDark : AppThemeData.surface,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Verify Your Number 📱".tr,
+                style: TextStyle(color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900, fontSize: 22, fontFamily: AppThemeData.semiBold),
+              ),
+              Text(
+                "${'Enter the OTP sent to your mobile number.'.tr} ${controller.countryCode.value} ${Constant.maskingString(controller.phoneNumber.value, 3)}",
+                textAlign: TextAlign.start,
+                style: TextStyle(
+                  color: themeChange.getThem() ? AppThemeData.grey200 : AppThemeData.grey700,
+                  fontSize: 16,
+                  fontFamily: AppThemeData.regular,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+              const SizedBox(
+                height: 60,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Center(
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: PinCodeTextField(
+                      length: 6,
+                      appContext: context,
+                      keyboardType: TextInputType.phone,
+                      enablePinAutofill: true,
+                      hintCharacter: "-",
+                      textStyle: TextStyle(
+                        color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900,
+                        fontFamily: AppThemeData.regular,
                       ),
-                      Text(
-                        "${'Enter the OTP sent to your mobile number.'.tr} ${controller.countryCode.value} ${Constant.maskingString(controller.phoneNumber.value, 3)}".tr,
-                        textAlign: TextAlign.start,
-                        style: TextStyle(
-                          color: themeChange.getThem() ? AppThemeData.grey200 : AppThemeData.grey700,
-                          fontSize: 16,
-                          fontFamily: AppThemeData.regular,
-                          fontWeight: FontWeight.w400,
-                        ),
+                      pinTheme: PinTheme(
+                        fieldHeight: 50,
+                        fieldWidth: 40,
+                        inactiveFillColor: themeChange.getThem() ? AppThemeData.grey900 : AppThemeData.grey50,
+                        selectedFillColor: themeChange.getThem() ? AppThemeData.grey900 : AppThemeData.grey50,
+                        activeFillColor: themeChange.getThem() ? AppThemeData.grey900 : AppThemeData.grey50,
+                        selectedColor: themeChange.getThem() ? AppThemeData.grey900 : AppThemeData.grey50,
+                        activeColor: themeChange.getThem() ? AppThemeData.primary300 : AppThemeData.primary300,
+                        inactiveColor: themeChange.getThem() ? AppThemeData.grey900 : AppThemeData.grey50,
+                        disabledColor: themeChange.getThem() ? AppThemeData.grey900 : AppThemeData.grey50,
+                        shape: PinCodeFieldShape.box,
+                        errorBorderColor: themeChange.getThem() ? AppThemeData.grey600 : AppThemeData.grey300,
+                        borderRadius: const BorderRadius.all(Radius.circular(10)),
                       ),
-                      const SizedBox(
-                        height: 60,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        child: Center(
-                          child: SizedBox(
-                            width: double.infinity,
-                            child: PinCodeTextField(
-                              length: 6,
-                              appContext: context,
-                              keyboardType: TextInputType.phone,
-                              enablePinAutofill: true,
-                              hintCharacter: "-",
-                              textStyle: TextStyle(
-                                color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900,
-                                fontFamily: AppThemeData.regular,
-                              ),
-                              pinTheme: PinTheme(
-                                fieldHeight: 50,
-                                fieldWidth: 40,
-                                inactiveFillColor: themeChange.getThem() ? AppThemeData.grey900 : AppThemeData.grey50,
-                                selectedFillColor: themeChange.getThem() ? AppThemeData.grey900 : AppThemeData.grey50,
-                                activeFillColor: themeChange.getThem() ? AppThemeData.grey900 : AppThemeData.grey50,
-                                selectedColor: themeChange.getThem() ? AppThemeData.grey900 : AppThemeData.grey50,
-                                activeColor: themeChange.getThem() ? AppThemeData.primary300 : AppThemeData.primary300,
-                                inactiveColor: themeChange.getThem() ? AppThemeData.grey900 : AppThemeData.grey50,
-                                disabledColor: themeChange.getThem() ? AppThemeData.grey900 : AppThemeData.grey50,
-                                shape: PinCodeFieldShape.box,
-                                errorBorderColor: themeChange.getThem() ? AppThemeData.grey600 : AppThemeData.grey300,
-                                borderRadius: const BorderRadius.all(Radius.circular(10)),
-                              ),
-                              cursorColor: AppThemeData.primary300,
-                              enableActiveFill: true,
-                              controller: otpController,
-                              onCompleted: (v) async {
-                                if (!mounted) return;
-                                // your logic (if any)
-                              },
-                              onChanged: (value) {
-                                if (!mounted) return;
-                                // your logic (if any)
-                              },
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 50,
-                      ),
-                      RoundedButtonFill(
-                        title: "Verify & Next".tr,
-                        color: AppThemeData.primary300,
-                        textColor: AppThemeData.grey50,
-                        onPress: () async {
-                          _unfocus();
-                          // Defensive: Check for disposed controller
-                          if (otpController == null) return;
-                          // Defensive: Check for empty verificationId
-                          if (controller.verificationId.value.isEmpty) {
-                            ShowToastDialog.showToast("Verification ID is missing. Please try again.");
-                            return;
-                          }
-                          if (otpController!.text.trim().length == 6) {
-                            ShowToastDialog.showLoader("Verify otp".tr);
-                            // Debug: Print verificationId and OTP
-                            print('Verifying with verificationId: \\${controller.verificationId.value}, otp: \\${otpController!.text.trim()}');
-                            try {
-                              // Defensive: Check for both values
-                              if (controller.verificationId.value.isEmpty || otpController!.text.trim().isEmpty) {
-                                ShowToastDialog.showToast("Missing OTP or verification ID. Please try again.");
-                                return;
-                              }
-                            PhoneAuthCredential credential =
-                                  PhoneAuthProvider.credential(verificationId: controller.verificationId.value, smsCode: otpController!.text.trim());
-                            String fcmToken = await NotificationService.getToken();
-                            await FirebaseAuth.instance.signInWithCredential(credential).then((value) async {
-                                if (!mounted) return; // Prevent using disposed widget
-                              if (value.additionalUserInfo!.isNewUser) {
-                                UserModel userModel = UserModel();
-                                userModel.id = value.user!.uid;
-                                userModel.countryCode = controller.countryCode.value;
-                                userModel.phoneNumber = controller.phoneNumber.value;
-                                userModel.fcmToken = fcmToken;
-                                userModel.provider = 'phone';
-
-                                ShowToastDialog.closeLoader();
-                                _unfocus();
-                                Get.off(const SignupScreen(), arguments: {
-                                  "userModel": userModel,
-                                  "type": "mobileNumber",
-                                });
-                                } else {
-                                  // Existing user logic (unchanged)
-                                await FireStoreUtils.userExistOrNot(value.user!.uid).then((userExit) async {
-                                  ShowToastDialog.closeLoader();
-                                  if (userExit == true) {
-                                    UserModel? userModel = await FireStoreUtils.getUserProfile(value.user!.uid);
-                                    if (userModel!.role == Constant.userRoleCustomer) {
-                                      if (userModel.active == true) {
-                                        userModel.fcmToken = await NotificationService.getToken();
-                                        await FireStoreUtils.updateUser(userModel);
-                                        if (userModel.shippingAddress != null && userModel.shippingAddress!.isNotEmpty) {
-                                          if (userModel.shippingAddress!.where((element) => element.isDefault == true).isNotEmpty) {
-                                            Constant.selectedLocation = userModel.shippingAddress!.where((element) => element.isDefault == true).single;
-                                          } else {
-                                            Constant.selectedLocation = userModel.shippingAddress!.first;
-                                          }
-                                          _unfocus();
-                                          Get.offAll(const DashBoardScreen());
-                                        } else {
-                                          _unfocus();
-                                          Get.offAll(const LocationPermissionScreen());
-                                        }
-                                        } else {
-                                        ShowToastDialog.showToast("This user is disable please contact to administrator".tr);
-                                        await FirebaseAuth.instance.signOut();
-                                        _unfocus();
-                                        Get.offAll(const LoginScreen());
-                                      }
-                                    } else {
-                                      await FirebaseAuth.instance.signOut();
-                                      _unfocus();
-                                      Get.offAll(const LoginScreen());
-                                    }
-                                  } else {
-                                    UserModel userModel = UserModel();
-                                    userModel.id = value.user!.uid;
-                                    userModel.countryCode = controller.countryCode.value;
-                                    userModel.phoneNumber = controller.phoneNumber.value;
-                                    userModel.fcmToken = fcmToken;
-                                    userModel.provider = 'phone';
-
-                                    _unfocus();
-                                    Get.off(const SignupScreen(), arguments: {
-                                      "userModel": userModel,
-                                      "type": "mobileNumber",
-                                    });
-                                  }
-                                });
-                              }
-                              });
-                            } catch (error) {
-                              // Debug: Log the actual error
-                              print('FirebaseAuthException: \\${error.toString()}');
-                              ShowToastDialog.closeLoader();
-                              ShowToastDialog.showToast("Invalid Code".tr);
-                            }
-                          } else {
-                            ShowToastDialog.showToast("Enter Valid otp".tr);
-                          }
-                        },
-                      ),
-                      const SizedBox(
-                        height: 40,
-                      ),
-                      Text.rich(
-                        textAlign: TextAlign.start,
-                        TextSpan(
-                          text: "Didn't receive any code?".tr,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 14,
-                            fontFamily: AppThemeData.medium,
-                            color: themeChange.getThem() ? AppThemeData.grey100 : AppThemeData.grey800,
-                          ),
-                          children: <TextSpan>[
-                            TextSpan(
-                              recognizer: TapGestureRecognizer()
-                                ..onTap = () {
-                                  otpController?.clear();
-                                  controller.resendOtp(controller.phoneNumber.value, controller.countryCode.value);
-                                },
-                              text: 'Send Again'.tr,
-                              style: TextStyle(
-                                  color: themeChange.getThem() ? AppThemeData.primary300 : AppThemeData.primary300,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 14,
-                                  fontFamily: AppThemeData.medium,
-                                  decoration: TextDecoration.underline,
-                                  decorationColor: AppThemeData.primary300),
-                            ),
-                          ],
-                        ),
-                      )
-                    ],
+                      cursorColor: AppThemeData.primary300,
+                      enableActiveFill: true,
+                      controller: controller.otpEditingController.value,
+                      onCompleted: (v) async {
+                        // No 'mounted' check needed in StatelessWidget
+                        // Optionally, you can auto-verify here
+                      },
+                      onChanged: (value) {
+                        // No 'mounted' check needed in StatelessWidget
+                      },
+                    ),
                   ),
                 ),
               ),
-      );
-    });
+              const SizedBox(
+                height: 50,
+              ),
+              RoundedButtonFill(
+                title: "Verify & Next".tr,
+                color: AppThemeData.primary300,
+                textColor: AppThemeData.grey50,
+                onPress: () async {
+                  await controller.verifyOtp();
+                },
+              ),
+              const SizedBox(
+                height: 40,
+              ),
+              Text.rich(
+                textAlign: TextAlign.start,
+                TextSpan(
+                  text: "Didn't receive any code?".tr,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 14,
+                    fontFamily: AppThemeData.medium,
+                    color: themeChange.getThem() ? AppThemeData.grey100 : AppThemeData.grey800,
+                  ),
+                  children: <TextSpan>[
+                    TextSpan(
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () {
+                          controller.resendOtp();
+                        },
+                      text: 'Send Again'.tr,
+                      style: TextStyle(
+                          color: themeChange.getThem() ? AppThemeData.primary300 : AppThemeData.primary300,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 14,
+                          fontFamily: AppThemeData.medium,
+                          decoration: TextDecoration.underline,
+                          decorationColor: AppThemeData.primary300),
+                    ),
+                  ],
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

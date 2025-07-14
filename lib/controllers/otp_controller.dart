@@ -15,59 +15,62 @@ class OtpController extends GetxController {
     verificationId.value = id;
   }
 
-  void verifyOtp(String enteredOtp) async {
-    if (enteredOtp.length != 6) {
-      ShowToastDialog.showToast("Enter a valid 6-digit OTP");
-      return;
-    }
-    isLoading.value = true;
-    ShowToastDialog.showLoader("Verifying OTP...");
-    try {
-      PhoneAuthCredential credential = PhoneAuthProvider.credential(
-        verificationId: verificationId.value,
-        smsCode: enteredOtp,
-      );
-      await FirebaseAuth.instance.signInWithCredential(credential);
-      await Preferences.setBoolean('isOtpVerified', true);
-      isLoading.value = false;
-      ShowToastDialog.closeLoader();
-      Get.offAllNamed('/DashBoardScreen');
-    } catch (e) {
-      await Preferences.setBoolean('isOtpVerified', false);
-      await FirebaseAuth.instance.signOut();
-    isLoading.value = false;
-      ShowToastDialog.closeLoader();
-      ShowToastDialog.showToast("Invalid OTP. Try again.");
-    }
-  }
-
-  void resendOtp(String phone, String countryCode) async {
-    isLoading.value = true;
-    try {
-    await FirebaseAuth.instance.verifyPhoneNumber(
-        phoneNumber: countryCode + phone,
-        timeout: const Duration(seconds: 60),
-        verificationCompleted: (PhoneAuthCredential credential) async {
-          isLoading.value = false;
-        },
-        verificationFailed: (FirebaseAuthException e) {
-          isLoading.value = false;
-          ShowToastDialog.showToast("Verification failed: "+(e.message ?? ''));
-        },
-        codeSent: (String newVerificationId, int? resendToken) {
-          isLoading.value = false;
-          verificationId.value = newVerificationId;
-          ShowToastDialog.showToast("OTP resent");
-      },
-        codeAutoRetrievalTimeout: (String verificationId) {
-          this.verificationId.value = verificationId;
-        },
-      );
-    } catch (e) {
-      isLoading.value = false;
-      ShowToastDialog.showToast("Error: "+e.toString());
-    }
-  }
+  // --- Deprecated: Firebase Phone Auth (replaced by custom backend OTP API) ---
+  // The following code is commented out as we now use our own backend for OTP verification.
+  //
+  // void verifyOtp(String enteredOtp) async {
+  //   if (enteredOtp.length != 6) {
+  //     ShowToastDialog.showToast("Enter a valid 6-digit OTP");
+  //     return;
+  //   }
+  //   isLoading.value = true;
+  //   ShowToastDialog.showLoader("Verifying OTP...");
+  //   try {
+  //     PhoneAuthCredential credential = PhoneAuthProvider.credential(
+  //       verificationId: verificationId.value,
+  //       smsCode: enteredOtp,
+  //     );
+  //     await FirebaseAuth.instance.signInWithCredential(credential);
+  //     await Preferences.setBoolean('isOtpVerified', true);
+  //     isLoading.value = false;
+  //     ShowToastDialog.closeLoader();
+  //     Get.offAllNamed('/DashBoardScreen');
+  //   } catch (e) {
+  //     await Preferences.setBoolean('isOtpVerified', false);
+  //     await FirebaseAuth.instance.signOut();
+  //     isLoading.value = false;
+  //     ShowToastDialog.closeLoader();
+  //     ShowToastDialog.showToast("Invalid OTP. Try again.");
+  //   }
+  // }
+  //
+  // void resendOtp(String phone, String countryCode) async {
+  //   isLoading.value = true;
+  //   try {
+  //     await FirebaseAuth.instance.verifyPhoneNumber(
+  //         phoneNumber: countryCode + phone,
+  //         timeout: const Duration(seconds: 60),
+  //         verificationCompleted: (PhoneAuthCredential credential) async {
+  //           isLoading.value = false;
+  //         },
+  //         verificationFailed: (FirebaseAuthException e) {
+  //           isLoading.value = false;
+  //           ShowToastDialog.showToast("Verification failed: "+(e.message ?? ''));
+  //         },
+  //         codeSent: (String newVerificationId, int? resendToken) {
+  //           isLoading.value = false;
+  //           verificationId.value = newVerificationId;
+  //           ShowToastDialog.showToast("OTP resent");
+  //       },
+  //         codeAutoRetrievalTimeout: (String verificationId) {
+  //           this.verificationId.value = verificationId;
+  //         },
+  //       );
+  //   } catch (e) {
+  //     isLoading.value = false;
+  //     ShowToastDialog.showToast("Error: "+e.toString());
+  //   }
+  // }
 
   @override
   void onClose() {

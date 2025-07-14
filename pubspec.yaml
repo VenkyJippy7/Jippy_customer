@@ -30,13 +30,13 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  http: ^1.1.0
+  http: ^1.2.1
   # google_play_integrity: ^1.0.0  # Removed as we're using platform channels
 
   cupertino_icons: ^1.0.8
   firebase_core: ^3.14.0
-  firebase_auth: ^5.6.0
-  cloud_firestore: ^5.6.9
+  firebase_auth: ^5.6.2
+  cloud_firestore: ^5.6.11
   firebase_storage: ^12.4.7
   firebase_messaging: ^15.2.7
   firebase_database: ^11.3.7
@@ -103,6 +103,7 @@ dependencies:
   google_maps_place_picker_mb: ^3.1.2
 
   firebase_app_check: ^0.3.2+7
+  dio: ^5.4.0
 
 dependency_overrides:
   webview_flutter: ^4.7.0

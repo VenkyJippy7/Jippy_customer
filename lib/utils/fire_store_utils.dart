@@ -65,8 +65,14 @@ import 'package:video_compress/video_compress.dart';
 class FireStoreUtils {
   static FirebaseFirestore fireStore = FirebaseFirestore.instance;
 
+  static String? backendUserId; // Set this from LoginController after OTP verification
+
   static String getCurrentUid() {
-    return FirebaseAuth.instance.currentUser!.uid;
+    if (backendUserId != null && backendUserId!.isNotEmpty) {
+      return backendUserId!;
+    }
+    // Fallback for legacy Firebase flows
+    return FirebaseAuth.instance.currentUser?.uid ?? '';
   }
 
   static Future<bool> isLogin() async {
@@ -1855,5 +1861,24 @@ class FireStoreUtils {
       'couponId': couponId,
       'usedAt': Timestamp.now(),
     });
+  }
+
+  // Add this function to find user by phone number
+  static Future<UserModel?> getUserByPhoneNumber(String phone) async {
+    try {
+      final query = await fireStore
+          .collection(CollectionName.users)
+          .where('phoneNumber', isEqualTo: phone)
+          .limit(1)
+          .get();
+      if (query.docs.isNotEmpty) {
+        final data = query.docs.first.data();
+        data['id'] = query.docs.first.id;
+        return UserModel.fromJson(data);
+      }
+    } catch (e) {
+      log('Error finding user by phone: $e');
+    }
+    return null;
   }
 }

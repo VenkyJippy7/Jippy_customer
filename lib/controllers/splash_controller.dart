@@ -49,11 +49,13 @@ class SplashController extends GetxController {
                 }
               } else {
                 await FirebaseAuth.instance.signOut();
+                FireStoreUtils.backendUserId = null;
                 await Preferences.setBoolean('isOtpVerified', false);
                 Get.offAll(const LoginScreen());
               }
             } else {
               await FirebaseAuth.instance.signOut();
+              FireStoreUtils.backendUserId = null;
               await Preferences.setBoolean('isOtpVerified', false);
               Get.offAll(const LoginScreen());
             }
@@ -61,6 +63,7 @@ class SplashController extends GetxController {
         });
       } else {
         await FirebaseAuth.instance.signOut();
+        FireStoreUtils.backendUserId = null;
         await Preferences.setBoolean('isOtpVerified', false);
         Get.offAll(const LoginScreen());
       }
