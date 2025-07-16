@@ -23,6 +23,7 @@ class EditProfileScreen extends StatelessWidget {
     return GetX(
         init: EditProfileController(),
         builder: (controller) {
+          print('[PROFILE_SCREEN] Loaded user model: ' + controller.userModel.value.toJson().toString());
           return Scaffold(
             appBar: AppBar(
               centerTitle: false,

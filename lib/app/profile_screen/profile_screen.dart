@@ -1,4 +1,5 @@
 import 'package:customer/app/auth_screen/login_screen.dart';
+import 'package:customer/app/auth_screen/phone_number_screen.dart';
 import 'package:customer/app/change%20langauge/change_language_screen.dart';
 import 'package:customer/app/chat_screens/driver_inbox_screen.dart';
 import 'package:customer/app/chat_screens/restaurant_inbox_screen.dart';
@@ -26,6 +27,7 @@ import 'package:in_app_review/in_app_review.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:customer/controllers/login_controller.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -333,7 +335,7 @@ class ProfileScreen extends StatelessWidget {
                                   children: [
                                     Constant.userModel == null
                                         ? cardDecoration(themeChange, controller, "assets/icons/ic_logout.svg", "Log In", () {
-                                            Get.offAll(const LoginScreen());
+                                            Get.offAll(const PhoneNumberScreen());
                                           })
                                         : cardDecoration(themeChange, controller, "assets/icons/ic_logout.svg", "Log out", () {
                                             showDialog(
@@ -357,10 +359,13 @@ class ProfileScreen extends StatelessWidget {
                                                       } catch (_) {}
                                                       // Clear preferences (or use your Preferences.clear() if available)
                                                       await Preferences.clearSharPreference();
+                                                      // Delete API token from secure storage
+                                                      final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
+                                                      await secureStorage.delete(key: 'api_token');
                                                       // Delete all controllers except splash/login
                                                       Get.deleteAll(force: true);
                                                       await FirebaseAuth.instance.signOut();
-                                                      Get.offAll(const LoginScreen());
+                                                      Get.offAll(const PhoneNumberScreen());
                                                     },
                                                     negativeClick: () {
                                                       Get.back();
@@ -402,7 +407,7 @@ class ProfileScreen extends StatelessWidget {
                                                     ShowToastDialog.closeLoader();
                                                     if (value == true) {
                                                       ShowToastDialog.showToast("Account deleted successfully".tr);
-                                                      Get.offAll(const LoginScreen());
+                                                      Get.offAll(const PhoneNumberScreen());
                                                     } else {
                                                       ShowToastDialog.showToast("Contact Administrator".tr);
                                                     }

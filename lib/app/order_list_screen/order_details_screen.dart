@@ -8,6 +8,7 @@ import 'package:customer/models/cart_product_model.dart';
 import 'package:customer/models/tax_model.dart';
 import 'package:customer/models/user_model.dart';
 import 'package:customer/models/vendor_model.dart';
+import 'package:customer/models/order_model.dart';
 import 'package:customer/themes/app_them_data.dart';
 import 'package:customer/themes/responsive.dart';
 import 'package:customer/themes/round_button_fill.dart';
@@ -21,8 +22,122 @@ import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:timelines_plus/timelines_plus.dart';
 
+class OrderBillDetails {
+  final double subTotal;
+  final double deliveryCharges;
+  final double originalDeliveryFee;
+  final double couponAmount;
+  final double specialDiscountAmount;
+  final double taxAmount;
+  final double deliveryTips;
+  final double totalAmount;
+  final bool isFreeDelivery;
+  OrderBillDetails({
+    required this.subTotal,
+    required this.deliveryCharges,
+    required this.originalDeliveryFee,
+    required this.couponAmount,
+    required this.specialDiscountAmount,
+    required this.taxAmount,
+    required this.deliveryTips,
+    required this.totalAmount,
+    required this.isFreeDelivery,
+  });
+}
+
 class OrderDetailsScreen extends StatelessWidget {
   const OrderDetailsScreen({super.key});
+
+  OrderBillDetails _calculateOrderBillDetails(OrderModel order, VendorModel vendor, DeliveryCharge deliveryCharge, double totalDistance) {
+    double subTotal = 0.0;
+    double deliveryCharges = 0.0;
+    double originalDeliveryFee = 0.0;
+    double couponAmount = 0.0;
+    double specialDiscountAmount = 0.0;
+    double taxAmount = 0.0;
+    double deliveryTips = double.tryParse(order.tipAmount ?? '0') ?? 0.0;
+    double totalAmount = 0.0;
+
+    // Subtotal
+    if (order.products != null) {
+      for (var element in order.products!) {
+        if (double.parse(element.discountPrice.toString()) <= 0) {
+          subTotal += double.parse(element.price.toString()) * double.parse(element.quantity.toString()) +
+              (double.parse(element.extrasPrice.toString()) * double.parse(element.quantity.toString()));
+        } else {
+          subTotal += double.parse(element.discountPrice.toString()) * double.parse(element.quantity.toString()) +
+              (double.parse(element.extrasPrice.toString()) * double.parse(element.quantity.toString()));
+        }
+      }
+    }
+
+    // Delivery Charges
+    final threshold = deliveryCharge.itemTotalThreshold ?? 299;
+    final baseCharge = deliveryCharge.baseDeliveryCharge ?? 23;
+    final freeKm = deliveryCharge.freeDeliveryDistanceKm ?? 7;
+    final perKm = deliveryCharge.perKmChargeAboveFreeDistance ?? 8;
+    if (vendor.isSelfDelivery == true && Constant.isSelfDeliveryFeature == true) {
+      deliveryCharges = 0.0;
+      originalDeliveryFee = 0.0;
+    } else if (subTotal < threshold) {
+      if (totalDistance <= freeKm) {
+        deliveryCharges = baseCharge.toDouble();
+        originalDeliveryFee = baseCharge.toDouble();
+      } else {
+        double extraKm = (totalDistance - freeKm).ceilToDouble();
+        deliveryCharges = (baseCharge + (extraKm * perKm)).toDouble();
+        originalDeliveryFee = deliveryCharges;
+      }
+    } else {
+      if (totalDistance <= freeKm) {
+        deliveryCharges = 0.0;
+        originalDeliveryFee = baseCharge.toDouble();
+      } else {
+        double extraKm = (totalDistance - freeKm).ceilToDouble();
+        deliveryCharges = (extraKm * perKm).toDouble();
+        originalDeliveryFee = (baseCharge + (extraKm * perKm)).toDouble();
+      }
+    }
+
+    // Coupon Discount
+    if (order.couponId != null && order.couponId!.isNotEmpty && order.discount != null) {
+      couponAmount = double.tryParse(order.discount.toString()) ?? 0.0;
+    }
+
+    // Special Discount
+    if (order.specialDiscount != null && order.specialDiscount!['special_discount'] != null) {
+      specialDiscountAmount = double.tryParse(order.specialDiscount!['special_discount'].toString()) ?? 0.0;
+    }
+
+    // Taxes
+    double sgst = subTotal * 0.05;
+    double gst = originalDeliveryFee * 0.18;
+    taxAmount = sgst + gst;
+
+        print('DEBUG: subTotal = ' + subTotal.toString());
+        print('DEBUG: totalDistance = ' + totalDistance.toString());
+        print('DEBUG: originalDeliveryFee = ' + originalDeliveryFee.toString());
+        print('DEBUG: deliveryCharges = ' + deliveryCharges.toString());
+    // Free Delivery logic for total
+    bool isFreeDelivery = false;
+    if (subTotal >= threshold && totalDistance <= freeKm) {
+      isFreeDelivery = true;
+    }
+
+    totalAmount = (subTotal - couponAmount - specialDiscountAmount) + taxAmount + (isFreeDelivery ? 0.0 : deliveryCharges) + deliveryTips;
+
+    return OrderBillDetails(
+      subTotal: subTotal,
+      deliveryCharges: deliveryCharges,
+      originalDeliveryFee: originalDeliveryFee,
+      couponAmount: couponAmount,
+      specialDiscountAmount: specialDiscountAmount,
+      taxAmount: taxAmount,
+      deliveryTips: deliveryTips,
+      totalAmount: totalAmount,
+      isFreeDelivery: isFreeDelivery,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +145,16 @@ class OrderDetailsScreen extends StatelessWidget {
     return GetX(
         init: OrderDetailsController(),
         builder: (controller) {
+          final order = controller.orderModel.value;
+          final vendor = order.vendor!;
+          final deliveryCharge = vendor.deliveryCharge ?? DeliveryCharge();
+          final totalDistance = Constant.calculateDistance(
+            vendor.latitude ?? 0.0,
+            vendor.longitude ?? 0.0,
+            order.address?.location?.latitude ?? 0.0,
+            order.address?.location?.longitude ?? 0.0,
+          );
+          final bill = _calculateOrderBillDetails(order, vendor, deliveryCharge, totalDistance);
           return Scaffold(
             backgroundColor: themeChange.getThem()
                 ? AppThemeData.surfaceDark
@@ -671,7 +796,7 @@ class OrderDetailsScreen extends StatelessWidget {
                                                                       .status ==
                                                                   Constant
                                                                       .orderAccepted ||
-                                                              controller
+                                                                  controller
                                                                       .orderModel
                                                                       .value
                                                                       .status ==
@@ -1404,7 +1529,7 @@ class OrderDetailsScreen extends StatelessWidget {
                                       ),
                                       Text(
                                         Constant.amountShow(
-                                            amount: controller.subTotal.value
+                                            amount: bill.subTotal
                                                 .toString()),
                                         textAlign: TextAlign.start,
                                         style: TextStyle(
@@ -1420,75 +1545,113 @@ class OrderDetailsScreen extends StatelessWidget {
                                   const SizedBox(
                                     height: 10,
                                   ),
-                                  controller.orderModel.value.takeAway == true
-                                      ? const SizedBox()
-                                      : Row(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Expanded(
-                                              child: Text(
-                                                "Delivery Fee".tr,
-                                                textAlign: TextAlign.start,
-                                                style: TextStyle(
-                                                  fontFamily:
-                                                      AppThemeData.regular,
-                                                  color: themeChange.getThem()
-                                                      ? AppThemeData.grey300
-                                                      : AppThemeData.grey600,
-                                                  fontSize: 16,
-                                                ),
-                                              ),
-                                            ),
-                                            (controller.orderModel.value.vendor
-                                                        ?.isSelfDelivery ==
-                                                    true &&
-                                                Constant.isSelfDeliveryFeature ==
-                                                    true)
-                                                ? Text(
-                                                    'Free Delivery',
-                                                    textAlign: TextAlign.start,
-                                                    style: TextStyle(
-                                                      fontFamily:
-                                                          AppThemeData.regular,
-                                                      color: AppThemeData
-                                                          .success400,
-                                                      fontSize: 16,
-                                                    ),
-                                                  )
-                                                : Text(
-                                                    Constant.amountShow(
-                                                        amount: controller
-                                                                    .orderModel
-                                                                    .value
-                                                                    .deliveryCharge ==
-                                                                null ||
-                                                            controller
-                                                                .orderModel
-                                                                .value
-                                                                .deliveryCharge!
-                                                                .isEmpty
-                                                        ? "0.0"
-                                                        : controller
-                                                            .orderModel
-                                                            .value
-                                                            .deliveryCharge
-                                                            .toString()),
-                                                    textAlign: TextAlign.start,
-                                                    style: TextStyle(
-                                                      fontFamily:
-                                                          AppThemeData.regular,
-                                                      color: themeChange
-                                                              .getThem()
-                                                          ? AppThemeData
-                                                              .grey50
-                                                          : AppThemeData
-                                                              .grey900,
-                                                      fontSize: 16,
-                                                    ),
-                                                  ),
-                                          ],
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          "Delivery Fee".tr,
+                                          textAlign: TextAlign.start,
+                                          style: TextStyle(
+                                            fontFamily: AppThemeData.regular,
+                                            color: themeChange.getThem()
+                                                ? AppThemeData.grey300
+                                                : AppThemeData.grey600,
+                                            fontSize: 16,
+                                          ),
                                         ),
+                                      ),
+                                      (vendor.isSelfDelivery == true && Constant.isSelfDeliveryFeature == true)
+                                          ? Text(
+                                              'Free Delivery',
+                                              textAlign: TextAlign.start,
+                                              style: TextStyle(
+                                                fontFamily: AppThemeData.regular,
+                                                color: AppThemeData.success400,
+                                                fontSize: 16,
+                                              ),
+                                            )
+                                          : (bill.subTotal >= (deliveryCharge.itemTotalThreshold ?? 299) &&
+                                              totalDistance > (deliveryCharge.freeDeliveryDistanceKm ?? 7))
+                                              ? Row(
+                                                  children: [
+                                                    Text(
+                                                      'Free Delivery',
+                                                      textAlign: TextAlign.start,
+                                                      style: TextStyle(
+                                                        fontFamily: AppThemeData.regular,
+                                                        color: AppThemeData.success400,
+                                                        fontSize: 16,
+                                                      ),
+                                                    ),
+                                                    const SizedBox(width: 8),
+                                                    Text(
+                                                      Constant.amountShow(amount: bill.originalDeliveryFee.toString()),
+                                                      style: TextStyle(
+                                                        fontFamily: AppThemeData.regular,
+                                                        color: AppThemeData.danger300,
+                                                        fontSize: 16,
+                                                        decoration: TextDecoration.lineThrough,
+                                                        decorationColor: AppThemeData.danger300,
+                                                      ),
+                                                    ),
+                                                    const SizedBox(width: 8),
+                                                    Text(
+                                                      Constant.amountShow(amount: bill.deliveryCharges.toString()),
+                                                      style: TextStyle(
+                                                        fontFamily: AppThemeData.regular,
+                                                        color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900,
+                                                        fontSize: 16,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                )
+                                              : (bill.subTotal >= (deliveryCharge.itemTotalThreshold ?? 299) &&
+                                                  totalDistance <= (deliveryCharge.freeDeliveryDistanceKm ?? 7))
+                                                  ? Row(
+                                                      children: [
+                                                        Text(
+                                                          'Free Delivery',
+                                                          textAlign: TextAlign.start,
+                                                          style: TextStyle(
+                                                            fontFamily: AppThemeData.regular,
+                                                            color: AppThemeData.success400,
+                                                            fontSize: 16,
+                                                          ),
+                                                        ),
+                                                        const SizedBox(width: 8),
+                                                        Text(
+                                                          Constant.amountShow(amount: (deliveryCharge.baseDeliveryCharge ?? 23).toString()),
+                                                          style: TextStyle(
+                                                            fontFamily: AppThemeData.regular,
+                                                            color: AppThemeData.danger300,
+                                                            fontSize: 16,
+                                                            decoration: TextDecoration.lineThrough,
+                                                            decorationColor: AppThemeData.danger300,
+                                                          ),
+                                                        ),
+                                                        const SizedBox(width: 8),
+                                                        Text(
+                                                          Constant.amountShow(amount: '0.00'),
+                                                          style: TextStyle(
+                                                            fontFamily: AppThemeData.regular,
+                                                            color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900,
+                                                            fontSize: 16,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    )
+                                                  : Text(
+                                                      Constant.amountShow(amount: bill.deliveryCharges.toString()),
+                                                      textAlign: TextAlign.start,
+                                                      style: TextStyle(
+                                                        fontFamily: AppThemeData.regular,
+                                                        color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900,
+                                                        fontSize: 16,
+                                                      ),
+                                                    ),
+                                    ],
+                                  ),
                                   const SizedBox(
                                     height: 10,
                                   ),
@@ -1549,7 +1712,7 @@ class OrderDetailsScreen extends StatelessWidget {
                                         ),
                                       ),
                                       Text(
-                                        "- (${Constant.amountShow(amount: controller.orderModel.value.discount.toString())})",
+                                        "- (${Constant.amountShow(amount: order.discount.toString())})",
                                         textAlign: TextAlign.start,
                                         style: TextStyle(
                                           fontFamily: AppThemeData.regular,
@@ -1561,10 +1724,9 @@ class OrderDetailsScreen extends StatelessWidget {
                                       ),
                                     ],
                                   ),
-                                  controller.orderModel.value.specialDiscount !=
+                                  order.specialDiscount !=
                                               null &&
-                                          controller.orderModel.value
-                                                      .specialDiscount![
+                                          order.specialDiscount![
                                                   'special_discount'] !=
                                               null
                                       ? Column(
@@ -1593,7 +1755,7 @@ class OrderDetailsScreen extends StatelessWidget {
                                                   ),
                                                 ),
                                                 Text(
-                                                  "- (${Constant.amountShow(amount: controller.specialDiscountAmount.value.toString())})",
+                                                  "- (${Constant.amountShow(amount: order.specialDiscount!['special_discount'].toString())})",
                                                   textAlign: TextAlign.start,
                                                   style: TextStyle(
                                                     fontFamily:
@@ -1613,10 +1775,9 @@ class OrderDetailsScreen extends StatelessWidget {
                                   const SizedBox(
                                     height: 10,
                                   ),
-                                  controller.orderModel.value.takeAway ==
+                                  order.takeAway ==
                                               true ||
-                                          controller.orderModel.value.vendor
-                                                  ?.isSelfDelivery ==
+                                          vendor.isSelfDelivery ==
                                               true
                                       ? const SizedBox()
                                       : Row(
@@ -1647,8 +1808,7 @@ class OrderDetailsScreen extends StatelessWidget {
                                             ),
                                             Text(
                                               Constant.amountShow(
-                                                  amount: controller.orderModel
-                                                      .value.tipAmount
+                                                  amount: order.tipAmount
                                                       .toString()),
                                               textAlign: TextAlign.start,
                                               style: TextStyle(
@@ -1691,7 +1851,7 @@ class OrderDetailsScreen extends StatelessWidget {
                                       ),
                                       Text(
                                         Constant.amountShow(
-                                            amount: controller.taxAmount.value
+                                            amount: bill.taxAmount
                                                 .toString()),
                                         textAlign: TextAlign.start,
                                         style: TextStyle(
@@ -1726,7 +1886,7 @@ class OrderDetailsScreen extends StatelessWidget {
                                       ),
                                       Text(
                                         Constant.amountShow(
-                                            amount: controller.totalAmount.value
+                                            amount: bill.totalAmount
                                                 .toString()),
                                         textAlign: TextAlign.start,
                                         style: TextStyle(
@@ -1792,20 +1952,16 @@ class OrderDetailsScreen extends StatelessWidget {
                                         ),
                                       ),
                                       Text(
-                                        controller.orderModel.value.takeAway ==
+                                        order.takeAway ==
                                                 true
                                             ? "TakeAway".tr
-                                            : controller.orderModel.value
-                                                        .scheduleTime ==
-                                                    null
+                                            : order.scheduleTime == null
                                                 ? "Standard".tr
                                                 : "Schedule".tr,
                                         textAlign: TextAlign.start,
                                         style: TextStyle(
                                           fontFamily: AppThemeData.medium,
-                                          color: controller.orderModel.value
-                                                      .scheduleTime !=
-                                                  null
+                                          color: order.scheduleTime != null
                                               ? AppThemeData.primary300
                                               : themeChange.getThem()
                                                   ? AppThemeData.grey50
@@ -1836,8 +1992,8 @@ class OrderDetailsScreen extends StatelessWidget {
                                         ),
                                       ),
                                       Text(
-                                        controller
-                                            .orderModel.value.paymentMethod
+                                        order
+                                            .paymentMethod
                                             .toString(),
                                         textAlign: TextAlign.start,
                                         style: TextStyle(
@@ -1871,8 +2027,7 @@ class OrderDetailsScreen extends StatelessWidget {
                                         ),
                                       ),
                                       Text(
-                                        Constant.timestampToDateTime(controller
-                                            .orderModel.value.createdAt!),
+                                        Constant.timestampToDateTime(order.createdAt!),
                                         textAlign: TextAlign.start,
                                         style: TextStyle(
                                           fontFamily: AppThemeData.regular,
@@ -1912,7 +2067,7 @@ class OrderDetailsScreen extends StatelessWidget {
                                         ),
                                       ),
                                       Text(
-                                        controller.orderModel.value.author!
+                                        order.author!
                                             .phoneNumber
                                             .toString(),
                                         textAlign: TextAlign.start,
@@ -1936,8 +2091,8 @@ class OrderDetailsScreen extends StatelessWidget {
                           const SizedBox(
                             height: 20,
                           ),
-                          controller.orderModel.value.notes == null ||
-                                  controller.orderModel.value.notes!.isEmpty
+                          order.notes == null ||
+                                  order.notes!.isEmpty
                               ? const SizedBox()
                               : Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -1970,7 +2125,7 @@ class OrderDetailsScreen extends StatelessWidget {
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 10, vertical: 14),
                                         child: Text(
-                                          controller.orderModel.value.notes
+                                          order.notes
                                               .toString(),
                                           textAlign: TextAlign.start,
                                           style: TextStyle(
@@ -1989,11 +2144,11 @@ class OrderDetailsScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-            bottomNavigationBar: controller.orderModel.value.status ==
+            bottomNavigationBar: order.status ==
                         Constant.orderShipped ||
-                    controller.orderModel.value.status ==
+                    order.status ==
                         Constant.orderInTransit ||
-                    controller.orderModel.value.status ==
+                    order.status ==
                         Constant.orderCompleted
                 ? Container(
                     color: themeChange.getThem()
@@ -2003,9 +2158,9 @@ class OrderDetailsScreen extends StatelessWidget {
                         horizontal: 16, vertical: 20),
                     child: Padding(
                       padding: const EdgeInsets.only(bottom: 20),
-                      child: controller.orderModel.value.status ==
+                      child: order.status ==
                                   Constant.orderShipped ||
-                              controller.orderModel.value.status ==
+                              order.status ==
                                   Constant.orderInTransit
                           ? RoundedButtonFill(
                               title: "Track Order".tr,
@@ -2014,7 +2169,7 @@ class OrderDetailsScreen extends StatelessWidget {
                               textColor: AppThemeData.grey900,
                               onPress: () async {
                                 Get.to(const LiveTrackingScreen(), arguments: {
-                                  "orderModel": controller.orderModel.value
+                                  "orderModel": order
                                 });
                               },
                             )
@@ -2025,7 +2180,7 @@ class OrderDetailsScreen extends StatelessWidget {
                               textColor: AppThemeData.grey50,
                               onPress: () async {
                                 for (var element
-                                    in controller.orderModel.value.products!) {
+                                    in order.products!) {
                                   controller.addToCart(
                                       cartProductModel: element);
                                   ShowToastDialog.showToast(

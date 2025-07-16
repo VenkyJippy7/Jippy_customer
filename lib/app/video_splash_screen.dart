@@ -1,4 +1,5 @@
 import 'package:customer/app/auth_screen/login_screen.dart';
+import 'package:customer/app/auth_screen/phone_number_screen.dart';
 import 'package:customer/app/dash_board_screens/dash_board_screen.dart';
 import 'package:customer/app/location_permission_screen/location_permission_screen.dart';
 import 'package:customer/app/on_boarding_screen.dart';
@@ -15,6 +16,8 @@ import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 import 'dart:developer' as developer;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:dio/dio.dart';
 
 class VideoSplashScreen extends StatefulWidget {
   const VideoSplashScreen({super.key});
@@ -85,7 +88,7 @@ class _VideoSplashScreenState extends State<VideoSplashScreen> {
       });
       
       // Wait a bit then navigate to main app
-      Future.delayed(const Duration(seconds: 2), () {
+      Future.delayed(const Duration(seconds: 1), () {
         if (mounted) {
           _navigateToMainApp();
         }
@@ -99,80 +102,53 @@ class _VideoSplashScreenState extends State<VideoSplashScreen> {
       if (_isVideoInitialized) {
         _videoPlayerController.dispose();
       }
-      
+
       developer.log('VideoSplashScreen: Navigating to main app');
-      
-      // Use the same logic as SplashController to determine where to go
-      if (Preferences.getBoolean(Preferences.isFinishOnBoardingKey) == false) {
-        Get.offAll(
-          () => const OnBoardingScreen(),
-          transition: Transition.fadeIn,
-          duration: const Duration(milliseconds: 1200),
-        );
-      } else {
-        bool isLogin = await FireStoreUtils.isLogin();
-        if (isLogin == true) {
-          await FireStoreUtils.getUserProfile(FireStoreUtils.getCurrentUid()).then((value) async {
-            if (value != null) {
-              UserModel userModel = value;
-              developer.log(userModel.toJson().toString());
-              if (userModel.role == Constant.userRoleCustomer) {
-                if (userModel.active == true) {
-                  userModel.fcmToken = await NotificationService.getToken();
-                  await FireStoreUtils.updateUser(userModel);
-                  if (userModel.shippingAddress != null && userModel.shippingAddress!.isNotEmpty) {
-                    if (userModel.shippingAddress!.where((element) => element.isDefault == true).isNotEmpty) {
-                      Constant.selectedLocation = userModel.shippingAddress!.where((element) => element.isDefault == true).single;
-                    } else {
-                      Constant.selectedLocation = userModel.shippingAddress!.first;
-                    }
-                    Get.offAll(
-                      () => const DashBoardScreen(),
-                      transition: Transition.fadeIn,
-                      duration: const Duration(milliseconds: 1200),
-                    );
-                  } else {
-                    Get.offAll(
-                      () => const LocationPermissionScreen(),
-                      transition: Transition.fadeIn,
-                      duration: const Duration(milliseconds: 1200),
-                    );
-                  }
-                } else {
-                  await FirebaseAuth.instance.signOut();
-                  Get.offAll(
-                    () => const LoginScreen(),
-                    transition: Transition.fadeIn,
-                    duration: const Duration(milliseconds: 1200),
-                  );
-                }
-              } else {
-                await FirebaseAuth.instance.signOut();
-                Get.offAll(
-                  () => const LoginScreen(),
-                  transition: Transition.fadeIn,
-                  duration: const Duration(milliseconds: 1200),
-                );
-              }
-            }
-          });
+
+      // 1. Read API token
+      final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
+      final apiToken = await secureStorage.read(key: 'api_token');
+      developer.log('[VIDEO_SPLASH] api_token from secure storage: $apiToken');
+
+      // 2. Check Firebase user
+      User? firebaseUser = FirebaseAuth.instance.currentUser;
+      developer.log('[VIDEO_SPLASH] Firebase currentUser:  firebaseUser?.uid');
+
+      // If no API token or no Firebase user, go to phone number login
+      if (apiToken == null || apiToken.isEmpty || firebaseUser == null) {
+        developer.log('[VIDEO_SPLASH] No API token or Firebase user. Navigating to PhoneNumberScreen.');
+        await FirebaseAuth.instance.signOut();
+        Get.offAll(() => const PhoneNumberScreen(), transition: Transition.fadeIn, duration: const Duration(milliseconds: 1200));
+        return;
+      }
+
+      // 3. If Firebase user is null but token exists, try to refresh Firebase session
+      // (This block is now unreachable, so you can remove or comment it out)
+
+      // 4. Check all three: API token, Firebase user, Firestore user profile
+      if (apiToken != null && apiToken.isNotEmpty && firebaseUser != null) {
+        developer.log('[VIDEO_SPLASH] All tokens present, checking Firestore user profile...');
+        UserModel? userModel = await FireStoreUtils.getUserProfile(firebaseUser.uid);
+        if (userModel != null && userModel.active == true) {
+          developer.log('[VIDEO_SPLASH] Firestore user profile found and active. Navigating to DashBoardScreen.');
+          Get.offAll(() => const DashBoardScreen(), transition: Transition.fadeIn, duration: const Duration(milliseconds: 1200));
+          return;
         } else {
+          developer.log('[VIDEO_SPLASH] Firestore user profile missing or inactive. Signing out and going to LoginScreen.');
           await FirebaseAuth.instance.signOut();
-          Get.offAll(
-            () => const LoginScreen(),
-            transition: Transition.fadeIn,
-            duration: const Duration(milliseconds: 1200),
-          );
+          Get.offAll(() => const PhoneNumberScreen(), transition: Transition.fadeIn, duration: const Duration(milliseconds: 1200));
+          return;
         }
       }
+
+      // If any check fails, go to login
+      developer.log('[VIDEO_SPLASH] Session check failed. Navigating to LoginScreen.');
+      await FirebaseAuth.instance.signOut();
+      Get.offAll(() => const PhoneNumberScreen(), transition: Transition.fadeIn, duration: const Duration(milliseconds: 1200));
     } catch (e) {
       developer.log('VideoSplashScreen: Error navigating to main app: $e');
       // Fallback navigation to login screen
-      Get.offAll(
-        () => const LoginScreen(),
-        transition: Transition.fadeIn,
-        duration: const Duration(milliseconds: 1200),
-      );
+      Get.offAll(() => const PhoneNumberScreen(), transition: Transition.fadeIn, duration: const Duration(milliseconds: 1200));
     }
   }
 

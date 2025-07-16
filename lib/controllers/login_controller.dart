@@ -20,6 +20,7 @@ import 'package:dio/dio.dart';
 import 'package:customer/app/auth_screen/otp_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class LoginController extends GetxController {
   Rx<TextEditingController> emailEditingController = TextEditingController().obs;
@@ -35,6 +36,25 @@ class LoginController extends GetxController {
   RxString authToken = ''.obs;
   RxString countryCode = '+91'.obs;
   RxString phoneNumber = ''.obs;
+
+  RxInt resendSeconds = 0.obs;
+  bool resendTimerStarted = false;
+  void startResendTimer() {
+    if (resendTimerStarted) return;
+    resendTimerStarted = true;
+    resendSeconds.value = 60;
+    Future.doWhile(() async {
+      await Future.delayed(const Duration(seconds: 1));
+      resendSeconds.value--;
+      if (resendSeconds.value <= 0) {
+        resendTimerStarted = false;
+        return false;
+      }
+      return true;
+    });
+  }
+
+  final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
 
   @override
   void onInit() {
@@ -314,22 +334,20 @@ class LoginController extends GetxController {
     print('[DEBUG] sendOtp() called with phone: ${phoneEditingController.value.text.trim()}');
     ShowToastDialog.showLoader("Please wait".tr);
     try {
-      // Set phone number and country code for use in OTP screen
       phoneNumber.value = phoneEditingController.value.text.trim();
-      // If you have a country code picker, set countryCode.value accordingly
       final response = await Dio().post(
         'https://jippymart.in/api/send-otp',
         data: {'phone': phoneEditingController.value.text.trim()},
       );
       print('[DEBUG] sendOtp() response: ${response.statusCode} ${response.data}');
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 && response.data['success'] == true) {
         isOtpSent.value = true;
         ShowToastDialog.closeLoader();
         ShowToastDialog.showToast("OTP sent successfully".tr);
         Get.to(() => OtpScreen());
       } else {
         ShowToastDialog.closeLoader();
-        ShowToastDialog.showToast("Failed to send OTP".tr);
+        ShowToastDialog.showToast(response.data['message'] ?? "Failed to send OTP".tr);
       }
     } catch (e) {
       print('[DEBUG] sendOtp() error: ${e.toString()}');
@@ -367,29 +385,62 @@ class LoginController extends GetxController {
       print('[DEBUG] verifyOtp() response: ${response.statusCode} ${response.data}');
       if (response.statusCode == 200 && response.data['success'] == true) {
         authToken.value = response.data['token'] ?? '';
-        // Set backend user ID for FireStoreUtils
+        await secureStorage.write(key: 'api_token', value: authToken.value);
+        if (response.data['firebase_custom_token'] != null) {
+          await FirebaseAuth.instance.signInWithCustomToken(response.data['firebase_custom_token']);
+        }
+        final firebaseUser = FirebaseAuth.instance.currentUser;
+        if (firebaseUser == null) {
+          print('[DEBUG] Firebase sign-in failed, forcing logout');
+          await FirebaseAuth.instance.signOut();
+          FireStoreUtils.backendUserId = null;
+          ShowToastDialog.closeLoader();
+          ShowToastDialog.showToast('Login failed, please try again.');
+          Get.offAllNamed('/LoginScreen');
+          return;
+        }
         if (response.data['user'] != null && response.data['user']['id'] != null) {
           FireStoreUtils.backendUserId = response.data['user']['id'].toString();
         }
-        ShowToastDialog.closeLoader();
-        ShowToastDialog.showToast("OTP verified successfully".tr);
-        // New logic: check if user exists by phone number
+        // Check Firestore for user profile by phone number
         final phone = phoneEditingController.value.text.trim();
         UserModel? userModel = await FireStoreUtils.getUserByPhoneNumber(phone);
-        if (userModel != null && (userModel.active == true || userModel.isActive == true)) {
-          print('[DEBUG] User exists and is active, navigating to dashboard');
-          Get.offAll(() => DashBoardScreen());
-        } else {
-          print('[DEBUG] User does not exist or is not active, navigating to signup');
+        if (userModel == null || userModel.active != true || userModel.role?.toLowerCase() != Constant.userRoleCustomer.toLowerCase()) {
+          // User not found, inactive, or not customer
           UserModel newUser = UserModel();
           newUser.phoneNumber = phone;
           newUser.countryCode = countryCode.value;
           newUser.email = response.data['user']?['email']?.toString();
+          ShowToastDialog.closeLoader();
           Get.offAll(() => SignupScreen(), arguments: {
             "userModel": newUser,
             "type": "mobileNumber"
           });
+          return;
         }
+        if ((userModel.firstName == null || userModel.firstName!.isEmpty) ||
+            (userModel.email == null || userModel.email!.isEmpty)) {
+          // Profile incomplete
+          ShowToastDialog.closeLoader();
+          Get.offAll(() => SignupScreen(), arguments: {
+            "userModel": userModel,
+            "type": "mobileNumber"
+          });
+          return;
+        }
+        // Profile exists and complete
+        userModel.fcmToken = await NotificationService.getToken();
+        await FireStoreUtils.updateUser(userModel);
+        Constant.userModel = userModel;
+        if (userModel.shippingAddress != null && userModel.shippingAddress!.isNotEmpty) {
+          if (userModel.shippingAddress!.where((element) => element.isDefault == true).isNotEmpty) {
+            Constant.selectedLocation = userModel.shippingAddress!.where((element) => element.isDefault == true).single;
+          } else {
+            Constant.selectedLocation = userModel.shippingAddress!.first;
+          }
+        }
+        ShowToastDialog.closeLoader();
+        Get.offAll(() => const DashBoardScreen());
       } else {
         ShowToastDialog.closeLoader();
         ShowToastDialog.showToast(response.data['message'] ?? 'OTP verification failed');
@@ -412,12 +463,12 @@ class LoginController extends GetxController {
         data: {'phone': phoneEditingController.value.text.trim()},
       );
       print('[DEBUG] resendOtp() response: ${response.statusCode} ${response.data}');
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 && response.data['success'] == true) {
         ShowToastDialog.closeLoader();
         ShowToastDialog.showToast("OTP resent successfully".tr);
       } else {
         ShowToastDialog.closeLoader();
-        ShowToastDialog.showToast("Failed to resend OTP".tr);
+        ShowToastDialog.showToast(response.data['message'] ?? "Failed to resend OTP".tr);
       }
     } catch (e) {
       print('[DEBUG] resendOtp() error: ${e.toString()}');
@@ -497,5 +548,15 @@ class LoginController extends GetxController {
       ShowToastDialog.showToast('Login failed: \n$e');
     }
     ShowToastDialog.closeLoader();
+  }
+
+  Future<void> logout() async {
+    // Sign out from Firebase
+    await FirebaseAuth.instance.signOut();
+    // Remove API token from secure storage
+    await secureStorage.delete(key: 'api_token');
+    // Optionally clear any other user-related state here
+    // Navigate to login screen
+    Get.offAllNamed('/LoginScreen');
   }
 }

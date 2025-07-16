@@ -81,7 +81,7 @@ class SelectPaymentScreen extends StatelessWidget {
                                 opacity: controller.subTotal.value > 599 ? 0.4 : 1.0,
                                 child: IgnorePointer(
                                   ignoring: controller.subTotal.value > 599,
-                                  child: cardDecoration(controller, PaymentGateway.cod, themeChange, "assets/images/ic_cash.png"),
+                              child: cardDecoration(controller, PaymentGateway.cod, themeChange, "assets/images/ic_cash.png"),
                                 ),
                               )),
                             ),

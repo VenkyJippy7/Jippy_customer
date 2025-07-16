@@ -81,6 +81,12 @@ class SignupController extends GetxController {
       userModel.value.countryCode = countryCodeEditingController.value.text;
       userModel.value.createdAt = Timestamp.now();
       userModel.value.appIdentifier = Platform.isAndroid ? 'android' : 'ios';
+      // Always set userModel.id to Firebase UID
+      final firebaseUser = FirebaseAuth.instance.currentUser;
+      if (firebaseUser != null) {
+        userModel.value.id = firebaseUser.uid;
+      }
+      print('[SIGNUP] Saving user profile: ' + userModel.value.toJson().toString());
 
       await FireStoreUtils.getReferralUserByCode(referralCodeEditingController.value.text).then((value) async {
         if (value != null) {

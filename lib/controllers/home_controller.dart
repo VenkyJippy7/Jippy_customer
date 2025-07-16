@@ -50,7 +50,7 @@ class HomeController extends GetxController {
   void onInit() {
     getVendorCategory();
     getData();
-    startBannerTimer();
+    // startBannerTimer(); // Move to onReady
     scrollController.addListener(() {
       if (scrollController.position.userScrollDirection.toString() == 'ScrollDirection.reverse') {
         if (isNavBarVisible.value) isNavBarVisible.value = false;
@@ -59,6 +59,12 @@ class HomeController extends GetxController {
       }
     });
     super.onInit();
+  }
+
+  @override
+  void onReady() {
+    super.onReady();
+    startBannerTimer();
   }
 
   @override
@@ -78,11 +84,14 @@ class HomeController extends GetxController {
         } else {
           currentPage.value = 0;
         }
+        // Only animate if attached
+        if (pageController.value.hasClients) {
         pageController.value.animateToPage(
           currentPage.value,
           duration: const Duration(milliseconds: 500),
           curve: Curves.easeInOut,
         );
+        }
       }
     });
   }

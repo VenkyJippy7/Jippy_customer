@@ -1,5 +1,7 @@
 import 'package:customer/app/auth_screen/otp_screen.dart';
 import 'package:customer/constant/show_toast_dialog.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -14,6 +16,9 @@ class PhoneNumberController extends GetxController {
     countryCodeEditingController.value.text = '+91';
   }
 
+  final Dio dio = Dio();
+  final storage = FlutterSecureStorage();
+
   sendCode() async {
     final rawNumber = phoneNUmberEditingController.value.text.trim();
     final countryCode = countryCodeEditingController.value.text.trim();
@@ -22,45 +27,26 @@ class PhoneNumberController extends GetxController {
       ShowToastDialog.showToast('Please enter a valid 10-digit Indian mobile number.');
       return;
     }
-    final e164Number = '+91' + rawNumber;
+    final fullNumber = countryCode + rawNumber;
     try {
       ShowToastDialog.showLoader("Please wait".tr);
-      
-      // --- Deprecated: Firebase Phone Auth (replaced by custom backend OTP API) ---
-      // The following code is commented out as we now use our own backend for OTP verification.
-      //
-      // await FirebaseAuth.instance.verifyPhoneNumber(
-      //   phoneNumber: e164Number,
-      //   verificationCompleted: (PhoneAuthCredential credential) async {
-      //     ShowToastDialog.closeLoader();
-      //     await signInWithPhoneAuthCredential(credential);
-      //   },
-      //   verificationFailed: (FirebaseAuthException e) {
-      //     ShowToastDialog.closeLoader();
-      //     if (e.code == 'invalid-phone-number') {
-      //       ShowToastDialog.showToast("Invalid phone number".tr);
-      //     } else {
-      //       ShowToastDialog.showToast(e.message ?? "Verification failed".tr);
-      //     }
-      //   },
-      //   codeSent: (String verificationId, int? resendToken) {
-      //     ShowToastDialog.closeLoader();
-      //     this.verificationId.value = verificationId;
-      //     print('Navigating to OtpScreen with verificationId: ' + verificationId);
-      //     Get.to(() => const OtpScreen(), arguments: {
-      //       "countryCode": countryCode,
-      //       "phoneNumber": rawNumber,
-      //       "verificationId": verificationId,
-      //     });
-      //   },
-      //   codeAutoRetrievalTimeout: (String verificationId) {
-      //     this.verificationId.value = verificationId;
-      //   },
-      // );
+      final response = await dio.post(
+        'https://your-backend.com/api/send-otp',
+        data: {"phone": fullNumber.replaceAll('+', '')},
+        options: Options(headers: {"Accept": "application/json"}),
+      );
+      ShowToastDialog.closeLoader();
+      if (response.data['success'] == true) {
+        Get.to(() => const OtpScreen(), arguments: {
+          "countryCode": countryCode,
+          "phoneNumber": rawNumber,
+        });
+      } else {
+        ShowToastDialog.showToast(response.data['message'] ?? "Failed to send OTP");
+      }
     } catch (e) {
       ShowToastDialog.closeLoader();
       ShowToastDialog.showToast("An error occurred. Please try again.".tr);
-      debugPrint("Error in sendCode: $e");
     }
   }
 

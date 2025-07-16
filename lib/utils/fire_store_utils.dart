@@ -200,9 +200,16 @@ class FireStoreUtils {
 
   static Future<bool> updateUser(UserModel userModel) async {
     bool isUpdate = false;
+    // Always use Firebase UID as document ID
+    String uid = userModel.id ?? FirebaseAuth.instance.currentUser?.uid ?? '';
+    if (uid.isEmpty) {
+      log('updateUser: No UID available for user document!');
+      return false;
+    }
+    userModel.id = uid;
     await fireStore
         .collection(CollectionName.users)
-        .doc(userModel.id)
+        .doc(uid)
         .set(userModel.toJson())
         .whenComplete(() {
       Constant.userModel = userModel;

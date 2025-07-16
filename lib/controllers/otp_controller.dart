@@ -3,6 +3,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:customer/utils/preferences.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'dart:developer' as developer;
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class OtpController extends GetxController {
   Rx<TextEditingController> otpController = TextEditingController().obs;
@@ -11,66 +15,79 @@ class OtpController extends GetxController {
   RxString countryCode = ''.obs;
   RxString phoneNumber = ''.obs;
 
+  final Dio dio = Dio();
+  final storage = FlutterSecureStorage();
+
   void setVerificationId(String id) {
     verificationId.value = id;
   }
 
-  // --- Deprecated: Firebase Phone Auth (replaced by custom backend OTP API) ---
-  // The following code is commented out as we now use our own backend for OTP verification.
-  //
-  // void verifyOtp(String enteredOtp) async {
-  //   if (enteredOtp.length != 6) {
-  //     ShowToastDialog.showToast("Enter a valid 6-digit OTP");
-  //     return;
-  //   }
-  //   isLoading.value = true;
-  //   ShowToastDialog.showLoader("Verifying OTP...");
-  //   try {
-  //     PhoneAuthCredential credential = PhoneAuthProvider.credential(
-  //       verificationId: verificationId.value,
-  //       smsCode: enteredOtp,
-  //     );
-  //     await FirebaseAuth.instance.signInWithCredential(credential);
-  //     await Preferences.setBoolean('isOtpVerified', true);
-  //     isLoading.value = false;
-  //     ShowToastDialog.closeLoader();
-  //     Get.offAllNamed('/DashBoardScreen');
-  //   } catch (e) {
-  //     await Preferences.setBoolean('isOtpVerified', false);
-  //     await FirebaseAuth.instance.signOut();
-  //     isLoading.value = false;
-  //     ShowToastDialog.closeLoader();
-  //     ShowToastDialog.showToast("Invalid OTP. Try again.");
-  //   }
-  // }
-  //
-  // void resendOtp(String phone, String countryCode) async {
-  //   isLoading.value = true;
-  //   try {
-  //     await FirebaseAuth.instance.verifyPhoneNumber(
-  //         phoneNumber: countryCode + phone,
-  //         timeout: const Duration(seconds: 60),
-  //         verificationCompleted: (PhoneAuthCredential credential) async {
-  //           isLoading.value = false;
-  //         },
-  //         verificationFailed: (FirebaseAuthException e) {
-  //           isLoading.value = false;
-  //           ShowToastDialog.showToast("Verification failed: "+(e.message ?? ''));
-  //         },
-  //         codeSent: (String newVerificationId, int? resendToken) {
-  //           isLoading.value = false;
-  //           verificationId.value = newVerificationId;
-  //           ShowToastDialog.showToast("OTP resent");
-  //       },
-  //         codeAutoRetrievalTimeout: (String verificationId) {
-  //           this.verificationId.value = verificationId;
-  //         },
-  //       );
-  //   } catch (e) {
-  //     isLoading.value = false;
-  //     ShowToastDialog.showToast("Error: "+e.toString());
-  //   }
-  // }
+  Future<void> verifyOtp(String enteredOtp, String phone) async {
+    if (enteredOtp.length != 6) {
+      ShowToastDialog.showToast("Enter a valid 6-digit OTP");
+      return;
+    }
+    isLoading.value = true;
+    ShowToastDialog.showLoader("Verifying OTP...");
+    try {
+      final response = await dio.post(
+        'https://your-backend.com/api/verify-otp',
+        data: {
+          "phone": phone.replaceAll('+', ''),
+          "otp": enteredOtp,
+        },
+        options: Options(headers: {"Accept": "application/json"}),
+      );
+      if (response.data['success'] == true) {
+        // Store API token securely
+        await storage.write(key: 'api_token', value: response.data['token']);
+        developer.log('[OTP] api_token written to secure storage: ${response.data['token']}');
+        // Set token for future API calls
+        dio.options.headers['Authorization'] = 'Bearer ${response.data['token']}';
+        // Sign in to Firebase
+        await FirebaseAuth.instance.signInWithCustomToken(response.data['firebase_custom_token']);
+        developer.log('[OTP] Firebase sign-in with custom token successful');
+        // Ensure Firestore user document exists with UID as document ID
+        final firebaseUser = FirebaseAuth.instance.currentUser;
+        if (firebaseUser != null) {
+          final usersCollection = FirebaseFirestore.instance.collection('users');
+          // Find any document with this user's phone/email but wrong doc ID
+          final query = await usersCollection.where('phoneNumber', isEqualTo: phone).get();
+          for (var doc in query.docs) {
+            if (doc.id != firebaseUser.uid) {
+              // Migrate data to correct UID doc and delete old
+              await usersCollection.doc(firebaseUser.uid).set(doc.data(), SetOptions(merge: true));
+              await usersCollection.doc(doc.id).delete();
+              developer.log('[OTP] Migrated user doc from ${doc.id} to ${firebaseUser.uid}');
+            }
+          }
+          // Always ensure UID doc exists/updated
+          final userDoc = usersCollection.doc(firebaseUser.uid);
+          final userData = {
+            'id': firebaseUser.uid,
+            'phoneNumber': phone,
+            'active': true,
+            'appIdentifier': 'android',
+            'createdAt': FieldValue.serverTimestamp(),
+            'role': 'customer',
+            // Add other fields as needed
+          };
+          await userDoc.set(userData, SetOptions(merge: true));
+          developer.log('[OTP] Firestore user document ensured for UID: ${firebaseUser.uid}');
+        }
+        // Navigate to dashboard
+        Get.offAllNamed('/DashBoardScreen');
+      } else {
+        ShowToastDialog.showToast(response.data['message'] ?? "Invalid OTP. Try again.");
+      }
+    } catch (e) {
+      developer.log('[OTP] Error verifying OTP: $e');
+      ShowToastDialog.showToast("Invalid OTP. Try again.");
+    } finally {
+      isLoading.value = false;
+      ShowToastDialog.closeLoader();
+    }
+  }
 
   @override
   void onClose() {

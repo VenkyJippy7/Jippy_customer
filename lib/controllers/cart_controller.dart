@@ -196,6 +196,18 @@ class CartController extends GetxController {
     taxAmount.value = 0.0;
     totalAmount.value = 0.0;
 
+    // 1. Calculate subtotal first
+    subTotal.value = 0.0;
+    for (var element in cartItem) {
+      if (double.parse(element.discountPrice.toString()) <= 0) {
+        subTotal.value += double.parse(element.price.toString()) * double.parse(element.quantity.toString()) +
+            (double.parse(element.extrasPrice.toString()) * double.parse(element.quantity.toString()));
+      } else {
+        subTotal.value += double.parse(element.discountPrice.toString()) * double.parse(element.quantity.toString()) +
+            (double.parse(element.extrasPrice.toString()) * double.parse(element.quantity.toString()));
+      }
+    }
+    // 2. Now calculate delivery fee using the correct subtotal
     if (cartItem.isNotEmpty) {
       if (selectedFoodType.value == "Delivery") {
         totalDistance.value = double.parse(Constant.getDistance(
@@ -227,26 +239,20 @@ class CartController extends GetxController {
             originalDeliveryFee.value = baseCharge.toDouble();
           } else {
             double extraKm = (totalDistance.value - freeKm).ceilToDouble();
-            deliveryCharges.value = (extraKm * perKm).toDouble();
             originalDeliveryFee.value = (baseCharge + (extraKm * perKm)).toDouble();
+            deliveryCharges.value = (extraKm * perKm).toDouble();
+            print('DEBUG: subtotal >= threshold && totalDistance > freeKm');
+            print('DEBUG: baseCharge = ' + baseCharge.toString());
+            print('DEBUG: extraKm = ' + extraKm.toString());
+            print('DEBUG: perKm = ' + perKm.toString());
+            print('DEBUG: originalDeliveryFee = ' + originalDeliveryFee.value.toString());
+            print('DEBUG: deliveryCharges = ' + deliveryCharges.value.toString());
           }
         }
-      }
-    }
-
-    for (var element in cartItem) {
-      if (double.parse(element.discountPrice.toString()) <= 0) {
-        subTotal.value = subTotal.value +
-            double.parse(element.price.toString()) *
-                double.parse(element.quantity.toString()) +
-            (double.parse(element.extrasPrice.toString()) *
-                double.parse(element.quantity.toString()));
-      } else {
-        subTotal.value = subTotal.value +
-            double.parse(element.discountPrice.toString()) *
-                double.parse(element.quantity.toString()) +
-            (double.parse(element.extrasPrice.toString()) *
-                double.parse(element.quantity.toString()));
+        print('DEBUG: subTotal.value = ' + subTotal.value.toString());
+        print('DEBUG: totalDistance.value = ' + totalDistance.value.toString());
+        print('DEBUG: originalDeliveryFee = ' + originalDeliveryFee.value.toString());
+        print('DEBUG: deliveryCharges = ' + deliveryCharges.value.toString());
       }
     }
 
@@ -302,7 +308,7 @@ class CartController extends GetxController {
           sgst = Constant.calculateTax(amount: subTotal.value.toString(), taxModel: element);
           print('DEBUG: SGST (5%) on item total: ' + sgst.toString());
         } else if ((element.title?.toLowerCase() ?? '').contains('gst')) {
-          gst = Constant.calculateTax(amount: deliveryCharges.value.toString(), taxModel: element);
+          gst = Constant.calculateTax(amount: originalDeliveryFee.value.toString(), taxModel: element);
           print('DEBUG: GST (18%) on delivery fee: ' + gst.toString());
         }
       }

@@ -22,143 +22,139 @@ class PhoneNumberScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeChange = Provider.of<DarkThemeProvider>(context);
-    final LoginController controller = Get.find<LoginController>();
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: themeChange.getThem() ? AppThemeData.surfaceDark : AppThemeData.surface,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Welcome Back! 👋".tr,
-                style: TextStyle(color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900, fontSize: 22, fontFamily: AppThemeData.semiBold),
-              ),
-              Text(
-                "Log in to continue enjoying delicious food delivered to your doorstep.".tr,
-                style: TextStyle(color: themeChange.getThem() ? AppThemeData.grey400 : AppThemeData.grey500, fontSize: 16, fontFamily: AppThemeData.regular),
-              ),
-              const SizedBox(
-                height: 32,
-              ),
-              TextFieldWidget(
-                title: 'Phone Number'.tr,
-                controller: controller.phoneEditingController.value,
-                hintText: 'Enter Phone Number'.tr,
-                textInputType: const TextInputType.numberWithOptions(signed: true, decimal: true),
-                textInputAction: TextInputAction.done,
-                inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp('[0-9]')),
-                ],
-                prefix: CountryCodePicker(
-                  onChanged: (value) {
-                    // Optionally handle country code if needed
-                  },
-                  dialogTextStyle:
-                      TextStyle(color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900, fontWeight: FontWeight.w500, fontFamily: AppThemeData.medium),
-                  dialogBackgroundColor: themeChange.getThem() ? AppThemeData.grey800 : AppThemeData.grey100,
-                  initialSelection: 'IN',
-                  countryFilter: const ['IN'],
-                  comparator: (a, b) => b.name!.compareTo(a.name.toString()),
-                  textStyle: TextStyle(fontSize: 14, color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900, fontFamily: AppThemeData.medium),
-                  searchDecoration: InputDecoration(iconColor: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900),
-                  searchStyle:
-                      TextStyle(color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900, fontWeight: FontWeight.w500, fontFamily: AppThemeData.medium),
-                ),
-              ),
-              const SizedBox(
-                height: 36,
-              ),
-              Obx(() => controller.isOtpSent.value
-                  ? Center(child: Text('OTP sent!'))
-                  : RoundedButtonFill(
-                      title: "Send OTP".tr,
-                      color: AppThemeData.primary300,
-                      textColor: AppThemeData.grey50,
-                      onPress: () async {
-                        if (controller.phoneEditingController.value.text.isEmpty) {
-                          ShowToastDialog.showToast("Please enter mobile number".tr);
-                        } else {
-                          await controller.sendOtp();
-                        }
-                      },
-                    )),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 40),
-                child: Row(
+    final controller = Get.put(LoginController());
+          return Scaffold(
+            appBar: AppBar(
+              backgroundColor: themeChange.getThem() ? AppThemeData.surfaceDark : AppThemeData.surface,
+            ),
+            body: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Expanded(child: Divider(thickness: 1)),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
-                      child: Text(
-                        "or".tr,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: themeChange.getThem() ? AppThemeData.grey500 : AppThemeData.grey400,
-                          fontSize: 16,
-                          fontFamily: AppThemeData.medium,
-                          fontWeight: FontWeight.w500,
-                        ),
+                    Text(
+                      "Welcome Back! 👋".tr,
+                      style: TextStyle(color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900, fontSize: 22, fontFamily: AppThemeData.semiBold),
+                    ),
+                    Text(
+                      "Log in to continue enjoying delicious food delivered to your doorstep.".tr,
+                      style: TextStyle(color: themeChange.getThem() ? AppThemeData.grey400 : AppThemeData.grey500, fontSize: 16, fontFamily: AppThemeData.regular),
+                    ),
+              const SizedBox(height: 32),
+                    TextFieldWidget(
+                      title: 'Phone Number'.tr,
+                controller: controller.phoneEditingController.value,
+                      hintText: 'Enter Phone Number'.tr,
+                      textInputType: const TextInputType.numberWithOptions(signed: true, decimal: true),
+                      textInputAction: TextInputAction.done,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(RegExp('[0-9]')),
+                      ],
+                      prefix: CountryCodePicker(
+                        onChanged: (value) {
+                    // Optionally handle country code if needed
+                        },
+                  dialogTextStyle: TextStyle(color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900, fontWeight: FontWeight.w500, fontFamily: AppThemeData.medium),
+                        dialogBackgroundColor: themeChange.getThem() ? AppThemeData.grey800 : AppThemeData.grey100,
+                        initialSelection: 'IN',
+                        countryFilter: const ['IN'],
+                        comparator: (a, b) => b.name!.compareTo(a.name.toString()),
+                        textStyle: TextStyle(fontSize: 14, color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900, fontFamily: AppThemeData.medium),
+                        searchDecoration: InputDecoration(iconColor: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900),
+                  searchStyle: TextStyle(color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900, fontWeight: FontWeight.w500, fontFamily: AppThemeData.medium),
                       ),
                     ),
-                    const Expanded(child: Divider()),
+              const SizedBox(height: 36),
+              Obx(() => controller.isOtpSent.value
+                  ? Center(child: Text('OTP sent!'))
+                  : Obx(() => RoundedButtonFill(
+                        title: controller.isVerifying.value ? "Sending...".tr : "Send OTP".tr,
+                      color: AppThemeData.primary300,
+                      textColor: AppThemeData.grey50,
+                        onPress: controller.isVerifying.value
+                            ? null
+                            : () async {
+                                final phone = controller.phoneEditingController.value.text.trim();
+                                if (phone.isEmpty) {
+                          ShowToastDialog.showToast("Please enter mobile number".tr);
+                                } else if (phone.length < 10 || phone.length > 15) {
+                                  ShowToastDialog.showToast("Phone number must be 10-15 digits".tr);
+                        } else {
+                                  await controller.sendOtp();
+                        }
+                      },
+                      ))),
+                    // Padding(
+                    //   padding: const EdgeInsets.symmetric(horizontal: 40),
+                    //   child: Row(
+                    //     children: [
+                    //       const Expanded(child: Divider(thickness: 1)),
+                    //       Padding(
+                    //         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+                    //         child: Text(
+                    //           "or".tr,
+                    //           textAlign: TextAlign.center,
+                    //           style: TextStyle(
+                    //             color: themeChange.getThem() ? AppThemeData.grey500 : AppThemeData.grey400,
+                    //             fontSize: 16,
+                    //             fontFamily: AppThemeData.medium,
+                    //             fontWeight: FontWeight.w500,
+                    //           ),
+                    //         ),
+                    //       ),
+                    //       const Expanded(child: Divider()),
+                    //     ],
+                    //   ),
+                    // ),
+                    // RoundedButtonBorder(
+                    //   title: "Continue with Email".tr,
+                    //   textColor: AppThemeData.primary300,
+                    //   icon: SvgPicture.asset("assets/icons/ic_mail.svg"),
+                    //   isRight: false,
+                    //   onPress: () async {
+                    //     Get.back();
+                    //   },
+                    // ),
                   ],
                 ),
               ),
-              RoundedButtonBorder(
-                title: "Continue with Email".tr,
-                textColor: AppThemeData.primary300,
-                icon: SvgPicture.asset("assets/icons/ic_mail.svg"),
-                isRight: false,
-                onPress: () async {
-                  Get.back();
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
-      bottomNavigationBar: Padding(
-        padding: EdgeInsets.symmetric(vertical: Platform.isAndroid ? 10 : 30),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text.rich(
-              TextSpan(
-                children: [
-                  TextSpan(
-                    text: "Don't have an account?".tr,
-                    style: TextStyle(
-                      color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                  const WidgetSpan(
-                      child: SizedBox(
-                    width: 10,
-                  )),
-                  TextSpan(
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () {
-                          Get.to(const SignupScreen());
-                        },
-                      text: 'Sign up'.tr,
-                      style: TextStyle(
-                          color: AppThemeData.primary300,
-                          fontFamily: AppThemeData.bold,
-                          fontWeight: FontWeight.w500,
-                          decoration: TextDecoration.underline,
-                          decorationColor: AppThemeData.primary300)),
-                ],
-              ),
             ),
-          ],
-        ),
-      ),
-    );
+            // bottomNavigationBar: Padding(
+            //   padding: EdgeInsets.symmetric(vertical: Platform.isAndroid ? 10 : 30),
+            //   child: Column(
+            //     mainAxisSize: MainAxisSize.min,
+            //     children: [
+            //       Text.rich(
+            //         TextSpan(
+            //           children: [
+            //             TextSpan(
+            //               text: "Don't have an account?".tr,
+            //               style: TextStyle(
+            //                 color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900,
+            //                 fontSize: 14,
+            //                 fontWeight: FontWeight.w400,
+            //               ),
+            //             ),
+            //       const WidgetSpan(child: SizedBox(width: 10)),
+            //             TextSpan(
+            //                 recognizer: TapGestureRecognizer()
+            //                   ..onTap = () {
+            //                     Get.to(const SignupScreen());
+            //                   },
+            //                 text: 'Sign up'.tr,
+            //                 style: TextStyle(
+            //                     color: AppThemeData.primary300,
+            //                     fontFamily: AppThemeData.bold,
+            //                     fontWeight: FontWeight.w500,
+            //                     decoration: TextDecoration.underline,
+            //                     decorationColor: AppThemeData.primary300)),
+            //           ],
+            //         ),
+            //       ),
+            //     ],
+            //   ),
+            // ),
+          );
   }
 }
